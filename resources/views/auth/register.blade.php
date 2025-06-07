@@ -142,47 +142,102 @@
         document.getElementById('registerForm').addEventListener('submit', function(event) {
             let valid = true;
 
-            // Validate first name
-            const firstName = document.getElementById('first_name');
-            const firstNameError = document.getElementById('firstNameError');
-            if (!firstName.checkValidity()) {
-                firstNameError.classList.remove('hidden');
-                valid = false;
-            } else {
-                firstNameError.classList.add('hidden');
-            }
+            const inputs = [
+                { id: 'first_name', errorId: 'firstNameError' },
+                { id: 'last_name', errorId: 'lastNameError' },
+                { id: 'email', errorId: 'emailError' },
+                { id: 'password', errorId: 'passwordError' }
+            ];
 
-            // Validate last name
-            const lastName = document.getElementById('last_name');
-            const lastNameError = document.getElementById('lastNameError');
-            if (!lastName.checkValidity()) {
-                lastNameError.classList.remove('hidden');
-                valid = false;
-            } else {
-                lastNameError.classList.add('hidden');
-            }
+            inputs.forEach(({ id, errorId }) => {
+                const input = document.getElementById(id);
+                const error = document.getElementById(errorId);
+                if (!input.checkValidity()) {
+                    error.classList.remove('hidden');
+                    valid = false;
+                } else {
+                    error.classList.add('hidden');
+                }
+            });
 
-            // Validate email
-            const email = document.getElementById('email');
-            const emailError = document.getElementById('emailError');
-            if (!email.checkValidity()) {
-                emailError.classList.remove('hidden');
-                valid = false;
-            } else {
-                emailError.classList.add('hidden');
+            if (!valid) event.preventDefault();
+        });
+         // Real-time validation function
+        function validateField(input, errorElement) {
+            if (input.checkValidity() && input.value.trim() !== '') {
+                errorElement.classList.add('hidden');
+                input.style.borderColor = '#d1d5db';
+            } else if (input.value.trim() !== '') {
+                errorElement.classList.remove('hidden');
+                input.style.borderColor = '#ef4444';
             }
+        }
 
-            // Validate password
-            const password = document.getElementById('password');
-            const passwordError = document.getElementById('passwordError');
-            if (!password.checkValidity()) {
-                passwordError.classList.remove('hidden');
-                valid = false;
-            } else {
-                passwordError.classList.add('hidden');
-            }
+        // Add event listeners for real-time validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = [
+                { id: 'first_name', errorId: 'firstNameError' },
+                { id: 'last_name', errorId: 'lastNameError' },
+                { id: 'email', errorId: 'emailError' },
+                { id: 'password', errorId: 'passwordError' }
+            ];
+
+            inputs.forEach(({ id, errorId }) => {
+                const input = document.getElementById(id);
+                const errorElement = document.getElementById(errorId);
+
+                // Validate on input (as user types)
+                input.addEventListener('input', function() {
+                    validateField(input, errorElement);
+                });
+
+                // Validate on blur (when user leaves the field)
+                input.addEventListener('blur', function() {
+                    if (input.value.trim() !== '') {
+                        validateField(input, errorElement);
+                    }
+                });
+
+                // Clear error when user focuses on the field
+                input.addEventListener('focus', function() {
+                    if (input.checkValidity()) {
+                        errorElement.classList.add('hidden');
+                        input.style.borderColor = '#3b82f6';
+                    }
+                });
+            });
+        });
+
+        // Form submission validation
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            let valid = true;
+
+            const inputs = [
+                { id: 'first_name', errorId: 'firstNameError' },
+                { id: 'last_name', errorId: 'lastNameError' },
+                { id: 'email', errorId: 'emailError' },
+                { id: 'password', errorId: 'passwordError' }
+            ];
+
+            inputs.forEach(({ id, errorId }) => {
+                const input = document.getElementById(id);
+                const error = document.getElementById(errorId);
+                
+                if (!input.checkValidity() || input.value.trim() === '') {
+                    error.classList.remove('hidden');
+                    input.style.borderColor = '#ef4444';
+                    valid = false;
+                } else {
+                    error.classList.add('hidden');
+                    input.style.borderColor = '#d1d5db';
+                }
+            });
 
             if (!valid) {
+                event.preventDefault();
+            } else {
+                // Simulate form submission
+                alert('Form would be submitted! (This is just a demo)');
                 event.preventDefault();
             }
         });

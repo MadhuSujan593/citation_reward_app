@@ -102,7 +102,7 @@ class AuthController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('login')->with('success', 'Logged out successfully.');
+            return redirect()->route('login');
         } catch (\Exception $e) {
             Log::error('Logout error: ' . $e->getMessage());
 
@@ -137,7 +137,6 @@ class AuthController extends Controller
                 return back()->withErrors(['email' => 'Failed to send reset link. Please try again later.']);
             }
         } catch (\Exception $e) {
-            dd($e);
             Log::error('Password reset error: ' . $e->getMessage());
             return back()->withErrors(['email' => 'Failed to send reset link. Please try again later.']);
         }

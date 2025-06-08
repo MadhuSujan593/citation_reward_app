@@ -5,6 +5,7 @@
     <title>Register - Ebolt</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     @vite('resources/css/app.css')
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -23,8 +24,20 @@
 
         <h2 class="text-center text-2xl font-semibold text-gray-800">Create your account</h2>
         <p class="text-center text-sm text-gray-500 mb-6">Start your journey with us today</p>
+        {{-- ✅ Success & Error Session Messages --}}
+@if (session('success'))
+    <div class="mb-4 text-sm text-green-700 bg-green-100 border border-green-300 px-4 py-2 rounded-lg">
+        {{ session('success') }}
+    </div>
+@endif
 
-        <form id="registerForm" method="POST" action="{{ route('register') }}" novalidate>
+@if (session('error'))
+    <div class="mb-4 text-sm text-red-700 bg-red-100 border border-red-300 px-4 py-2 rounded-lg">
+        {{ session('error') }}
+    </div>
+@endif
+        
+        <form id="registerForm" method="POST" action="{{ route('register.post') }}" novalidate>
             @csrf
             <div class="mb-4">
                 <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
@@ -66,6 +79,9 @@
                     placeholder="example@mail.com"
                     class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
+                @error('email')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
                 <p class="text-red-600 text-sm mt-1 hidden" id="emailError">Please enter a valid email address.</p>
             </div>
 
@@ -120,109 +136,73 @@
     </div>
 
     <script>
-        function togglePassword() {
-            const password = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
-            if (password.type === 'password') {
-                password.type = 'text';
-                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7
-                    a10.054 10.054 0 011.442-2.568m3.1-2.53A9.959 9.959 0 0112 5c4.477 0 8.268 2.943
-                    9.542 7a9.972 9.972 0 01-4.043 5.317M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>`;
-            } else {
-                password.type = 'password';
-                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943
-                    9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
-            }
+    function togglePassword() {
+        const password = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        if (password.type === 'password') {
+            password.type = 'text';
+            eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7
+                a10.054 10.054 0 011.442-2.568m3.1-2.53A9.959 9.959 0 0112 5c4.477 0 8.268 2.943
+                9.542 7a9.972 9.972 0 01-4.043 5.317M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>`;
+        } else {
+            password.type = 'password';
+            eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943
+                9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
         }
+    }
 
-        document.getElementById('registerForm').addEventListener('submit', function(event) {
-            let valid = true;
+    function validateField(input, errorElement) {
+        if (input.checkValidity() && input.value.trim() !== '') {
+            errorElement.classList.add('hidden');
+            input.style.borderColor = '#d1d5db';
+        } else if (input.value.trim() !== '') {
+            errorElement.classList.remove('hidden');
+            input.style.borderColor = '#ef4444';
+        }
+    }
 
-            const inputs = [
-                { id: 'first_name', errorId: 'firstNameError' },
-                { id: 'last_name', errorId: 'lastNameError' },
-                { id: 'email', errorId: 'emailError' },
-                { id: 'password', errorId: 'passwordError' }
-            ];
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = [
+            { id: 'first_name', errorId: 'firstNameError' },
+            { id: 'last_name', errorId: 'lastNameError' },
+            { id: 'email', errorId: 'emailError' },
+            { id: 'password', errorId: 'passwordError' }
+        ];
 
-            inputs.forEach(({ id, errorId }) => {
-                const input = document.getElementById(id);
-                const error = document.getElementById(errorId);
-                if (!input.checkValidity()) {
-                    error.classList.remove('hidden');
-                    valid = false;
-                } else {
-                    error.classList.add('hidden');
+        inputs.forEach(({ id, errorId }) => {
+            const input = document.getElementById(id);
+            const errorElement = document.getElementById(errorId);
+
+            input.addEventListener('input', function() {
+                validateField(input, errorElement);
+            });
+
+            input.addEventListener('blur', function() {
+                if (input.value.trim() !== '') {
+                    validateField(input, errorElement);
                 }
             });
 
-            if (!valid) event.preventDefault();
-        });
-         // Real-time validation function
-        function validateField(input, errorElement) {
-            if (input.checkValidity() && input.value.trim() !== '') {
-                errorElement.classList.add('hidden');
-                input.style.borderColor = '#d1d5db';
-            } else if (input.value.trim() !== '') {
-                errorElement.classList.remove('hidden');
-                input.style.borderColor = '#ef4444';
-            }
-        }
-
-        // Add event listeners for real-time validation
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = [
-                { id: 'first_name', errorId: 'firstNameError' },
-                { id: 'last_name', errorId: 'lastNameError' },
-                { id: 'email', errorId: 'emailError' },
-                { id: 'password', errorId: 'passwordError' }
-            ];
-
-            inputs.forEach(({ id, errorId }) => {
-                const input = document.getElementById(id);
-                const errorElement = document.getElementById(errorId);
-
-                // Validate on input (as user types)
-                input.addEventListener('input', function() {
-                    validateField(input, errorElement);
-                });
-
-                // Validate on blur (when user leaves the field)
-                input.addEventListener('blur', function() {
-                    if (input.value.trim() !== '') {
-                        validateField(input, errorElement);
-                    }
-                });
-
-                // Clear error when user focuses on the field
-                input.addEventListener('focus', function() {
-                    if (input.checkValidity()) {
-                        errorElement.classList.add('hidden');
-                        input.style.borderColor = '#3b82f6';
-                    }
-                });
+            input.addEventListener('focus', function() {
+                if (input.checkValidity()) {
+                    errorElement.classList.add('hidden');
+                    input.style.borderColor = '#3b82f6'; // Tailwind blue-500
+                }
             });
         });
 
-        // Form submission validation
+        // Single submit handler
         document.getElementById('registerForm').addEventListener('submit', function(event) {
             let valid = true;
-
-            const inputs = [
-                { id: 'first_name', errorId: 'firstNameError' },
-                { id: 'last_name', errorId: 'lastNameError' },
-                { id: 'email', errorId: 'emailError' },
-                { id: 'password', errorId: 'passwordError' }
-            ];
 
             inputs.forEach(({ id, errorId }) => {
                 const input = document.getElementById(id);
                 const error = document.getElementById(errorId);
-                
+
                 if (!input.checkValidity() || input.value.trim() === '') {
                     error.classList.remove('hidden');
                     input.style.borderColor = '#ef4444';
@@ -235,12 +215,12 @@
 
             if (!valid) {
                 event.preventDefault();
-            } else {
-                // Simulate form submission
-                alert('Form would be submitted! (This is just a demo)');
-                event.preventDefault();
             }
+          
+            // else form submits normally, no alert needed here
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>

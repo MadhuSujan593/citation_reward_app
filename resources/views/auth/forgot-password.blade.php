@@ -40,11 +40,17 @@
                     name="email"
                     id="email"
                     placeholder="you@example.com"
+                    value="{{ old('email') }}"
                     required
                     autofocus
                     class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
                 <p id="emailError" class="text-red-500 text-sm mt-1 hidden">Please enter a valid email address</p>
+
+                {{-- Backend validation error --}}
+                @error('email')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <button type="submit" class="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-900 transition">

@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
 
 // Guest-only routes
     //welcome
     Route::get('/', function () {
-      return view('welcome');
+      return view('auth.login');
     }   );
     // Register
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -27,7 +29,8 @@ use App\Http\Controllers\Auth\AuthController;
 // Authenticated-only routes
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/switch/{type}', [DashboardController::class, 'switchView'])->name('dashboard.switch');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::delete('/account', [ProfileController::class, 'destroy'])->name('account.delete');
 });

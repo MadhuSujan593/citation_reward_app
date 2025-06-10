@@ -181,4 +181,34 @@ class AuthController extends Controller
             return back()->withErrors(['error' => 'An unexpected error occurred. Please try again later.']);
         }
     }
+
+    public function deleteUserAccount(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            Auth::logout();
+
+            // Attempt to delete the user
+            $user->delete();
+
+            // Invalidate the session
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Your profile has been deleted successfully.'
+            ], 200);
+
+        } catch (Exception $e) {
+            // Log the exception for debugging
+            Log::error('Profile deletion failed: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete your profile. Please try again later.'
+            ], 500);
+        }
+    }
 }

@@ -31,6 +31,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/switch/{type}', [DashboardController::class, 'switchView'])->name('dashboard.switch');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::delete('/account', [ProfileController::class, 'destroy'])->name('account.delete');
+    Route::post('/profile-update', [ProfileController::class, 'update'])->name('profile.edit');
+    Route::post('/profile-delete', [AuthController::class, 'deleteUserAccount'])->name('profile.del');
 });

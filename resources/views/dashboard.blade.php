@@ -308,7 +308,7 @@ function confirmDelete() {
 
   // Send delete request (update route if needed)
   fetch('{{ route("profile.del") }}', {
-    method: 'POST',
+    method: 'DELETE',
     headers: {
       'X-CSRF-TOKEN': '{{ csrf_token() }}',
       'Content-Type': 'application/json',
@@ -317,12 +317,13 @@ function confirmDelete() {
   })
   .then(response => response.json())
   .then(data => {
-    if (data.success) {
-      showToast('Account deleted successfully.');
-      // Optionally redirect to login or homepage
-      setTimeout(() => window.location.href = '{{ route("login") }}', 2000);
+    if (data.status === 'success') {
+        showToast(data.message);
+        setTimeout(() => {
+          window.location.href = '{{ route("login") }}';
+        }, 2000);
     } else {
-      showToast('Failed to delete account.');
+        showToast(data.message || 'Failed to delete account.', true);
     }
   })
   .catch(error => {

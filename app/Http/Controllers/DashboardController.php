@@ -22,4 +22,25 @@ class DashboardController extends Controller
 
         return redirect()->route('dashboard');
     }
+
+    public function showPapers(Request $request)
+    {
+        $role = $request->input('role'); 
+        $user = Auth::user();
+
+        if ($role === 'fund') {
+            $papers = PublishedPaper::where('user_id', $user->id)->latest()->get();
+        } elseif ($role === 'citer') {
+            $papers = PublishedPaper::where('user_id', '!=', $user->id)->latest()->get();
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid role.'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'papers' => $papers
+        ]);
 }

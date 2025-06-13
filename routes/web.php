@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublishPaperController;
 
 // Guest-only routes
     //welcome
@@ -33,4 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/switch/{type}', [DashboardController::class, 'switchView'])->name('dashboard.switch');
     Route::post('/profile-update', [ProfileController::class, 'update'])->name('profile.edit');
     Route::delete('/profile-delete', [AuthController::class, 'deleteUserAccount'])->name('profile.del');
+
+    //upload papers routes
+    Route::post('/papers/upload', [PublishPaperController::class, 'store'])->name('papers.upload');
+    Route::get('/dashboard/papers', [DashboardController::class, 'showPapers'])->name('dashboard.papers');
 });

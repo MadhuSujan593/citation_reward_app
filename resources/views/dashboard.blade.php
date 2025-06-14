@@ -48,25 +48,26 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-<div id="deleteConfirmModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm px-4 hidden">
-    <div class="bg-white w-full max-w-md rounded-xl shadow-xl p-6 sm:p-8 text-center transition-all transform scale-100">
-        <h2 class="text-2xl font-semibold text-red-600 mb-4">Are you sure?</h2>
-        <p class="text-gray-600 text-base mb-6">
-            This action will permanently delete your account. This cannot be undone.
-        </p>
-        <div class="flex flex-col sm:flex-row sm:justify-center sm:gap-4 gap-3">
-            <button onclick="confirmDelete()"
-                class="bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-md shadow-sm transition-colors w-full sm:w-auto">
-                Yes, Delete
-            </button>
-            <button onclick="closeDeleteModal()"
-                class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 px-6 rounded-md border border-gray-300 transition-colors w-full sm:w-auto">
-                Cancel
-            </button>
+    <div id="deleteConfirmModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm px-4 hidden">
+        <div
+            class="bg-white w-full max-w-md rounded-xl shadow-xl p-6 sm:p-8 text-center transition-all transform scale-100">
+            <h2 class="text-2xl font-semibold text-red-600 mb-4">Are you sure?</h2>
+            <p class="text-gray-600 text-base mb-6">
+                This action will permanently delete your account. This cannot be undone.
+            </p>
+            <div class="flex flex-col sm:flex-row sm:justify-center sm:gap-4 gap-3">
+                <button onclick="confirmDelete()"
+                    class="bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-md shadow-sm transition-colors w-full sm:w-auto">
+                    Yes, Delete
+                </button>
+                <button onclick="closeDeleteModal()"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 px-6 rounded-md border border-gray-300 transition-colors w-full sm:w-auto">
+                    Cancel
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- Paper Details Modal -->
     <div id="paperDetailsModal"
@@ -203,7 +204,7 @@
             <div class="mb-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-semibold text-gray-800" id="papersTitle">
-                        My Published Papers
+                        Available Research Papers
                     </h3>
                     <div class="flex items-center space-x-2">
                         <span class="text-sm text-gray-500" id="papersCount">0 papers</span>
@@ -328,25 +329,25 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-<div id="deleteConfirmationModal"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 sm:px-6 hidden">
-    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">Confirm Deletion</h3>
-        <p class="text-sm text-gray-600 mb-6">
-            Are you sure you want to delete this paper?
-        </p>
-        <div class="flex flex-col space-y-3">
-            <button onclick="confirmDeletePaper()"
-                class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg transition-colors">
-                Delete
-            </button>
-            <button onclick="closeDeletePaperModal()"
-                class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 rounded-lg transition-colors">
-                Cancel
-            </button>
+    <div id="deleteConfirmationModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 sm:px-6 hidden">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Confirm Deletion</h3>
+            <p class="text-sm text-gray-600 mb-6">
+                Are you sure you want to delete this paper?
+            </p>
+            <div class="flex flex-col space-y-3">
+                <button onclick="confirmDeletePaper()"
+                    class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg transition-colors">
+                    Delete
+                </button>
+                <button onclick="closeDeletePaperModal()"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 rounded-lg transition-colors">
+                    Cancel
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
 
 
@@ -410,15 +411,6 @@
 
             // Reload papers for the new role
             loadPapers();
-
-            // Update role in backend
-            fetch(`{{ url('dashboard/switch') }}/${role}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                }).then(response => response.json())
-                .then(data => console.log(data));
         }
 
         // Load papers based on current role
@@ -501,26 +493,18 @@
                             </p>
                         </div>  
                         ${currentRole === 'Funder' ? `
-                                                    <div class="flex space-x-2">
-                                                        <button onclick="editPaper(${paper.id})" class="text-indigo-600 hover:text-indigo-800">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-                                                        <button onclick="deletePaper(${paper.id})" class="text-red-600 hover:text-red-800">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                ` : ''}
+                                                        <div class="flex space-x-2">
+                                                            <button onclick="editPaper(${paper.id})" class="text-indigo-600 hover:text-indigo-800">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button onclick="deletePaper(${paper.id})" class="text-red-600 hover:text-red-800">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    ` : ''}
                     </div>
                     
-                    <div class="mb-4">
-                        <div class="flex flex-wrap gap-2 mb-3">
-                            ${paper.mla ? '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">MLA</span>' : ''}
-                            ${paper.apa ? '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">APA</span>' : ''}
-                            ${paper.chicago ? '<span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Chicago</span>' : ''}
-                            ${paper.harvard ? '<span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Harvard</span>' : ''}
-                            ${paper.vancouver ? '<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Vancouver</span>' : ''}
-                        </div>
-                    </div>
+                   
                     
                     <div class="flex justify-between items-center">
                         <button onclick="viewPaperDetails(${paper.id})" 
@@ -529,12 +513,12 @@
                             View Details
                         </button>
                         ${currentRole === 'Citer' ? `
-                                                    <button onclick="citePaper(${paper.id})" 
-                                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
-                                                        <i class="fas fa-quote-left mr-1"></i>
-                                                        Cite
-                                                    </button>
-                                                ` : ''}
+                                                        <button onclick="citePaper(${paper.id})" 
+                                                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                                                            <i class="fas fa-quote-left mr-1"></i>
+                                                            Cite
+                                                        </button>
+                                                    ` : ''}
                     </div>
                 </div>
             `;
@@ -543,16 +527,32 @@
         // Search functionality
         function setupSearch() {
             const searchInput = document.getElementById('searchInput');
+
             searchInput.addEventListener('input', function(e) {
                 const searchTerm = e.target.value.toLowerCase().trim();
 
                 if (searchTerm === '') {
                     filteredPapers = [...papers];
                 } else {
-                    filteredPapers = papers.filter(paper =>
-                        paper.title.toLowerCase().includes(searchTerm) ||
-                        (paper.author_name && paper.author_name.toLowerCase().includes(searchTerm))
-                    );
+                    filteredPapers = papers.filter(paper => {
+                        const titleMatch = paper.title && paper.title.toLowerCase().includes(searchTerm);
+                        const authorIdMatch = paper.author_id && paper.author_id.toLowerCase().includes(
+                            searchTerm);
+                        const authorNameMatch = paper.author_name && paper.author_name.toLowerCase()
+                            .includes(searchTerm);
+
+                        const mlaMatch = paper.mla && paper.mla.toLowerCase().includes(searchTerm);
+                        const apaMatch = paper.apa && paper.apa.toLowerCase().includes(searchTerm);
+                        const chicagoMatch = paper.chicago && paper.chicago.toLowerCase().includes(
+                            searchTerm);
+                        const harvardMatch = paper.harvard && paper.harvard.toLowerCase().includes(
+                            searchTerm);
+                        const vancouverMatch = paper.vancouver && paper.vancouver.toLowerCase().includes(
+                            searchTerm);
+
+                        return titleMatch || authorIdMatch || authorNameMatch ||
+                            mlaMatch || apaMatch || chicagoMatch || harvardMatch || vancouverMatch;
+                    });
                 }
 
                 displayPapers();
@@ -581,50 +581,50 @@
                     </div>
                     
                     ${paper.mla ? `
-                                                <div>
-                                                    <h4 class="font-semibold text-gray-800 mb-2">MLA Citation</h4>
-                                                    <div class="bg-gray-50 p-3 rounded-lg">
-                                                        <p class="text-sm text-gray-700">${paper.mla}</p>
-                                                       
+                                                    <div>
+                                                        <h4 class="font-semibold text-gray-800 mb-2">MLA Citation</h4>
+                                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                                            <p class="text-sm text-gray-700">${paper.mla}</p>
+                                                           
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ` : ''}
+                                                ` : ''}
                     
                     ${paper.apa ? `
-                                                <div>
-                                                    <h4 class="font-semibold text-gray-800 mb-2">APA Citation</h4>
-                                                    <div class="bg-gray-50 p-3 rounded-lg">
-                                                        <p class="text-sm text-gray-700">${paper.apa}</p>
+                                                    <div>
+                                                        <h4 class="font-semibold text-gray-800 mb-2">APA Citation</h4>
+                                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                                            <p class="text-sm text-gray-700">${paper.apa}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ` : ''}
+                                                ` : ''}
                     
                     ${paper.chicago ? `
-                                                <div>
-                                                    <h4 class="font-semibold text-gray-800 mb-2">Chicago Citation</h4>
-                                                    <div class="bg-gray-50 p-3 rounded-lg">
-                                                        <p class="text-sm text-gray-700">${paper.chicago}</p>
+                                                    <div>
+                                                        <h4 class="font-semibold text-gray-800 mb-2">Chicago Citation</h4>
+                                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                                            <p class="text-sm text-gray-700">${paper.chicago}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ` : ''}
+                                                ` : ''}
                     
                     ${paper.harvard ? `
-                                                <div>
-                                                    <h4 class="font-semibold text-gray-800 mb-2">Harvard Citation</h4>
-                                                    <div class="bg-gray-50 p-3 rounded-lg">
-                                                        <p class="text-sm text-gray-700">${paper.harvard}</p>
+                                                    <div>
+                                                        <h4 class="font-semibold text-gray-800 mb-2">Harvard Citation</h4>
+                                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                                            <p class="text-sm text-gray-700">${paper.harvard}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ` : ''}
+                                                ` : ''}
                     
                     ${paper.vancouver ? `
-                                                <div>
-                                                    <h4 class="font-semibold text-gray-800 mb-2">Vancouver Citation</h4>
-                                                    <div class="bg-gray-50 p-3 rounded-lg">
-                                                        <p class="text-sm text-gray-700">${paper.vancouver}</p>
+                                                    <div>
+                                                        <h4 class="font-semibold text-gray-800 mb-2">Vancouver Citation</h4>
+                                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                                            <p class="text-sm text-gray-700">${paper.vancouver}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ` : ''}
+                                                ` : ''}
                 </div>
             `;
 
@@ -896,19 +896,19 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    closeDeleteModal();
+                    closeDeletePaperModal();
                     if (data.success) {
                         showToast(data.message || 'Paper deleted');
                         papers = papers.filter(p => p.id !== paperIdToDelete);
                         filteredPapers = [...papers];
-                        displayPapers();
+                        loadPapers();
                     } else {
                         showToast(data.message || 'Delete failed', true);
                     }
                 })
                 .catch(error => {
                     console.error('Delete error:', error);
-                    closeDeleteModal();
+                    closeDeletePaperModal();
                     showToast('Error deleting paper', true);
                 });
         }

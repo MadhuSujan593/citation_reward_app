@@ -22,7 +22,11 @@ return new class extends Migration
             $table->text('harvard')->nullable();
             $table->text('vancouver')->nullable();
             $table->timestamps();
-        });
+            // Add foreign key with ON DELETE CASCADE
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+                });
     }
 
     /**

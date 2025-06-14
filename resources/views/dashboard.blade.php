@@ -493,15 +493,15 @@
                             </p>
                         </div>  
                         ${currentRole === 'Funder' ? `
-                                                        <div class="flex space-x-2">
-                                                            <button onclick="editPaper(${paper.id})" class="text-indigo-600 hover:text-indigo-800">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
-                                                            <button onclick="deletePaper(${paper.id})" class="text-red-600 hover:text-red-800">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </div>
-                                                    ` : ''}
+                                                            <div class="flex space-x-2">
+                                                                <button onclick="editPaper(${paper.id})" class="text-indigo-600 hover:text-indigo-800">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </button>
+                                                                <button onclick="deletePaper(${paper.id})" class="text-red-600 hover:text-red-800">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        ` : ''}
                     </div>
                     
                    
@@ -513,12 +513,12 @@
                             View Details
                         </button>
                         ${currentRole === 'Citer' ? `
-                                                        <button onclick="citePaper(${paper.id})" 
-                                                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
-                                                            <i class="fas fa-quote-left mr-1"></i>
-                                                            Cite
-                                                        </button>
-                                                    ` : ''}
+                                                            <button onclick="citePaper(${paper.id})" 
+                                                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                                                                <i class="fas fa-quote-left mr-1"></i>
+                                                                Cite
+                                                            </button>
+                                                        ` : ''}
                     </div>
                 </div>
             `;
@@ -581,50 +581,50 @@
                     </div>
                     
                     ${paper.mla ? `
-                                                    <div>
-                                                        <h4 class="font-semibold text-gray-800 mb-2">MLA Citation</h4>
-                                                        <div class="bg-gray-50 p-3 rounded-lg">
-                                                            <p class="text-sm text-gray-700">${paper.mla}</p>
-                                                           
+                                                        <div>
+                                                            <h4 class="font-semibold text-gray-800 mb-2">MLA Citation</h4>
+                                                            <div class="bg-gray-50 p-3 rounded-lg">
+                                                                <p class="text-sm text-gray-700">${paper.mla}</p>
+                                                               
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ` : ''}
+                                                    ` : ''}
                     
                     ${paper.apa ? `
-                                                    <div>
-                                                        <h4 class="font-semibold text-gray-800 mb-2">APA Citation</h4>
-                                                        <div class="bg-gray-50 p-3 rounded-lg">
-                                                            <p class="text-sm text-gray-700">${paper.apa}</p>
+                                                        <div>
+                                                            <h4 class="font-semibold text-gray-800 mb-2">APA Citation</h4>
+                                                            <div class="bg-gray-50 p-3 rounded-lg">
+                                                                <p class="text-sm text-gray-700">${paper.apa}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ` : ''}
+                                                    ` : ''}
                     
                     ${paper.chicago ? `
-                                                    <div>
-                                                        <h4 class="font-semibold text-gray-800 mb-2">Chicago Citation</h4>
-                                                        <div class="bg-gray-50 p-3 rounded-lg">
-                                                            <p class="text-sm text-gray-700">${paper.chicago}</p>
+                                                        <div>
+                                                            <h4 class="font-semibold text-gray-800 mb-2">Chicago Citation</h4>
+                                                            <div class="bg-gray-50 p-3 rounded-lg">
+                                                                <p class="text-sm text-gray-700">${paper.chicago}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ` : ''}
+                                                    ` : ''}
                     
                     ${paper.harvard ? `
-                                                    <div>
-                                                        <h4 class="font-semibold text-gray-800 mb-2">Harvard Citation</h4>
-                                                        <div class="bg-gray-50 p-3 rounded-lg">
-                                                            <p class="text-sm text-gray-700">${paper.harvard}</p>
+                                                        <div>
+                                                            <h4 class="font-semibold text-gray-800 mb-2">Harvard Citation</h4>
+                                                            <div class="bg-gray-50 p-3 rounded-lg">
+                                                                <p class="text-sm text-gray-700">${paper.harvard}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ` : ''}
+                                                    ` : ''}
                     
                     ${paper.vancouver ? `
-                                                    <div>
-                                                        <h4 class="font-semibold text-gray-800 mb-2">Vancouver Citation</h4>
-                                                        <div class="bg-gray-50 p-3 rounded-lg">
-                                                            <p class="text-sm text-gray-700">${paper.vancouver}</p>
+                                                        <div>
+                                                            <h4 class="font-semibold text-gray-800 mb-2">Vancouver Citation</h4>
+                                                            <div class="bg-gray-50 p-3 rounded-lg">
+                                                                <p class="text-sm text-gray-700">${paper.vancouver}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ` : ''}
+                                                    ` : ''}
                 </div>
             `;
 

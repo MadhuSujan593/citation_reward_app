@@ -7,10 +7,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublishPaperController;
 
 // Guest-only routes
-    //welcome
+Route::middleware('guest')->group(function () {
+    // Welcome
     Route::get('/', function () {
-      return view('auth.login');
-    }   );
+        return view('auth.login');
+    });
+
     // Register
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register-post', [AuthController::class, 'register'])->name('register.post');
@@ -26,6 +28,7 @@ use App\Http\Controllers\PublishPaperController;
     // Reset Password
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
+});
 
 // Authenticated-only routes
 Route::middleware('auth')->group(function () {

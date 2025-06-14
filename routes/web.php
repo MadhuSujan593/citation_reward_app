@@ -37,5 +37,7 @@ Route::middleware('auth')->group(function () {
 
     //upload papers routes
     Route::post('/papers/upload', [PublishPaperController::class, 'store'])->name('papers.upload');
+    Route::put('/papers/{paper}', [PublishPaperController::class, 'update'])->name('papers.update');
     Route::get('/dashboard/papers', [DashboardController::class, 'showPapers'])->name('dashboard.papers');
+    Route::delete('/papers/{paper}', [PublishPaperController::class, 'destroy'])->name('papers.destroy');
 });

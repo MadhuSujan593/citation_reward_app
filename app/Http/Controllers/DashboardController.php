@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PublishedPaper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -25,12 +28,14 @@ class DashboardController extends Controller
 
     public function showPapers(Request $request)
     {
-        $role = $request->input('role'); 
+         $role = preg_replace('/^\d+/', '', $request->query('role'));
+    
         $user = Auth::user();
+      
 
-        if ($role === 'fund') {
+        if ($role === 'Funder') {
             $papers = PublishedPaper::where('user_id', $user->id)->latest()->get();
-        } elseif ($role === 'citer') {
+        } elseif ($role === 'Citer') {
             $papers = PublishedPaper::where('user_id', '!=', $user->id)->latest()->get();
         } else {
             return response()->json([
@@ -43,4 +48,5 @@ class DashboardController extends Controller
             'success' => true,
             'papers' => $papers
         ]);
+    }
 }

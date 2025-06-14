@@ -48,27 +48,41 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteConfirmModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4 sm:px-0 hidden">
-        <div class="bg-white w-full max-w-sm sm:rounded-lg sm:shadow-lg p-6 sm:p-8 text-center">
-            <h2 class="text-xl sm:text-2xl font-bold text-red-600 mb-2">Are you sure?</h2>
-            <p class="text-gray-700 text-sm sm:text-base mb-4">
-                This will permanently delete your account.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center sm:gap-4 gap-2">
-                <button onclick="confirmDelete()"
-                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full sm:w-auto">
-                    Yes, Delete
+<div id="deleteConfirmModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm px-4 hidden">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-xl p-6 sm:p-8 text-center transition-all transform scale-100">
+        <h2 class="text-2xl font-semibold text-red-600 mb-4">Are you sure?</h2>
+        <p class="text-gray-600 text-base mb-6">
+            This action will permanently delete your account. This cannot be undone.
+        </p>
+        <div class="flex flex-col sm:flex-row sm:justify-center sm:gap-4 gap-3">
+            <button onclick="confirmDelete()"
+                class="bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-md shadow-sm transition-colors w-full sm:w-auto">
+                Yes, Delete
+            </button>
+            <button onclick="closeDeleteModal()"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 px-6 rounded-md border border-gray-300 transition-colors w-full sm:w-auto">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- Paper Details Modal -->
+    <div id="paperDetailsModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden px-4 sm:px-6">
+        <div class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
+            <div class="flex justify-between items-start mb-4">
+                <h2 class="text-xl font-semibold text-gray-800" id="paperModalTitle">Paper Details</h2>
+                <button onclick="closePaperDetailsModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
-                <button onclick="closeDeleteModal()"
-                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded w-full sm:w-auto">
-                    Cancel
-                </button>
+            </div>
+            <div id="paperModalContent">
+                <!-- Paper details will be populated here -->
             </div>
         </div>
     </div>
-
-
 
     <div class="flex flex-col md:flex-row min-h-screen relative">
 
@@ -99,8 +113,6 @@
                     </button>
                 </div>
             </div>
-
-
 
             <!-- Navigation Menu -->
             <nav class="space-y-2">
@@ -175,11 +187,9 @@
                         {{ ($userRole ?? 'Citer') === 'Citer' ? 'Citation Management Overview' : 'Funder Portfolio Overview' }}
                     </p>
                 </div>
-                <!-- Paper Display Container -->
-<div id="papersContainer" class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6"></div>
                 <div class="flex items-center space-x-4 w-full md:w-auto">
                     <div class="relative w-full md:w-auto">
-                        <input type="text" placeholder="Search here..."
+                        <input type="text" placeholder="Search papers..." id="searchInput"
                             class="w-full md:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
@@ -188,11 +198,42 @@
                     </button>
                 </div>
             </div>
-        </div>
 
+            <!-- Papers Section -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800" id="papersTitle">
+                        My Published Papers
+                    </h3>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-500" id="papersCount">0 papers</span>
+                        <button onclick="refreshPapers()" class="text-indigo-600 hover:text-indigo-800">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="papersLoading" class="text-center py-8 hidden">
+                    <i class="fas fa-spinner fa-spin text-2xl text-indigo-600"></i>
+                    <p class="text-gray-600 mt-2">Loading papers...</p>
+                </div>
+
+                <!-- Empty State -->
+                <div id="papersEmpty" class="text-center py-12 bg-white rounded-lg shadow-sm hidden">
+                    <i class="fas fa-file-alt text-4xl text-gray-300 mb-4"></i>
+                    <h4 class="text-lg font-medium text-gray-600 mb-2" id="emptyTitle">No papers found</h4>
+                    <p class="text-gray-500" id="emptyMessage">No published papers available at the moment.</p>
+                </div>
+
+                <!-- Papers Grid -->
+                <div id="papersContainer" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                    <!-- Papers will be populated here -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Upload Paper Modal -->
     <!-- Upload Paper Modal -->
     <div id="uploadPaperModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden px-4 sm:px-6">
@@ -239,6 +280,73 @@
         </div>
     </div>
 
+    <!-- Edit Paper Modal -->
+    <div id="editPaperModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden px-4 sm:px-6">
+        <div
+            class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
+            <h2 class="text-xl font-semibold mb-6 text-gray-800">Edit Published Paper</h2>
+            <form id="editPaperForm">
+                <input type="hidden" name="paper_id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Author ID</label>
+                        <input type="text" name="author_id" required class="w-full border rounded p-2" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Paper Title</label>
+                        <input type="text" name="title" required class="w-full border rounded p-2" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">MLA Citation</label>
+                        <textarea name="mla" class="w-full border rounded p-2" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">APA Citation</label>
+                        <textarea name="apa" class="w-full border rounded p-2" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Chicago Citation</label>
+                        <textarea name="chicago" class="w-full border rounded p-2" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Harvard Citation</label>
+                        <textarea name="harvard" class="w-full border rounded p-2" rows="2"></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium mb-1">Vancouver Citation</label>
+                        <textarea name="vancouver" class="w-full border rounded p-2" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 pt-6">
+                    <button type="button" onclick="closeEditModal()"
+                        class="bg-gray-200 px-4 py-2 rounded">Cancel</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+<div id="deleteConfirmationModal"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 sm:px-6 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Confirm Deletion</h3>
+        <p class="text-sm text-gray-600 mb-6">
+            Are you sure you want to delete this paper?
+        </p>
+        <div class="flex flex-col space-y-3">
+            <button onclick="confirmDeletePaper()"
+                class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg transition-colors">
+                Delete
+            </button>
+            <button onclick="closeDeletePaperModal()"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 rounded-lg transition-colors">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
 
 
 
@@ -249,18 +357,28 @@
     </div>
 
     <script>
+        // Current user role and papers data
+        let currentRole = '{{ $userRole ?? 'Citer' }}';
+        let papers = [];
+        let filteredPapers = [];
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPapers();
+            setupSearch();
+        });
+
         // Toggle Sidebar on mobile
         document.getElementById('hamburgerBtn').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('-translate-x-full');
         });
 
         // Role switch logic
-        const userRole = '{{ $userRole ?? 'Citer' }}';
-
         document.getElementById('citerBtn').addEventListener('click', () => switchRole('Citer'));
         document.getElementById('funderBtn').addEventListener('click', () => switchRole('Funder'));
 
         function switchRole(role) {
+            currentRole = role;
             document.getElementById('currentRole').textContent = role;
 
             const citerBtn = document.getElementById('citerBtn');
@@ -268,9 +386,11 @@
             const citerMenu = document.getElementById('citerMenu');
             const funderMenu = document.getElementById('funderMenu');
             const subtitle = document.getElementById('dashboardSubtitle');
+            const papersTitle = document.getElementById('papersTitle');
 
             if (role === 'Citer') {
                 subtitle.textContent = 'Citation Management Overview';
+                papersTitle.textContent = 'Available Research Papers';
                 citerBtn.classList.add('bg-indigo-600', 'text-white');
                 citerBtn.classList.remove('text-gray-600', 'hover:text-indigo-600');
                 funderBtn.classList.remove('bg-indigo-600', 'text-white');
@@ -279,6 +399,7 @@
                 funderMenu.classList.add('hidden');
             } else {
                 subtitle.textContent = 'Funder Portfolio Overview';
+                papersTitle.textContent = 'My Published Papers';
                 funderBtn.classList.add('bg-indigo-600', 'text-white');
                 funderBtn.classList.remove('text-gray-600', 'hover:text-indigo-600');
                 citerBtn.classList.remove('bg-indigo-600', 'text-white');
@@ -287,6 +408,10 @@
                 citerMenu.classList.add('hidden');
             }
 
+            // Reload papers for the new role
+            loadPapers();
+
+            // Update role in backend
             fetch(`{{ url('dashboard/switch') }}/${role}`, {
                     method: 'GET',
                     headers: {
@@ -296,18 +421,343 @@
                 .then(data => console.log(data));
         }
 
+        // Load papers based on current role
+        async function loadPapers() {
+            try {
+                showLoading(true);
+                const roleName = currentRole.replace(/^\d+/, '');
+                console.log(roleName);
+                const endpoint = `{{ route('dashboard.papers') }}?role=${encodeURIComponent(roleName)}`;
+                const response = await fetch(endpoint, {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    papers = data.papers || [];
+                    filteredPapers = [...papers];
+                    displayPapers();
+                } else {
+                    showToast(data.message || 'Failed to load papers', true);
+                }
+            } catch (error) {
+                console.error('Error loading papers:', error);
+                showToast('Error loading papers', true);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+
+        // Display papers in the grid
+        function displayPapers() {
+            const container = document.getElementById('papersContainer');
+            const emptyState = document.getElementById('papersEmpty');
+            const countElement = document.getElementById('papersCount');
+            const emptyTitle = document.getElementById('emptyTitle');
+            const emptyMessage = document.getElementById('emptyMessage');
+
+            // Update count
+            countElement.textContent = `${filteredPapers.length} paper${filteredPapers.length !== 1 ? 's' : ''}`;
+
+            if (filteredPapers.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+
+                if (currentRole === 'Funder') {
+                    emptyTitle.textContent = 'No papers published yet';
+                    emptyMessage.textContent = 'Upload your first research paper to get started.';
+                } else {
+                    emptyTitle.textContent = 'No papers available';
+                    emptyMessage.textContent = 'No research papers have been published by funders yet.';
+                }
+            } else {
+                emptyState.classList.add('hidden');
+                container.innerHTML = filteredPapers.map(paper => createPaperCard(paper)).join('');
+            }
+        }
+
+        // Create individual paper card HTML
+        function createPaperCard(paper) {
+            const publishedDate = new Date(paper.created_at).toLocaleDateString();
+            const authorName = paper.author_name || 'Unknown Author';
+
+            return `
+                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6 border border-gray-100">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">${paper.title}</h4>
+                            <p class="text-sm text-gray-600 mb-1">
+                                <i class="fas fa-user mr-1"></i>
+                                ${authorName}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <i class="fas fa-calendar mr-1"></i>
+                                Published: ${publishedDate}
+                            </p>
+                        </div>  
+                        ${currentRole === 'Funder' ? `
+                                                    <div class="flex space-x-2">
+                                                        <button onclick="editPaper(${paper.id})" class="text-indigo-600 hover:text-indigo-800">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button onclick="deletePaper(${paper.id})" class="text-red-600 hover:text-red-800">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                ` : ''}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            ${paper.mla ? '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">MLA</span>' : ''}
+                            ${paper.apa ? '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">APA</span>' : ''}
+                            ${paper.chicago ? '<span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Chicago</span>' : ''}
+                            ${paper.harvard ? '<span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Harvard</span>' : ''}
+                            ${paper.vancouver ? '<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Vancouver</span>' : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <button onclick="viewPaperDetails(${paper.id})" 
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                            <i class="fas fa-eye mr-1"></i>
+                            View Details
+                        </button>
+                        ${currentRole === 'Citer' ? `
+                                                    <button onclick="citePaper(${paper.id})" 
+                                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                                                        <i class="fas fa-quote-left mr-1"></i>
+                                                        Cite
+                                                    </button>
+                                                ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+
+                if (searchTerm === '') {
+                    filteredPapers = [...papers];
+                } else {
+                    filteredPapers = papers.filter(paper =>
+                        paper.title.toLowerCase().includes(searchTerm) ||
+                        (paper.author_name && paper.author_name.toLowerCase().includes(searchTerm))
+                    );
+                }
+
+                displayPapers();
+            });
+        }
+
+        // Paper action functions
+        function viewPaperDetails(paperId) {
+            const paper = papers.find(p => p.id === paperId);
+            if (!paper) return;
+
+            document.getElementById('paperModalTitle').textContent = paper.title;
+
+            const modalContent = document.getElementById('paperModalContent');
+            modalContent.innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Author Information</h4>
+                        <p class="text-gray-600">${paper.author_name || 'Unknown Author'}</p>
+                        <p class="text-sm text-gray-500">Author ID: ${paper.author_id}</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Publication Date</h4>
+                        <p class="text-gray-600">${new Date(paper.created_at).toLocaleDateString()}</p>
+                    </div>
+                    
+                    ${paper.mla ? `
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-800 mb-2">MLA Citation</h4>
+                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                        <p class="text-sm text-gray-700">${paper.mla}</p>
+                                                       
+                                                    </div>
+                                                </div>
+                                            ` : ''}
+                    
+                    ${paper.apa ? `
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-800 mb-2">APA Citation</h4>
+                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                        <p class="text-sm text-gray-700">${paper.apa}</p>
+                                                    </div>
+                                                </div>
+                                            ` : ''}
+                    
+                    ${paper.chicago ? `
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-800 mb-2">Chicago Citation</h4>
+                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                        <p class="text-sm text-gray-700">${paper.chicago}</p>
+                                                    </div>
+                                                </div>
+                                            ` : ''}
+                    
+                    ${paper.harvard ? `
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-800 mb-2">Harvard Citation</h4>
+                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                        <p class="text-sm text-gray-700">${paper.harvard}</p>
+                                                    </div>
+                                                </div>
+                                            ` : ''}
+                    
+                    ${paper.vancouver ? `
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-800 mb-2">Vancouver Citation</h4>
+                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                        <p class="text-sm text-gray-700">${paper.vancouver}</p>
+                                                    </div>
+                                                </div>
+                                            ` : ''}
+                </div>
+            `;
+
+            document.getElementById('paperDetailsModal').classList.remove('hidden');
+        }
+
+        function citePaper(paperId) {
+            const paper = papers.find(p => p.id === paperId);
+            if (!paper) return;
+
+
+        }
+
+        function editPaper(paperId) {
+            const paper = papers.find(p => p.id === paperId);
+            if (!paper) {
+                showToast('Paper not found', true);
+                return;
+            }
+
+            const form = document.getElementById('editPaperForm');
+
+            form.paper_id.value = paper.id;
+            form.author_id.value = paper.author_id || '';
+            form.title.value = paper.title || '';
+            form.mla.value = paper.mla || '';
+            form.apa.value = paper.apa || '';
+            form.chicago.value = paper.chicago || '';
+            form.harvard.value = paper.harvard || '';
+            form.vancouver.value = paper.vancouver || '';
+
+            document.getElementById('editPaperModal').classList.remove('hidden');
+        }
+
+        document.getElementById('editPaperForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+            const paperId = form.paper_id.value;
+
+            formData.append('_method', 'PUT');
+
+            fetch(`/papers/${paperId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Paper updated successfully');
+                        closeEditModal();
+                        loadPapers(); // reload the list
+                    } else {
+                        showToast(data.message || 'Failed to update paper', true);
+                    }
+                })
+                .catch(err => {
+                    console.error('Update error:', err);
+                    showToast('Error updating paper', true);
+                });
+        });
+
+        function closeEditModal() {
+            const form = document.getElementById('editPaperForm');
+            form.reset();
+            document.getElementById('editPaperModal').classList.add('hidden');
+        }
+
+
+        function deletePaper(paperId) {
+            if (!confirm('Are you sure you want to delete this paper?')) return;
+
+            fetch(`{{ url('papers') }}/${paperId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Paper deleted successfully!');
+                        loadPapers(); // Reload papers
+                    } else {
+                        showToast(data.message || 'Failed to delete paper', true);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting paper:', error);
+                    showToast('Error deleting paper', true);
+                });
+        }
+
+
+
+        function refreshPapers() {
+            loadPapers();
+        }
+
+        function showLoading(show) {
+            const loading = document.getElementById('papersLoading');
+            const container = document.getElementById('papersContainer');
+            const emptyState = document.getElementById('papersEmpty');
+
+            if (show) {
+                loading.classList.remove('hidden');
+                container.classList.add('hidden');
+                emptyState.classList.add('hidden');
+            } else {
+                loading.classList.add('hidden');
+                container.classList.remove('hidden');
+            }
+        }
+
+        function closePaperDetailsModal() {
+            document.getElementById('paperDetailsModal').classList.add('hidden');
+        }
+
+        // Existing modal functions
         function openProfileModal() {
-            // Close sidebar (if open)
             const sidebar = document.getElementById('sidebar');
             if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
                 sidebar.classList.add('-translate-x-full');
             }
 
-            // Open modal
             const modal = document.getElementById('updateProfileModal');
             modal.classList.remove('hidden');
 
-            // Prefill fields
             document.getElementById('first_name').value = '{{ auth()->user()->first_name }}';
             document.getElementById('last_name').value = '{{ auth()->user()->last_name }}';
             document.getElementById('email').value = '{{ auth()->user()->email }}';
@@ -323,15 +773,12 @@
 
             toastMessage.textContent = message;
 
-            // Change background color based on error or success
             toast.classList.remove('bg-green-600', 'bg-red-600');
             toast.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
 
-            // Show the toast
             toast.classList.remove('opacity-0', 'pointer-events-none');
             toast.classList.add('opacity-100');
 
-            // Hide after 3 seconds
             setTimeout(() => {
                 toast.classList.remove('opacity-100');
                 toast.classList.add('opacity-0');
@@ -357,7 +804,6 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        // Update user info on page (if needed)
                         document.querySelectorAll('p.font-medium')[0].textContent =
                             `${data.user.first_name} ${data.user.last_name}`;
                         document.querySelectorAll('p.text-sm.opacity-80')[0].textContent = data.user.email;
@@ -365,7 +811,7 @@
                         closeProfileModal();
                         showToast('Profile updated successfully!');
                     } else {
-                        showToast('Update failed.',true);
+                        showToast('Update failed.', true);
                     }
                 })
                 .catch(error => {
@@ -374,9 +820,7 @@
                 });
         });
 
-
         function openDeleteModal() {
-            // Close sidebar (if open)
             const sidebar = document.getElementById('sidebar');
             if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
                 sidebar.classList.add('-translate-x-full');
@@ -389,10 +833,8 @@
         }
 
         function confirmDelete() {
-            // Close modal
             closeDeleteModal();
 
-            // Send delete request (update route if needed)
             fetch('{{ route('profile.del') }}', {
                     method: 'DELETE',
                     headers: {
@@ -430,6 +872,48 @@
             document.getElementById('uploadPaperModal').classList.add('hidden');
         }
 
+        let paperIdToDelete = null;
+
+        function deletePaper(paperId) {
+            paperIdToDelete = paperId;
+            document.getElementById('deleteConfirmationModal').classList.remove('hidden');
+        }
+
+        function closeDeletePaperModal() {
+            paperIdToDelete = null;
+            document.getElementById('deleteConfirmationModal').classList.add('hidden');
+        }
+
+        function confirmDeletePaper() {
+            if (!paperIdToDelete) return;
+
+            fetch(`/papers/${paperIdToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    closeDeleteModal();
+                    if (data.success) {
+                        showToast(data.message || 'Paper deleted');
+                        papers = papers.filter(p => p.id !== paperIdToDelete);
+                        filteredPapers = [...papers];
+                        displayPapers();
+                    } else {
+                        showToast(data.message || 'Delete failed', true);
+                    }
+                })
+                .catch(error => {
+                    console.error('Delete error:', error);
+                    closeDeleteModal();
+                    showToast('Error deleting paper', true);
+                });
+        }
+
+
         document.getElementById('uploadPaperForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
@@ -446,8 +930,10 @@
                     if (data.success) {
                         closePaperModal();
                         showToast('Paper uploaded successfully!');
+                        loadPapers(); // Reload papers to show the new one
+                        e.target.reset(); // Clear form
                     } else {
-                        showToast(data.message || 'Failed to upload paper.', true);;
+                        showToast(data.message || 'Failed to upload paper.', true);
                     }
                 })
                 .catch(err => {

@@ -9,6 +9,8 @@ class PublishedPaper extends Model
 {
     use HasFactory;
 
+    protected $appends = ['author_name'];
+
     protected $fillable = [
         'author_id',
         'title',
@@ -28,5 +30,12 @@ class PublishedPaper extends Model
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    public function getAuthorNameAttribute()
+    {
+        return $this->user 
+            ? trim($this->user->first_name . ' ' . $this->user->last_name) 
+            : null;
     }
 }

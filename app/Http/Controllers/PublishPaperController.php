@@ -49,4 +49,35 @@ class PublishPaperController extends Controller
             ], 500);
         }
     }
+
+    public function update(Request $request, PublishedPaper $paper)
+    {
+        $validated = $request->validate([
+            'author_id' => 'required',
+            'title' => 'required|string|max:255',
+            'mla' => 'nullable|string',
+            'apa' => 'nullable|string',
+            'chicago' => 'nullable|string',
+            'harvard' => 'nullable|string',
+            'vancouver' => 'nullable|string',
+        ]);
+
+        $paper->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Paper updated successfully.',
+            'paper' => $paper
+        ]);
+    }
+
+    public function destroy(PublishedPaper $paper)
+    {
+        $paper->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Paper deleted successfully.'
+        ]);
+    }
 }

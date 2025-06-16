@@ -244,10 +244,6 @@
             <form id="uploadPaperForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium mb-1">Author ID</label>
-                        <input type="text" name="author_id" required class="w-full border rounded p-2" />
-                    </div>
-                    <div>
                         <label class="block text-sm font-medium mb-1">Paper Title</label>
                         <input type="text" name="title" required class="w-full border rounded p-2" />
                     </div>
@@ -267,9 +263,13 @@
                         <label class="block text-sm font-medium mb-1">Harvard Citation</label>
                         <textarea name="harvard" class="w-full border rounded p-2" rows="2"></textarea>
                     </div>
-                    <div class="md:col-span-2">
+                    <div>
                         <label class="block text-sm font-medium mb-1">Vancouver Citation</label>
                         <textarea name="vancouver" class="w-full border rounded p-2" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">DOI</label>
+                        <textarea name="doi" class="w-full border rounded p-2" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-2 pt-6">
@@ -291,10 +291,6 @@
                 <input type="hidden" name="paper_id">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium mb-1">Author ID</label>
-                        <input type="text" name="author_id" required class="w-full border rounded p-2" />
-                    </div>
-                    <div>
                         <label class="block text-sm font-medium mb-1">Paper Title</label>
                         <input type="text" name="title" required class="w-full border rounded p-2" />
                     </div>
@@ -314,9 +310,13 @@
                         <label class="block text-sm font-medium mb-1">Harvard Citation</label>
                         <textarea name="harvard" class="w-full border rounded p-2" rows="2"></textarea>
                     </div>
-                    <div class="md:col-span-2">
+                    <div>
                         <label class="block text-sm font-medium mb-1">Vancouver Citation</label>
                         <textarea name="vancouver" class="w-full border rounded p-2" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">DOI</label>
+                        <textarea name="doi" class="w-full border rounded p-2" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-2 pt-6">
@@ -493,15 +493,15 @@
                             </p>
                         </div>  
                         ${currentRole === 'Funder' ? `
-                                                            <div class="flex space-x-2">
-                                                                <button onclick="editPaper(${paper.id})" class="text-indigo-600 hover:text-indigo-800">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                                <button onclick="deletePaper(${paper.id})" class="text-red-600 hover:text-red-800">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </div>
-                                                        ` : ''}
+                                                                    <div class="flex space-x-2">
+                                                                        <button onclick="editPaper(${paper.id})" class="text-indigo-600 hover:text-indigo-800">
+                                                                            <i class="fas fa-edit"></i>
+                                                                        </button>
+                                                                        <button onclick="deletePaper(${paper.id})" class="text-red-600 hover:text-red-800">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                ` : ''}
                     </div>
                     
                    
@@ -513,12 +513,12 @@
                             View Details
                         </button>
                         ${currentRole === 'Citer' ? `
-                                                            <button onclick="citePaper(${paper.id})" 
-                                                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
-                                                                <i class="fas fa-quote-left mr-1"></i>
-                                                                Cite
-                                                            </button>
-                                                        ` : ''}
+                                                                    <button onclick="citePaper(${paper.id})" 
+                                                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                                                                        <i class="fas fa-quote-left mr-1"></i>
+                                                                        Cite
+                                                                    </button>
+                                                                ` : ''}
                     </div>
                 </div>
             `;
@@ -536,8 +536,6 @@
                 } else {
                     filteredPapers = papers.filter(paper => {
                         const titleMatch = paper.title && paper.title.toLowerCase().includes(searchTerm);
-                        const authorIdMatch = paper.author_id && paper.author_id.toLowerCase().includes(
-                            searchTerm);
                         const authorNameMatch = paper.author_name && paper.author_name.toLowerCase()
                             .includes(searchTerm);
 
@@ -549,9 +547,12 @@
                             searchTerm);
                         const vancouverMatch = paper.vancouver && paper.vancouver.toLowerCase().includes(
                             searchTerm);
+                        const doiMatch = paper.doi && paper.doi.toLowerCase().includes(
+                            searchTerm);
 
-                        return titleMatch || authorIdMatch || authorNameMatch ||
-                            mlaMatch || apaMatch || chicagoMatch || harvardMatch || vancouverMatch;
+                        return titleMatch || authorNameMatch ||
+                            mlaMatch || apaMatch || chicagoMatch || harvardMatch || vancouverMatch ||
+                            doiMatch;
                     });
                 }
 
@@ -572,7 +573,7 @@
                     <div>
                         <h4 class="font-semibold text-gray-800 mb-2">Author Information</h4>
                         <p class="text-gray-600">${paper.author_name || 'Unknown Author'}</p>
-                        <p class="text-sm text-gray-500">Author ID: ${paper.author_id}</p>
+                        <p class="text-sm text-gray-500">Author ID: ${paper.user_id}</p>
                     </div>
                     
                     <div>
@@ -581,50 +582,58 @@
                     </div>
                     
                     ${paper.mla ? `
-                                                        <div>
-                                                            <h4 class="font-semibold text-gray-800 mb-2">MLA Citation</h4>
-                                                            <div class="bg-gray-50 p-3 rounded-lg">
-                                                                <p class="text-sm text-gray-700">${paper.mla}</p>
-                                                               
-                                                            </div>
-                                                        </div>
-                                                    ` : ''}
+                                                                <div>
+                                                                    <h4 class="font-semibold text-gray-800 mb-2">MLA Citation</h4>
+                                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                                        <p class="text-sm text-gray-700">${paper.mla}</p>
+                                                                       
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
                     
                     ${paper.apa ? `
-                                                        <div>
-                                                            <h4 class="font-semibold text-gray-800 mb-2">APA Citation</h4>
-                                                            <div class="bg-gray-50 p-3 rounded-lg">
-                                                                <p class="text-sm text-gray-700">${paper.apa}</p>
-                                                            </div>
-                                                        </div>
-                                                    ` : ''}
+                                                                <div>
+                                                                    <h4 class="font-semibold text-gray-800 mb-2">APA Citation</h4>
+                                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                                        <p class="text-sm text-gray-700">${paper.apa}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
                     
                     ${paper.chicago ? `
-                                                        <div>
-                                                            <h4 class="font-semibold text-gray-800 mb-2">Chicago Citation</h4>
-                                                            <div class="bg-gray-50 p-3 rounded-lg">
-                                                                <p class="text-sm text-gray-700">${paper.chicago}</p>
-                                                            </div>
-                                                        </div>
-                                                    ` : ''}
+                                                                <div>
+                                                                    <h4 class="font-semibold text-gray-800 mb-2">Chicago Citation</h4>
+                                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                                        <p class="text-sm text-gray-700">${paper.chicago}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
                     
                     ${paper.harvard ? `
-                                                        <div>
-                                                            <h4 class="font-semibold text-gray-800 mb-2">Harvard Citation</h4>
-                                                            <div class="bg-gray-50 p-3 rounded-lg">
-                                                                <p class="text-sm text-gray-700">${paper.harvard}</p>
-                                                            </div>
-                                                        </div>
-                                                    ` : ''}
+                                                                <div>
+                                                                    <h4 class="font-semibold text-gray-800 mb-2">Harvard Citation</h4>
+                                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                                        <p class="text-sm text-gray-700">${paper.harvard}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
                     
                     ${paper.vancouver ? `
-                                                        <div>
-                                                            <h4 class="font-semibold text-gray-800 mb-2">Vancouver Citation</h4>
-                                                            <div class="bg-gray-50 p-3 rounded-lg">
-                                                                <p class="text-sm text-gray-700">${paper.vancouver}</p>
-                                                            </div>
-                                                        </div>
-                                                    ` : ''}
+                                                                <div>
+                                                                    <h4 class="font-semibold text-gray-800 mb-2">Vancouver Citation</h4>
+                                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                                        <p class="text-sm text-gray-700">${paper.vancouver}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
+                     ${paper.doi ? `
+                                                                <div>
+                                                                    <h4 class="font-semibold text-gray-800 mb-2">DOI</h4>
+                                                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                                                        <p class="text-sm text-gray-700">${paper.doi}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
                 </div>
             `;
 
@@ -648,14 +657,13 @@
             const form = document.getElementById('editPaperForm');
 
             form.paper_id.value = paper.id;
-            form.author_id.value = paper.author_id || '';
             form.title.value = paper.title || '';
             form.mla.value = paper.mla || '';
             form.apa.value = paper.apa || '';
             form.chicago.value = paper.chicago || '';
             form.harvard.value = paper.harvard || '';
             form.vancouver.value = paper.vancouver || '';
-
+            form.doi.value = paper.doi || '';
             document.getElementById('editPaperModal').classList.remove('hidden');
         }
 

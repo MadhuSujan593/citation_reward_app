@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('published_papers', function (Blueprint $table) {
             $table->id();
-            $table->string('author_id');
-            $table->unsignedBigInteger('user_id'); 
-            $table->string('title');
+            $table->unsignedBigInteger('user_id')->index();
+            $table->string('title')->index();
             $table->text('mla')->nullable();
             $table->text('apa')->nullable();
             $table->text('chicago')->nullable();
             $table->text('harvard')->nullable();
             $table->text('vancouver')->nullable();
+            $table->string('doi')->nullable()->unique();
             $table->timestamps();
             // Add foreign key with ON DELETE CASCADE
             $table->foreign('user_id')

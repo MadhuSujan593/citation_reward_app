@@ -12,24 +12,19 @@ class PublishedPaper extends Model
     protected $appends = ['author_name'];
 
     protected $fillable = [
-        'author_id',
         'title',
         'mla',
         'apa',
         'chicago',
         'harvard',
         'vancouver',
-        'user_id'
+        'user_id',
+        'doi'
     ];
 
-     public function user()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function author()
-    {
-        return $this->belongsTo(User::class, 'author_id');
     }
 
     public function getAuthorNameAttribute()

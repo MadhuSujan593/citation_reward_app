@@ -13,24 +13,24 @@ class PublishPaperController extends Controller
     {
         try {
             $validated = $request->validate([
-                'author_id' => 'required',
                 'title' => 'required|string',
                 'mla' => 'nullable|string',
                 'apa' => 'nullable|string',
                 'chicago' => 'nullable|string',
                 'harvard' => 'nullable|string',
                 'vancouver' => 'nullable|string',
+                'doi' => 'nullable|string',
             ]);
 
             PublishedPaper::create([
                 'user_id' => Auth::id(),
-                'author_id' => $validated['author_id'],
                 'title' => $validated['title'],
                 'mla' => $validated['mla'],
                 'apa' => $validated['apa'],
                 'chicago' => $validated['chicago'],
                 'harvard' => $validated['harvard'],
                 'vancouver' => $validated['vancouver'],
+                'doi' => $validated['doi'],
             ]);
 
             return response()->json(['success' => true, ]);
@@ -53,13 +53,13 @@ class PublishPaperController extends Controller
     public function update(Request $request, PublishedPaper $paper)
     {
         $validated = $request->validate([
-            'author_id' => 'required',
             'title' => 'required|string|max:255',
             'mla' => 'nullable|string',
             'apa' => 'nullable|string',
             'chicago' => 'nullable|string',
             'harvard' => 'nullable|string',
             'vancouver' => 'nullable|string',
+            'doi' => 'nullable|string',
         ]);
 
         $paper->update($validated);

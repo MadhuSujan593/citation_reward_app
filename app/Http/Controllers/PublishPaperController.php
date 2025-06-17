@@ -80,4 +80,44 @@ class PublishPaperController extends Controller
             'message' => 'Paper deleted successfully.'
         ]);
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $filterType = $request->input('filter_type');
+
+        $papers = PublishedPaper::with('user'); // Eager load author details
+
+        if ($query) {
+            $papers->where(function ($q) use ($query, $filterType) {
+                switch ($filterType) {
+                    case 'author_id':
+                        // Filter by actual user_id
+                        $q->where('user_id', 'like', "%$query%");
+                        break;
+
+                    case 'author_name':
+                        // Join with user and filter on first_name + last_name
+                        $q->whereHas('user', function ($uq) use ($query) {
+                            $uq->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%$query%"]);
+                        });
+                        break;
+
+                    case 'title_name':
+                        $q->where('title', 'like', "%$query%");
+                        break;
+
+                    default:
+                        $q->where('title', 'like', "%$query%")
+                            ->orWhere('user_id', 'like', "%$query%")
+                            ->orWhereHas('user', function ($uq) use ($query) {
+                                $uq->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%$query%"]);
+                            });
+                        break;
+                }
+            });
+        }
+
+        return response()->json($papers->latest()->get());
+    }
 }

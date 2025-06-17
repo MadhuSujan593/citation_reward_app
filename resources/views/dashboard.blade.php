@@ -27,8 +27,7 @@
             <form id="updateProfileForm">
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-1">First Name</label>
-                    <input type="text" id="first_name" name="first_name" required
-                        class="w-full border rounded p-2" />
+                    <input type="text" id="first_name" name="first_name" required class="w-full border rounded p-2" />
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-1">Last Name</label>
@@ -123,23 +122,19 @@
                 </a>
 
                 <div id="citerMenu" class="{{ ($userRole ?? 'Citer') === 'Citer' ? '' : 'hidden' }}">
-                    <a href="#"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                         <i class="fas fa-file-alt w-5"></i><span>My Citations</span>
                     </a>
-                    <a href="#"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                         <i class="fas fa-search w-5"></i><span>Research Papers</span>
                     </a>
-                    <a href="#"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                         <i class="fas fa-bookmark w-5"></i><span>Saved Papers</span>
                     </a>
                 </div>
 
                 <div id="funderMenu" class="{{ ($userRole ?? 'Citer') === 'Funder' ? '' : 'hidden' }}">
-                    <a href="#"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                         <i class="fas fa-project-diagram w-5"></i><span>My Published Papers</span>
                         <a href="#" onclick="openPaperModal()"
                             class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
@@ -160,8 +155,7 @@
                     </div>
                 </div>
                 <div class="space-y-2">
-                    <button onclick="openProfileModal()"
-                        class="block text-sm hover:text-indigo-200 transition-colors">
+                    <button onclick="openProfileModal()" class="block text-sm hover:text-indigo-200 transition-colors">
                         <i class="fas fa-user-edit mr-2"></i>Update Profile
                     </button>
                     <button type="button" onclick="openDeleteModal()"
@@ -189,14 +183,36 @@
                     </p>
                 </div>
                 <div class="flex items-center space-x-4 w-full md:w-auto">
-                    <div class="relative w-full md:w-auto">
-                        <input type="text" placeholder="Search papers..." id="searchInput"
-                            class="w-full md:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                    </div>
-                    <button class="p-2 text-gray-600 hover:text-indigo-600">
-                        <i class="fas fa-bell text-xl"></i>
-                    </button>
+                    <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full">
+    <!-- Search Input -->
+    <div class="relative flex-1 min-w-[200px]">
+        <input type="text" id="searchInput" placeholder="Search papers..."
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+    </div>
+
+    <!-- Filter Button -->
+    <button id="advancedFilterBtn"
+        class="flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white rounded-lg hover:bg-gray-100 focus:outline-none whitespace-nowrap">
+        <i class="fas fa-filter text-indigo-600"></i>
+        <span id="filterLabel">All</span>
+    </button>
+</div>
+
+<!-- Filter Popup -->
+<div id="filterPopup"
+    class="absolute mt-1 right-0 w-48 bg-white border border-gray-200 rounded-md shadow-lg p-2 hidden z-50">
+    <p class="text-sm font-medium text-gray-700 mb-1">Search By:</p>
+    <button class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100" data-filter="">All</button>
+    <button class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100" data-filter="author_name">Author Name</button>
+    <button class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100" data-filter="author_id">Author ID</button>
+    <button class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100" data-filter="title_name">Title</button>
+</div>
+
+
+
+
+
                 </div>
             </div>
 
@@ -238,8 +254,7 @@
     <!-- Upload Paper Modal -->
     <div id="uploadPaperModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden px-4 sm:px-6">
-        <div
-            class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
+        <div class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
             <h2 class="text-xl font-semibold mb-6 text-gray-800">Upload Published Paper</h2>
             <form id="uploadPaperForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -284,8 +299,7 @@
     <!-- Edit Paper Modal -->
     <div id="editPaperModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden px-4 sm:px-6">
-        <div
-            class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
+        <div class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
             <h2 class="text-xl font-semibold mb-6 text-gray-800">Edit Published Paper</h2>
             <form id="editPaperForm">
                 <input type="hidden" name="paper_id">
@@ -364,9 +378,9 @@
         let filteredPapers = [];
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadPapers();
-            setupSearch();
+            //setupSearch();
         });
 
         // Toggle Sidebar on mobile
@@ -524,41 +538,6 @@
             `;
         }
 
-        // Search functionality
-        function setupSearch() {
-            const searchInput = document.getElementById('searchInput');
-
-            searchInput.addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase().trim();
-
-                if (searchTerm === '') {
-                    filteredPapers = [...papers];
-                } else {
-                    filteredPapers = papers.filter(paper => {
-                        const titleMatch = paper.title && paper.title.toLowerCase().includes(searchTerm);
-                        const authorNameMatch = paper.author_name && paper.author_name.toLowerCase()
-                            .includes(searchTerm);
-
-                        const mlaMatch = paper.mla && paper.mla.toLowerCase().includes(searchTerm);
-                        const apaMatch = paper.apa && paper.apa.toLowerCase().includes(searchTerm);
-                        const chicagoMatch = paper.chicago && paper.chicago.toLowerCase().includes(
-                            searchTerm);
-                        const harvardMatch = paper.harvard && paper.harvard.toLowerCase().includes(
-                            searchTerm);
-                        const vancouverMatch = paper.vancouver && paper.vancouver.toLowerCase().includes(
-                            searchTerm);
-                        const doiMatch = paper.doi && paper.doi.toLowerCase().includes(
-                            searchTerm);
-
-                        return titleMatch || authorNameMatch ||
-                            mlaMatch || apaMatch || chicagoMatch || harvardMatch || vancouverMatch ||
-                            doiMatch;
-                    });
-                }
-
-                displayPapers();
-            });
-        }
 
         // Paper action functions
         function viewPaperDetails(paperId) {
@@ -667,7 +646,7 @@
             document.getElementById('editPaperModal').classList.remove('hidden');
         }
 
-        document.getElementById('editPaperForm').addEventListener('submit', function(e) {
+        document.getElementById('editPaperForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
             const form = e.target;
@@ -677,13 +656,13 @@
             formData.append('_method', 'PUT');
 
             fetch(`/papers/${paperId}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                })
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -711,11 +690,11 @@
             if (!confirm('Are you sure you want to delete this paper?')) return;
 
             fetch(`{{ url('papers') }}/${paperId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -793,22 +772,22 @@
             }, 3000);
         }
 
-        document.getElementById('updateProfileForm').addEventListener('submit', function(e) {
+        document.getElementById('updateProfileForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const form = e.target;
 
             fetch('{{ route('profile.edit') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        first_name: form.first_name.value,
-                        last_name: form.last_name.value,
-                        email: form.email.value,
-                    })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    first_name: form.first_name.value,
+                    last_name: form.last_name.value,
+                    email: form.email.value,
                 })
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -844,13 +823,13 @@
             closeDeleteModal();
 
             fetch('{{ route('profile.del') }}', {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                })
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
@@ -896,12 +875,12 @@
             if (!paperIdToDelete) return;
 
             fetch(`/papers/${paperIdToDelete}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                    },
-                })
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            })
                 .then(response => response.json())
                 .then(data => {
                     closeDeletePaperModal();
@@ -922,17 +901,17 @@
         }
 
 
-        document.getElementById('uploadPaperForm').addEventListener('submit', function(e) {
+        document.getElementById('uploadPaperForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(e.target);
 
             fetch('{{ route('papers.upload') }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: formData
-                })
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: formData
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -948,6 +927,70 @@
                     console.error(err);
                     showToast('Something went wrong.');
                 });
+        });
+
+        let selectedFilter = ''; // Default filter (All)
+
+        const filterBtn = document.getElementById('advancedFilterBtn');
+        const filterPopup = document.getElementById('filterPopup');
+        const searchInput = document.getElementById('searchInput');
+
+        // Toggle the filter popup
+        filterBtn.addEventListener('click', function (e) {
+            e.stopPropagation(); // Prevent immediate close
+            filterPopup.classList.toggle('hidden');
+        });
+
+        // Handle filter selection
+        filterPopup.querySelectorAll('button[data-filter]').forEach(button => {
+            button.addEventListener('click', function () {
+                selectedFilter = this.getAttribute('data-filter') || '';
+                filterPopup.classList.add('hidden');
+                const icon = '<i class="fas fa-filter text-indigo-600"></i>';
+                filterBtn.innerHTML = `${icon} ${this.textContent.trim()}`;
+            });
+        });
+
+        // Close popup when clicking outside
+        window.addEventListener('click', function () {
+            filterPopup.classList.add('hidden');
+        });
+
+        // Prevent popup from closing when clicked inside
+        filterPopup.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+
+        // Handle Enter key on search input
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const query = this.value.trim();
+                if (!query) {
+                    alert("Please enter a search term.");
+                    return;
+                }
+
+                const params = new URLSearchParams();
+                params.append('query', query);
+                if (selectedFilter) {
+                    params.append('filter_type', selectedFilter);
+                }
+
+                fetch(`/papers/search?${params.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        filteredPapers = data;
+                        displayPapers(); // Ensure this function is defined
+                    })
+                    .catch(err => {
+                        console.error("Search failed:", err);
+                    });
+            }
         });
     </script>
 

@@ -43,4 +43,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/papers/{paper}', [PublishPaperController::class, 'update'])->name('papers.update');
     Route::get('/dashboard/papers', [DashboardController::class, 'showPapers'])->name('dashboard.papers');
     Route::delete('/papers/{paper}', [PublishPaperController::class, 'destroy'])->name('papers.destroy');
+    
+    Route::get('/papers/search', [PublishPaperController::class, 'search'])->name('papers.search');
 });

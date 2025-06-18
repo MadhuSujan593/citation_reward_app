@@ -84,10 +84,18 @@ class PublishPaperController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
+        $role = preg_replace('/^\d+/', '', $request->query('role'));
+    
         $filterType = $request->input('filter_type');
 
-        $papers = PublishedPaper::with('user'); // Eager load author details
-
+        $papers = PublishedPaper::with('user'); 
+        $userId = auth()->id();
+        // Apply role-based condition
+        if ($role === 'Citer') {
+            $papers->where('user_id', '!=', $userId);
+        } elseif ($role === 'Funder') {
+            $papers->where('user_id', $userId);
+        }
         if ($query) {
             $papers->where(function ($q) use ($query, $filterType) {
                 switch ($filterType) {
@@ -108,11 +116,19 @@ class PublishPaperController extends Controller
                         break;
 
                     default:
-                        $q->where('title', 'like', "%$query%")
-                            ->orWhere('user_id', 'like', "%$query%")
-                            ->orWhereHas('user', function ($uq) use ($query) {
-                                $uq->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%$query%"]);
-                            });
+                        $q->where(function ($subQuery) use ($query) {
+                            $subQuery->where('title', 'like', "%$query%")
+                                ->orWhere('user_id', 'like', "%$query%")
+                                ->orWhereHas('user', function ($uq) use ($query) {
+                                    $uq->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%$query%"]);
+                                })
+                                ->orWhere('mla', 'like', "%$query%")
+                                ->orWhere('apa', 'like', "%$query%")
+                                ->orWhere('chicago', 'like', "%$query%")
+                                ->orWhere('harvard', 'like', "%$query%")
+                                ->orWhere('vancouver', 'like', "%$query%")
+                                ->orWhere('doi', 'like', "%$query%");
+                        });
                         break;
                 }
             });

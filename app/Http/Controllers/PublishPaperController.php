@@ -33,7 +33,7 @@ class PublishPaperController extends Controller
                 'doi' => $validated['doi'],
             ]);
 
-            return response()->json(['success' => true, ]);
+            return response()->json(['success' => true,]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -41,7 +41,7 @@ class PublishPaperController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Failed to Upload the papers: ' . $e->getMessage());
+            Log::error('Failed to Upload the papers: '.$e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'An unexpected error occurred.',
@@ -85,10 +85,10 @@ class PublishPaperController extends Controller
     {
         $query = $request->input('query');
         $role = preg_replace('/^\d+/', '', $request->query('role'));
-    
+
         $filterType = $request->input('filter_type');
 
-        $papers = PublishedPaper::with('user'); 
+        $papers = PublishedPaper::with('user');
         $userId = auth()->id();
         // Apply role-based condition
         if ($role === 'Citer') {
@@ -135,5 +135,35 @@ class PublishPaperController extends Controller
         }
 
         return response()->json($papers->latest()->get());
+    }
+
+    public function cite(PublishedPaper $publishedPaper)
+    {
+        try {
+            $user = Auth::user();
+
+            if (! $user) {
+                return response()->json(['message' => 'Unauthorized.'], 401);
+            }
+
+            // Check if already cited
+            if ($publishedPaper->citers()->where('user_id', $user->id)->exists()) {
+                return response()->json(['message' => 'You have already cited this paper.'], 409);
+            }
+
+            // Attach the user as a citer
+            $publishedPaper->citers()->attach($user->id);
+
+            return response()->json(['success' => true,]);
+        } catch (\Throwable $e) {
+            Log::error('Citation error: '.$e->getMessage(), [
+                'user_id' => Auth::id(),
+                'paper_id' => $publishedPaper->id,
+            ]);
+
+            return response()->json([
+                'message' => 'An unexpected error occurred while citing the paper.'
+            ], 500);
+        }
     }
 }

@@ -80,11 +80,21 @@
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            <div id="paperModalContent">
+
+            <div id="paperModalContent" class="pb-4">
                 <!-- Paper details will be populated here -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div id="paperModalFooter" class="flex justify-end space-x-2 border-t pt-4 mt-4">
+                <button id="paperModalActionBtn"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm hidden">
+                    <!-- Dynamic text (Okay or Proceed to Cite) -->
+                </button>
             </div>
         </div>
     </div>
+
 
     <div class="flex flex-col md:flex-row min-h-screen relative">
 
@@ -124,23 +134,19 @@
                 </a>
 
                 <div id="citerMenu" class="{{ ($userRole ?? 'Citer') === 'Citer' ? '' : 'hidden' }}">
-                    <a href="#"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                         <i class="fas fa-file-alt w-5"></i><span>My Citations</span>
                     </a>
-                    <a href="#"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                         <i class="fas fa-search w-5"></i><span>Research Papers</span>
                     </a>
-                    <a href="#"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                         <i class="fas fa-bookmark w-5"></i><span>Saved Papers</span>
                     </a>
                 </div>
 
                 <div id="funderMenu" class="{{ ($userRole ?? 'Citer') === 'Funder' ? '' : 'hidden' }}">
-                    <a href="#"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                         <i class="fas fa-project-diagram w-5"></i><span>My Published Papers</span>
                         <a href="#" onclick="openPaperModal()"
                             class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
@@ -155,14 +161,13 @@
                 <div class="flex items-center space-x-3 mb-4">
                     <div>
                         <p class="font-medium">
-                            {{ auth()->user()->first_name . ' ' . auth()->user()->last_name ?? 'John Doe' }}
+                            {{ auth()->user()->first_name.' '.auth()->user()->last_name ?? 'John Doe' }}
                         </p>
                         <p class="text-sm opacity-80">{{ auth()->user()->email ?? 'john@example.com' }}</p>
                     </div>
                 </div>
                 <div class="space-y-2">
-                    <button onclick="openProfileModal()"
-                        class="block text-sm hover:text-indigo-200 transition-colors">
+                    <button onclick="openProfileModal()" class="block text-sm hover:text-indigo-200 transition-colors">
                         <i class="fas fa-user-edit mr-2"></i>Update Profile
                     </button>
                     <button type="button" onclick="openDeleteModal()"
@@ -210,8 +215,7 @@
                     <div id="filterPopup"
                         class="absolute mt-1 right-0 w-48 bg-white border border-gray-200 rounded-md shadow-lg p-2 hidden z-50">
                         <p class="text-sm font-medium text-gray-700 mb-1">Search By:</p>
-                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
-                            data-filter="">All</button>
+                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100" data-filter="">All</button>
                         <button class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
                             data-filter="author_name">Author Name</button>
                         <button class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
@@ -265,8 +269,7 @@
     <!-- Upload Paper Modal -->
     <div id="uploadPaperModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden px-4 sm:px-6">
-        <div
-            class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
+        <div class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
             <h2 class="text-xl font-semibold mb-6 text-gray-800">Upload Published Paper</h2>
             <form id="uploadPaperForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -311,8 +314,7 @@
     <!-- Edit Paper Modal -->
     <div id="editPaperModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden px-4 sm:px-6">
-        <div
-            class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
+        <div class="bg-white w-full max-w-4xl sm:rounded-lg shadow-lg p-4 sm:p-6 relative overflow-y-auto max-h-screen">
             <h2 class="text-xl font-semibold mb-6 text-gray-800">Edit Published Paper</h2>
             <form id="editPaperForm">
                 <input type="hidden" name="paper_id">
@@ -377,12 +379,34 @@
     </div>
 
 
+    <!-- Confirm Citation Modal -->
+    <div id="confirmCitationModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center px-4 sm:px-0">
+        <div class="bg-white p-6 rounded-md shadow-lg w-full max-w-sm">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Confirm Citation</h3>
+            <p class="text-gray-700 mb-6">Are you sure you want to cite this paper?</p>
+            <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+                <!-- Yes Cite First -->
+                <button id="confirmCitationBtn"
+                    class="w-full sm:w-auto px-4 py-2 text-sm rounded-md bg-green-600 hover:bg-green-700 text-white">
+                    Yes, Cite
+                </button>
+                <button onclick="closeConfirmModal()"
+                    class="w-full sm:w-auto px-4 py-2 text-sm rounded-md bg-gray-300 hover:bg-gray-400 text-gray-800">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Toast -->
     <div id="toast"
         class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-sm px-4 py-2 rounded-md shadow-lg z-[9999] opacity-0 transition-opacity duration-300 pointer-events-none">
         <span id="toastMessage"></span>
     </div>
+
+
 
     <script>
         // Current user role and papers data
@@ -391,7 +415,7 @@
         let filteredPapers = [];
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadPapers();
             //setupSearch();
         });
@@ -534,13 +558,13 @@
                    
                     
                     <div class="flex justify-between items-center">
-                        <button onclick="viewPaperDetails(${paper.id})" 
+                        <button onclick="viewPaperDetails(${paper.id},'view')" 
                             class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
                             <i class="fas fa-eye mr-1"></i>
                             View Details
                         </button>
                         ${currentRole === 'Citer' ? `
-                                                                        <button onclick="citePaper(${paper.id})" 
+                                                                        <button onclick="viewPaperDetails(${paper.id}, 'cite')" 
                                                                             class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
                                                                             <i class="fas fa-quote-left mr-1"></i>
                                                                             Cite
@@ -553,7 +577,7 @@
 
 
         // Paper action functions
-        function viewPaperDetails(paperId) {
+        function viewPaperDetails(paperId, mode = 'view') {
             const paper = papers.find(p => p.id === paperId);
             if (!paper) return;
 
@@ -718,6 +742,21 @@
                 </div>
             `;
 
+            // Footer Buttons
+            const actionBtn = document.getElementById('paperModalActionBtn');
+            const cancelBtn = document.getElementById('paperModalCancelBtn');
+
+            if (mode === 'view') {
+                actionBtn.textContent = 'Okay';
+                actionBtn.classList.remove('hidden');
+                actionBtn.onclick = closePaperDetailsModal;
+            } else if (mode === 'cite') {
+                console.log('hii');
+                actionBtn.textContent = 'Proceed to Cite';
+                actionBtn.classList.remove('hidden');
+                actionBtn.onclick = () => confirmCitation(paper.id);
+            }
+
             document.getElementById('paperDetailsModal').classList.remove('hidden');
         }
 
@@ -748,7 +787,7 @@
             document.getElementById('editPaperModal').classList.remove('hidden');
         }
 
-        document.getElementById('editPaperForm').addEventListener('submit', function(e) {
+        document.getElementById('editPaperForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
             const form = e.target;
@@ -758,13 +797,13 @@
             formData.append('_method', 'PUT');
 
             fetch(`/papers/${paperId}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                })
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -792,11 +831,11 @@
             if (!confirm('Are you sure you want to delete this paper?')) return;
 
             fetch(`{{ url('papers') }}/${paperId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -855,41 +894,55 @@
         function closeProfileModal() {
             document.getElementById('updateProfileModal').classList.add('hidden');
         }
-
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
 
-            toastMessage.textContent = message;
+            console.log('TOAST FUNCTION CALLED', message);
 
+            if (!toast || !toastMessage) {
+                console.warn('Toast element or message span not found.');
+                return;
+            }
+
+            toastMessage.textContent = message;
+            console.log('hiii from Ts');
+            // Reset background color
             toast.classList.remove('bg-green-600', 'bg-red-600');
             toast.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
 
+            // Remove hidden states
             toast.classList.remove('opacity-0', 'pointer-events-none');
+
+
+
+            // Apply visible state
             toast.classList.add('opacity-100');
 
+            // Hide after 3 seconds
             setTimeout(() => {
                 toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
+                toast.classList.add('opacity-0', 'pointer-events-none');
             }, 3000);
         }
 
-        document.getElementById('updateProfileForm').addEventListener('submit', function(e) {
+
+        document.getElementById('updateProfileForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const form = e.target;
 
             fetch('{{ route('profile.edit') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        first_name: form.first_name.value,
-                        last_name: form.last_name.value,
-                        email: form.email.value,
-                    })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    first_name: form.first_name.value,
+                    last_name: form.last_name.value,
+                    email: form.email.value,
                 })
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -925,13 +978,13 @@
             closeDeleteModal();
 
             fetch('{{ route('profile.del') }}', {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                })
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
@@ -977,12 +1030,12 @@
             if (!paperIdToDelete) return;
 
             fetch(`/papers/${paperIdToDelete}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                    },
-                })
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            })
                 .then(response => response.json())
                 .then(data => {
                     closeDeletePaperModal();
@@ -1003,17 +1056,17 @@
         }
 
 
-        document.getElementById('uploadPaperForm').addEventListener('submit', function(e) {
+        document.getElementById('uploadPaperForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(e.target);
 
             fetch('{{ route('papers.upload') }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: formData
-                })
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: formData
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -1027,7 +1080,7 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    showToast('Something went wrong.');
+                    showToast('Something went wrong.', true);
                 });
         });
 
@@ -1038,14 +1091,14 @@
         const searchInput = document.getElementById('searchInput');
 
         // Toggle the filter popup
-        filterBtn.addEventListener('click', function(e) {
+        filterBtn.addEventListener('click', function (e) {
             e.stopPropagation(); // Prevent immediate close
             filterPopup.classList.toggle('hidden');
         });
 
         // Handle filter selection
         filterPopup.querySelectorAll('button[data-filter]').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 selectedFilter = this.getAttribute('data-filter') || '';
                 filterPopup.classList.add('hidden');
                 const icon = '<i class="fas fa-filter text-indigo-600"></i>';
@@ -1054,17 +1107,17 @@
         });
 
         // Close popup when clicking outside
-        window.addEventListener('click', function() {
+        window.addEventListener('click', function () {
             filterPopup.classList.add('hidden');
         });
 
         // Prevent popup from closing when clicked inside
-        filterPopup.addEventListener('click', function(e) {
+        filterPopup.addEventListener('click', function (e) {
             e.stopPropagation();
         });
 
         // Handle Enter key on search input
-        searchInput.addEventListener('keypress', function(e) {
+        searchInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter' || e.keyCode === 13) {
                 e.preventDefault();
                 const query = this.value.trim();
@@ -1076,11 +1129,11 @@
                 params.append('role', currentRole);
 
                 fetch(`/papers/search?${params.toString()}`, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json',
-                        }
-                    })
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    }
+                })
                     .then(res => res.json())
                     .then(data => {
                         filteredPapers = data;
@@ -1144,6 +1197,51 @@
                 feedbackEl.classList.add("hidden");
             }, 1500);
         }
+
+        let citationPaperId = null;
+
+        function confirmCitation(paperId) {
+            citationPaperId = paperId;
+            document.getElementById('confirmCitationModal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmCitationModal').classList.add('hidden');
+            citationPaperId = null;
+        }
+
+        document.getElementById('confirmCitationBtn').addEventListener('click', function () {
+            fetch(`/cite-paper/${citationPaperId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        closePaperDetailsModal();
+                        closeConfirmModal();
+                        showToast('Paper Cited successfully!');
+                        loadPapers(); // Reload papers to show the new one
+
+                    } else {
+                        closePaperDetailsModal();
+                        closeConfirmModal();
+                        showToast(data.message || 'Failed to Cite.', true);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    closePaperDetailsModal();
+                    closeConfirmModal();
+                    showToast('Something went wrong.', true);
+                });
+        });
+
+
+
+
     </script>
 
 </body>

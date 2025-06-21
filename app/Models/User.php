@@ -48,4 +48,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(PublishedPaper::class);
     }
+
+    public function citedPapers()
+    {
+        return $this->belongsToMany(PublishedPaper::class, 'paper_citations', 'user_id', 'published_paper_id')
+            ->withTimestamps();
+    }
 }

@@ -45,4 +45,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/papers/{paper}', [PublishPaperController::class, 'destroy'])->name('papers.destroy');
     
     Route::get('/papers/search', [PublishPaperController::class, 'search'])->name('papers.search');
+    Route::post('/cite-paper/{publishedPaper}', [PublishPaperController::class, 'cite'])->name('papers.cite');
 });

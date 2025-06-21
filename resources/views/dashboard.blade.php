@@ -28,8 +28,7 @@
             <form id="updateProfileForm">
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-1">First Name</label>
-                    <input type="text" id="first_name" name="first_name" required
-                        class="w-full border rounded p-2" />
+                    <input type="text" id="first_name" name="first_name" required class="w-full border rounded p-2" />
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-1">Last Name</label>
@@ -383,10 +382,9 @@
     <div id="confirmCitationModal"
         class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center px-4 sm:px-0">
         <div class="bg-white p-6 rounded-md shadow-lg w-full max-w-sm">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Confirm Citation</h3>
-            <p class="text-gray-700 mb-6">Are you sure you want to cite this paper?</p>
+            <h3 id="modalTitle" class="text-lg font-semibold text-gray-800 mb-4">Confirm Citation</h3>
+            <p id="modalMessage" class="text-gray-700 mb-6">Are you sure you want to Cite this paper?</p>
             <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
-                <!-- Yes Cite First -->
                 <button id="confirmCitationBtn"
                     class="w-full sm:w-auto px-4 py-2 text-sm rounded-md bg-green-600 hover:bg-green-700 text-white">
                     Yes, Cite
@@ -398,6 +396,7 @@
             </div>
         </div>
     </div>
+
 
 
     <!-- Toast -->
@@ -564,12 +563,12 @@
                             View Details
                         </button>
                         ${currentRole === 'Citer' ? `
-                                                                        <button onclick="viewPaperDetails(${paper.id}, 'cite')" 
-                                                                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
-                                                                            <i class="fas fa-quote-left mr-1"></i>
-                                                                            Cite
-                                                                        </button>
-                                                                    ` : ''}
+        <button onclick="toggleCite(${paper.id}, ${paper.is_paper_cited_by_current_user})" 
+            class="${paper.is_paper_cited_by_current_user ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white px-4 py-2 rounded-md text-sm transition-colors">
+            <i class="fas ${paper.is_paper_cited_by_current_user ? 'fa-times' : 'fa-quote-left'} mr-1"></i>
+            ${paper.is_paper_cited_by_current_user ? 'Uncite' : 'Cite'}
+        </button>
+    ` : ''}
                     </div>
                 </div>
             `;
@@ -577,7 +576,7 @@
 
 
         // Paper action functions
-        function viewPaperDetails(paperId, mode = 'view') {
+        function viewPaperDetails(paperId, mode = 'view', action = 'cite') {
             const paper = papers.find(p => p.id === paperId);
             if (!paper) return;
 
@@ -751,10 +750,9 @@
                 actionBtn.classList.remove('hidden');
                 actionBtn.onclick = closePaperDetailsModal;
             } else if (mode === 'cite') {
-                console.log('hii');
                 actionBtn.textContent = 'Proceed to Cite';
                 actionBtn.classList.remove('hidden');
-                actionBtn.onclick = () => confirmCitation(paper.id);
+                actionBtn.onclick = () => confirmCitation(paper.id, action);
             }
 
             document.getElementById('paperDetailsModal').classList.remove('hidden');
@@ -898,15 +896,12 @@
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
 
-            console.log('TOAST FUNCTION CALLED', message);
-
             if (!toast || !toastMessage) {
                 console.warn('Toast element or message span not found.');
                 return;
             }
 
             toastMessage.textContent = message;
-            console.log('hiii from Ts');
             // Reset background color
             toast.classList.remove('bg-green-600', 'bg-red-600');
             toast.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
@@ -1199,19 +1194,45 @@
         }
 
         let citationPaperId = null;
+        let citationAction = null;
 
-        function confirmCitation(paperId) {
+        function confirmCitation(paperId, action = 'cite') {
             citationPaperId = paperId;
-            document.getElementById('confirmCitationModal').classList.remove('hidden');
+            citationAction = action.toLowerCase();
+
+            const actionCapitalized = citationAction.charAt(0).toUpperCase() + citationAction.slice(1);
+            const modal = document.getElementById('confirmCitationModal');
+            const title = document.getElementById('modalTitle');
+            const message = document.getElementById('modalMessage');
+            const confirmBtn = document.getElementById('confirmCitationBtn');
+
+            // Update modal content
+            title.textContent = `Confirm ${actionCapitalized}`;
+            message.textContent = `Are you sure you want to ${actionCapitalized} this paper?`;
+            confirmBtn.textContent = `Yes, ${actionCapitalized}`;
+
+            // Update button color
+            if (citationAction === 'uncite') {
+                confirmBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                confirmBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            } else {
+                confirmBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+                confirmBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            }
+
+            modal.classList.remove('hidden');
         }
 
         function closeConfirmModal() {
             document.getElementById('confirmCitationModal').classList.add('hidden');
             citationPaperId = null;
+            citationAction = null;
         }
 
         document.getElementById('confirmCitationBtn').addEventListener('click', function () {
-            fetch(`/cite-paper/${citationPaperId}`, {
+            if (!citationPaperId || !citationAction) return;
+
+            fetch(`/${citationAction}-paper/${citationPaperId}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -1220,16 +1241,13 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        closePaperDetailsModal();
-                        closeConfirmModal();
-                        showToast('Paper Cited successfully!');
-                        loadPapers(); // Reload papers to show the new one
-
+                        showToast(`Paper ${citationAction === 'cite' ? 'Cited' : 'Uncited'} successfully!`);
+                        loadPapers(); // Refresh the list
                     } else {
-                        closePaperDetailsModal();
-                        closeConfirmModal();
-                        showToast(data.message || 'Failed to Cite.', true);
+                        showToast(data.message || `Failed to ${citationAction}.`, true);
                     }
+                    closePaperDetailsModal();
+                    closeConfirmModal();
                 })
                 .catch(err => {
                     console.error(err);
@@ -1238,6 +1256,16 @@
                     showToast('Something went wrong.', true);
                 });
         });
+
+
+
+        function toggleCite(paperId, isCited) {
+            if (isCited) {
+                confirmCitation(paperId, 'uncite');
+            } else {
+                viewPaperDetails(paperId, 'cite', 'cite');
+            }
+        }
 
 
 

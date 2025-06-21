@@ -166,4 +166,35 @@ class PublishPaperController extends Controller
             ], 500);
         }
     }
+
+    public function unCite(PublishedPaper $publishedPaper)
+    {
+        try {
+            $user = Auth::user();
+
+            if (! $user) {
+                return response()->json(['message' => 'Unauthorized.'], 401);
+            }
+
+            // Check if the user has cited the paper
+            if (! $publishedPaper->citers()->where('user_id', $user->id)->exists()) {
+                return response()->json(['message' => 'You have not cited this paper.'], 409);
+            }
+
+            // Detach the user as a citer
+            $publishedPaper->citers()->detach($user->id);
+
+            return response()->json(['success' => true]);
+        } catch (\Throwable $e) {
+            Log::error('Uncitation error: '.$e->getMessage(), [
+                'user_id' => Auth::id(),
+                'paper_id' => $publishedPaper->id,
+            ]);
+
+            return response()->json([
+                'message' => 'An unexpected error occurred while removing the citation.'
+            ], 500);
+        }
+    }
+
 }

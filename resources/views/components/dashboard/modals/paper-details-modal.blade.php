@@ -1,6 +1,6 @@
 <div 
     id="paperDetailsModal"
-    class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[9999] px-2 sm:px-6 hidden"
+    class="fixed inset-0 bg-black bg-opacity-70 flex justify-center z-[9999] px-2 sm:px-6 pt-16 sm:pt-0 items-start sm:items-center hidden"
 >
     <div class="bg-white w-full max-w-sm sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-2 my-8 rounded-2xl shadow-2xl p-0 sm:p-0 relative">
         <!-- Header -->

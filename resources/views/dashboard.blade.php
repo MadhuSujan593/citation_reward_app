@@ -983,17 +983,29 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        showToast(data.message);
+                        if (window.dashboard && typeof window.dashboard.showToast === 'function') {
+                            window.dashboard.showToast(data.message);
+                        } else if (typeof showToast === 'function') {
+                            showToast(data.message);
+                        }
                         setTimeout(() => {
                             window.location.href = '{{ route('login') }}';
                         }, 2000);
                     } else {
-                        showToast(data.message || 'Failed to delete account.', true);
+                        if (window.dashboard && typeof window.dashboard.showToast === 'function') {
+                            window.dashboard.showToast(data.message || 'Failed to delete account.', true);
+                        } else if (typeof showToast === 'function') {
+                            showToast(data.message || 'Failed to delete account.', true);
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Delete error:', error);
-                    showToast('Something went wrong.');
+                    if (window.dashboard && typeof window.dashboard.showToast === 'function') {
+                        window.dashboard.showToast('Something went wrong.', true);
+                    } else if (typeof showToast === 'function') {
+                        showToast('Something went wrong.', true);
+                    }
                 });
         }
 

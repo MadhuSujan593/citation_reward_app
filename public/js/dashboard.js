@@ -786,6 +786,12 @@ class Dashboard {
     refreshPapers() {
         this.loadPapers();
     }
+
+    openDeleteModal() {
+        // Just open the modal directly, do NOT call window.dashboard.openDeleteModal()
+        const modal = document.getElementById('deleteConfirmModal') || document.getElementById('deleteConfirmationModal');
+        if (modal) modal.classList.remove('hidden');
+    }
 }
 
 // Initialize dashboard when DOM is loaded
@@ -912,4 +918,61 @@ if (sidebarCloseBtn && sidebar && sidebarOverlay) {
         sidebar.classList.add('-translate-x-full');
         sidebarOverlay.classList.add('hidden');
     });
-} 
+}
+
+window.openDeleteModal = function() {
+    if (window.dashboard && typeof window.dashboard.openDeleteModal === 'function') {
+        window.dashboard.openDeleteModal();
+    } else {
+        const modal = document.getElementById('deleteConfirmModal') || document.getElementById('deleteConfirmationModal');
+        if (modal) modal.classList.remove('hidden');
+    }
+};
+
+window.closeDeleteModal = function() {
+    if (window.dashboard && typeof window.dashboard.closeDeleteModal === 'function') {
+        window.dashboard.closeDeleteModal();
+    } else {
+        const modal = document.getElementById('deleteConfirmModal') || document.getElementById('deleteConfirmationModal');
+        if (modal) modal.classList.add('hidden');
+    }
+};
+
+window.confirmDelete = function() {
+    window.dashboard?.confirmDelete();
+};
+
+// For deleting a paper
+window.confirmDeletePaper = function() {
+    window.dashboard?.confirmDeletePaper();
+};
+
+// For deleting the user account
+window.confirmDeleteAccount = async function() {
+    // Show a loading state or confirmation if needed
+    try {
+        const response = await fetch('/profile-delete', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+            window.dashboard?.showToast(data.message);
+            setTimeout(() => {
+                window.location.href = '/login'; // or your login route
+            }, 2000);
+        } else {
+            window.dashboard?.showToast(data.message || 'Failed to delete account.', true);
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        window.dashboard?.showToast('Something went wrong.', true);
+    }
+};
+
+// Legacy alias for account deletion (if used in old HTML)
+window.confirmDelete = window.confirmDeleteAccount; 

@@ -223,12 +223,120 @@
     });
     </script>
 
-    <!-- ADD THE CSS HERE -->
-<style>
-    /* Ensure proper z-index stacking */
+<script>
+    // Fixed Modal JavaScript
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.style.zIndex = '60';
+            document.body.classList.add('overflow-hidden');
+            
+            // Ensure modal backdrop is properly set
+            const backdrop = modal.querySelector('.fixed');
+            if (backdrop) {
+                backdrop.style.zIndex = '70';
+            }
+        }
+    }
+    
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    }
+    
+    // Specific modal functions
+    function openPaperModal() {
+        openModal('uploadPaperModal');
+    }
+    
+    function closePaperModal() {
+        closeModal('uploadPaperModal');
+    }
+    
+    function openProfileModal() {
+        openModal('profileModal');
+    }
+    
+    function closeProfileModal() {
+        closeModal('profileModal');
+    }
+    
+    function openPaperDetailsModal() {
+        openModal('paperDetailsModal');
+    }
+    
+    function closePaperDetailsModal() {
+        closeModal('paperDetailsModal');
+    }
+    
+    // Enhanced delete modal functions (keep your existing confirmDelete function)
+    function openDeleteModal() {
+        openModal('deleteConfirmModal');
+    }
+    
+    function closeDeleteModal() {
+        closeModal('deleteConfirmModal');
+    }
+    
+    // Global modal event handlers
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add click handlers for all modal overlays
+        const modals = document.querySelectorAll('[id$="Modal"], [id$="modal"]');
+        
+        modals.forEach(modal => {
+            const overlay = modal.querySelector('.fixed');
+            if (overlay) {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === overlay) {
+                        modal.classList.add('hidden');
+                        document.body.classList.remove('overflow-hidden');
+                    }
+                });
+            }
+        });
+        
+        // Handle escape key for modals
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const visibleModals = document.querySelectorAll('[id$="Modal"]:not(.hidden), [id$="modal"]:not(.hidden)');
+                visibleModals.forEach(modal => {
+                    modal.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                });
+            }
+        });
+    });
+    </script>
+    
+    <!-- REPLACE YOUR EXISTING STYLE SECTION WITH THIS -->
+    <style>
+    /* Complete Modal and Layout Fix */
     #mainContent { 
         position: relative; 
         z-index: 1; 
+    }
+    
+    /* Sidebar z-index levels */
+    #sidebarOverlay {
+        z-index: 40 !important;
+    }
+    
+    #sidebar {
+        z-index: 50 !important;
+    }
+    
+    /* Modal z-index levels - Higher than sidebar */
+    [id$="Modal"], [id$="modal"] {
+        z-index: 60 !important;
+    }
+    
+    [id$="Modal"] .fixed, [id$="modal"] .fixed {
+        z-index: 70 !important;
+        background-color: rgba(0, 0, 0, 0.5) !important;
     }
     
     /* Prevent content from jumping on mobile */
@@ -241,6 +349,15 @@
             position: fixed;
             width: 100%;
             height: 100%;
+        }
+        
+        /* Ensure modals are properly positioned on mobile */
+        [id$="Modal"], [id$="modal"] {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
         }
     }
     
@@ -256,5 +373,19 @@
             display: none !important;
         }
     }
+    
+    /* Additional modal styling */
+    .modal-content {
+        background: white !important;
+        border-radius: 0.75rem !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Ensure toast notifications don't interfere */
+    .toast, .notification {
+        z-index: 90 !important;
+    }
     </style>
-@endpush 
+    @endpush

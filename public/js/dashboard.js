@@ -791,6 +791,57 @@ class Dashboard {
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     window.dashboard = new Dashboard();
+
+    const modalOverlay = document.getElementById('modalOverlay');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', () => {
+            // List all modal IDs
+            const modalIds = [
+                'updateProfileModal',
+                'uploadPaperModal',
+                'paperDetailsModal',
+                'editPaperModal',
+                'deleteConfirmationModal',
+                'deleteConfirmModal',
+                'confirmCitationModal'
+            ];
+            modalIds.forEach(id => {
+                const modal = document.getElementById(id);
+                if (modal && !modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                }
+            });
+            modalOverlay.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        });
+    }
+
+    // Escape key closes any open modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modalIds = [
+                'updateProfileModal',
+                'uploadPaperModal',
+                'paperDetailsModal',
+                'editPaperModal',
+                'deleteConfirmationModal',
+                'deleteConfirmModal',
+                'confirmCitationModal'
+            ];
+            let anyOpen = false;
+            modalIds.forEach(id => {
+                const modal = document.getElementById(id);
+                if (modal && !modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                    anyOpen = true;
+                }
+            });
+            if (anyOpen && modalOverlay) {
+                modalOverlay.classList.add('hidden');
+            }
+            document.body.classList.remove('overflow-hidden');
+        }
+    });
 });
 
 // Global functions for backward compatibility

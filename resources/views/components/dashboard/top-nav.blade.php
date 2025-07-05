@@ -51,10 +51,10 @@
                         class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-50"
                     >
                         <p class="text-sm font-medium text-gray-700 mb-2 px-3">Search By:</p>
-                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 rounded-lg transition-colors" data-filter="">All</button>
-                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 rounded-lg transition-colors" data-filter="author_name">Author Name</button>
-                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 rounded-lg transition-colors" data-filter="author_id">Author ID</button>
-                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 rounded-lg transition-colors" data-filter="title_name">Title</button>
+                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 rounded-lg transition-colors" data-filter="" @click="open = false">All</button>
+                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 rounded-lg transition-colors" data-filter="author_name" @click="open = false">Author Name</button>
+                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 rounded-lg transition-colors" data-filter="author_id" @click="open = false">Author ID</button>
+                        <button class="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 rounded-lg transition-colors" data-filter="title_name" @click="open = false">Title</button>
                     </div>
                 </div>
 

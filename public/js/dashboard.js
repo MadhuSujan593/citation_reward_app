@@ -109,6 +109,14 @@ class Dashboard {
         // Search input
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const value = e.target.value.trim();
+                if (value === '') {
+                    // Reset to full list
+                    this.filteredPapers = [...this.papers];
+                    this.displayPapers();
+                }
+            });
             searchInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -276,7 +284,7 @@ class Dashboard {
                         
                         ${this.currentRole === 'Citer' ? `
                             <button onclick="dashboard.toggleCite(${paper.id}, ${isCited})" 
-                                class="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${isCited ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white' : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'}">
+                                class="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${isCited ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white' : 'bg-green-500 hover:bg-green-600 text-white'}">
                                 <i class="fas ${isCited ? 'fa-times' : 'fa-quote-left'} mr-2"></i>
                                 ${isCited ? 'Uncite' : 'Cite'}
                             </button>
@@ -427,15 +435,15 @@ class Dashboard {
         if (title) title.textContent = `Confirm ${actionCapitalized}`;
         if (message) message.textContent = `Are you sure you want to ${actionCapitalized} this paper?`;
         if (confirmBtn) {
-            confirmBtn.textContent = `Yes, ${actionCapitalized}`;
-            
-            if (this.citationAction === 'uncite') {
-                confirmBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                confirmBtn.classList.add('bg-red-600', 'hover:bg-red-700');
-            } else {
-                confirmBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
-                confirmBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-            }
+            const icon = this.citationAction === 'uncite' ? 'times' : 'check';
+            confirmBtn.innerHTML = `<i class="fas fa-${icon} mr-2"></i>Yes, ${actionCapitalized}`;
+        
+            // Remove all existing color classes
+            confirmBtn.classList.remove(
+                'bg-green-600', 'hover:bg-green-700',
+                'bg-emerald-500', 'hover:bg-emerald-600',
+                'bg-red-600', 'hover:bg-red-700'
+            );
         }
 
         if (modal) modal.classList.remove('hidden');

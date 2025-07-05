@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function index()
     {
         $viewType = session('view_type', 'citer'); // Default to 'citer'
-        return view('dashboard', compact('viewType'));
+        return view('dashboard-new', compact('viewType'));
     }
 
     public function switchView($type)

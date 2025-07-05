@@ -1048,7 +1048,7 @@
                     closeDeletePaperModal();
                     showToast('Error deleting paper', true);
                 });
-        }
+        })
 
 
         document.getElementById('uploadPaperForm').addEventListener('submit', function (e) {

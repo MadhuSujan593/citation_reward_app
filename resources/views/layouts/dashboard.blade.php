@@ -87,9 +87,12 @@
     <!-- Modals -->
     @stack('modals')
     
-    <!-- Toast Notifications -->
-    <x-dashboard.toast />
-    
+   
+    <!-- Toast at bottom right -->
+    <div id="toast"
+        class="fixed bottom-6 right-4 z-[9999] isolation-isolate text-white px-4 py-3 rounded-lg shadow-lg opacity-0 pointer-events-none transform translate-x-full transition-all duration-300 ease-in-out">
+        <span id="toastMessage"></span>
+    </div>
     <!-- Scripts -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     @stack('scripts')

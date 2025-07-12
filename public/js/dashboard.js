@@ -228,8 +228,6 @@ class Dashboard {
                         data.stats.totalPapers;
                     document.getElementById("totalCitations").textContent =
                         data.stats.totalCitations;
-                    document.getElementById("recentActivity").textContent =
-                        this.formatActivityDate(data.stats.recentActivity);
                 }
             } else {
                 this.showToast(data.message || "Failed to load papers", true);
@@ -464,7 +462,7 @@ class Dashboard {
 
         try {
             await navigator.clipboard.writeText(text);
-            this.showCopyFeedback();
+            this.showToast("Copied to clipboard!");
         } catch (err) {
             this.fallbackCopy(text);
         }
@@ -639,26 +637,24 @@ class Dashboard {
     }
 
     showToast(message, isError = false) {
-        // Use Alpine.js toast if available
-        if (window.Alpine && window.Alpine.store("toast")) {
-            window.Alpine.store("toast").showToast(message, isError);
-        } else {
-            // Fallback to old toast
-            const toast = document.getElementById("toast");
-            const toastMessage = document.getElementById("toastMessage");
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
 
-            if (toast && toastMessage) {
-                toastMessage.textContent = message;
-                toast.classList.remove("bg-green-600", "bg-red-600");
-                toast.classList.add(isError ? "bg-red-600" : "bg-green-600");
-                toast.classList.remove("opacity-0", "pointer-events-none");
-                toast.classList.add("opacity-100");
+        if (toast && toastMessage) {
+            toastMessage.textContent = message;
 
-                setTimeout(() => {
-                    toast.classList.remove("opacity-100");
-                    toast.classList.add("opacity-0", "pointer-events-none");
-                }, 3000);
-            }
+            toast.classList.remove("bg-green-600", "bg-red-600");
+            toast.classList.add(isError ? "bg-red-600" : "bg-green-600");
+
+            // Show: Slide in from right
+            toast.classList.remove("opacity-0", "pointer-events-none", "translate-x-full");
+            toast.classList.add("opacity-100", "translate-x-0");
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove("opacity-100", "translate-x-0");
+                toast.classList.add("opacity-0", "pointer-events-none", "translate-x-full");
+            }, 3000);
         }
     }
 

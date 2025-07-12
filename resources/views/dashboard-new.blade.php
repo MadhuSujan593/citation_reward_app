@@ -48,18 +48,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Recent Activity</p>
-                    <p class="text-2xl font-bold text-gray-800" id="recentActivity">0</p>
-                </div>
-                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-clock text-white"></i>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Papers Section -->

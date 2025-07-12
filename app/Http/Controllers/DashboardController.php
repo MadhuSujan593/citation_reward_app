@@ -57,7 +57,7 @@ class DashboardController extends Controller
             'stats' => [
                 'totalPapers' => $totalPapers,
                 'totalCitations' => $totalCitations,
-                'recentActivity' => now()->toDateTimeString()
+                'recentActivity' => 0,
             ]
         ]);
     }

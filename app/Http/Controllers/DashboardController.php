@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaperCitation;
 use App\Models\PublishedPaper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,9 +35,14 @@ class DashboardController extends Controller
       
 
         if ($role === 'Funder') {
-            $papers = PublishedPaper::where('user_id', $user->id)->latest()->get();
+            $papers = PublishedPaper::where('user_id', $user->id)
+            ->latest()->get();
+            $totalPapers = $papers->count();
+            $totalCitations = PaperCitation::whereIn('published_paper_id', $papers->pluck('id'))->count();
         } elseif ($role === 'Citer') {
             $papers = PublishedPaper::where('user_id', '!=', $user->id)->latest()->get();
+            $totalPapers = $papers->count();
+            $totalCitations = PaperCitation::where('user_id', $user->id)->count();
         } else {
             return response()->json([
                 'success' => false,
@@ -46,7 +52,12 @@ class DashboardController extends Controller
 
         return response()->json([
             'success' => true,
-            'papers' => $papers
+            'papers' => $papers,
+            'stats' => [
+                'totalPapers' => $totalPapers,
+                'totalCitations' => $totalCitations,
+                'recentActivity' => now()->toDateTimeString()
+            ]
         ]);
     }
 }

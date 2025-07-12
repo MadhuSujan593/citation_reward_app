@@ -91,18 +91,19 @@
             </a>
 
             <div id="citerMenu" class="{{ ($userRole ?? 'Citer') === 'Citer' ? '' : 'hidden' }}">
-                <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
-                    <i class="fas fa-file-alt w-5 group-hover:text-indigo-600"></i>
-                    <span>My Citations</span>
-                </a>
-                <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
+            <a href="javascript:void(0);" onclick="dashboard.loadMyCitations()"
+                class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
+                <i class="fas fa-file-alt w-5 group-hover:text-indigo-600"></i>
+                <span>My Citations</span>
+            </a>
+                {{-- <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
                     <i class="fas fa-search w-5 group-hover:text-indigo-600"></i>
                     <span>Research Papers</span>
                 </a>
                 <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
                     <i class="fas fa-bookmark w-5 group-hover:text-indigo-600"></i>
                     <span>Saved Papers</span>
-                </a>
+                </a> --}}
             </div>
 
             <div id="funderMenu" class="{{ ($userRole ?? 'Citer') === 'Funder' ? '' : 'hidden' }}">
@@ -125,7 +126,7 @@
                 </div>
                 <div>
                     <p class="font-medium">
-                        {{ auth()->user()->first_name.' '.auth()->user()->last_name ?? 'John Doe' }}
+                        {{ auth()->user()->first_name . ' ' . auth()->user()->last_name ?? 'John Doe' }}
                     </p>
                     <p class="text-sm opacity-80">{{ auth()->user()->email ?? 'john@example.com' }}</p>
                 </div>

@@ -2,15 +2,17 @@
 class Dashboard {
     constructor() {
         // Get current role from DOM instead of Blade syntax
-        this.currentRole = document.getElementById('currentRole')?.textContent?.trim() || 'Citer';
-        console.log('Initial role:', this.currentRole);
+        this.currentRole =
+            document.getElementById("currentRole")?.textContent?.trim() ||
+            "Citer";
+        console.log("Initial role:", this.currentRole);
         this.papers = [];
         this.filteredPapers = [];
-        this.selectedFilter = '';
+        this.selectedFilter = "";
         this.citationPaperId = null;
         this.citationAction = null;
         this.paperIdToDelete = null;
-        
+
         this.init();
     }
 
@@ -26,10 +28,18 @@ class Dashboard {
         // Listen for role changes from Alpine.js
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
-                if (mutation.type === 'childList' && mutation.target.id === 'currentRole') {
+                if (
+                    mutation.type === "childList" &&
+                    mutation.target.id === "currentRole"
+                ) {
                     const newRole = mutation.target.textContent.trim();
                     if (newRole !== this.currentRole) {
-                        console.log('Role changed from', this.currentRole, 'to', newRole);
+                        console.log(
+                            "Role changed from",
+                            this.currentRole,
+                            "to",
+                            newRole
+                        );
                         this.currentRole = newRole;
                         this.loadPapers();
                     }
@@ -37,19 +47,32 @@ class Dashboard {
             });
         });
 
-        const currentRoleElement = document.getElementById('currentRole');
+        const currentRoleElement = document.getElementById("currentRole");
         if (currentRoleElement) {
-            observer.observe(currentRoleElement, { childList: true, subtree: true });
+            observer.observe(currentRoleElement, {
+                childList: true,
+                subtree: true,
+            });
         }
 
         // Also listen for clicks on role buttons to update immediately
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('#citerBtn') || e.target.closest('#funderBtn')) {
+        document.addEventListener("click", (e) => {
+            if (
+                e.target.closest("#citerBtn") ||
+                e.target.closest("#funderBtn")
+            ) {
                 // Small delay to let Alpine.js update the DOM first
                 setTimeout(() => {
-                    const newRole = document.getElementById('currentRole')?.textContent?.trim();
+                    const newRole = document
+                        .getElementById("currentRole")
+                        ?.textContent?.trim();
                     if (newRole && newRole !== this.currentRole) {
-                        console.log('Role button clicked, updating from', this.currentRole, 'to', newRole);
+                        console.log(
+                            "Role button clicked, updating from",
+                            this.currentRole,
+                            "to",
+                            newRole
+                        );
                         this.currentRole = newRole;
                         this.loadPapers();
                     }
@@ -61,7 +84,7 @@ class Dashboard {
     // Method to update role programmatically
     updateRole(newRole) {
         if (newRole !== this.currentRole) {
-            console.log('Updating role from', this.currentRole, 'to', newRole);
+            console.log("Updating role from", this.currentRole, "to", newRole);
             this.currentRole = newRole;
             this.updateUIForRole();
             this.loadPapers();
@@ -70,55 +93,68 @@ class Dashboard {
 
     updateUIForRole() {
         // Update papers title
-        const papersTitle = document.getElementById('papersTitle');
+        const papersTitle = document.getElementById("papersTitle");
         if (papersTitle) {
-            papersTitle.textContent = this.currentRole === 'Funder' ? 'My Published Papers' : 'Available Research Papers';
+            papersTitle.textContent =
+                this.currentRole === "Funder"
+                    ? "My Published Papers"
+                    : "Available Research Papers";
         }
 
         // Update dashboard subtitle if it exists
-        const dashboardSubtitle = document.getElementById('dashboardSubtitle');
+        const dashboardSubtitle = document.getElementById("dashboardSubtitle");
         if (dashboardSubtitle) {
-            dashboardSubtitle.textContent = this.currentRole === 'Funder' ? 'Funder Portfolio Overview' : 'Citation Management Overview';
+            dashboardSubtitle.textContent =
+                this.currentRole === "Funder"
+                    ? "Funder Portfolio Overview"
+                    : "Citation Management Overview";
         }
 
         // Update stats card labels
-        const citationsLabel = document.querySelector('[data-stat="citations"]');
+        const citationsLabel = document.querySelector(
+            '[data-stat="citations"]'
+        );
         if (citationsLabel) {
-            citationsLabel.textContent = this.currentRole === 'Citer' ? 'My Citations' : 'Total Citations';
+            citationsLabel.textContent =
+                this.currentRole === "Citer"
+                    ? "My Citations"
+                    : "Total Citations";
         }
 
         // Update welcome message if it exists
-        const welcomeMessage = document.querySelector('[data-welcome-message]');
+        const welcomeMessage = document.querySelector("[data-welcome-message]");
         if (welcomeMessage) {
-            welcomeMessage.textContent = this.currentRole === 'Citer' 
-                ? 'Manage your research citations and discover new papers.' 
-                : 'Manage your published papers and track citations.';
+            welcomeMessage.textContent =
+                this.currentRole === "Citer"
+                    ? "Manage your research citations and discover new papers."
+                    : "Manage your published papers and track citations.";
         }
     }
 
     setupEventListeners() {
         // Filter dropdown
-        document.querySelectorAll('[data-filter]').forEach(button => {
-            button.addEventListener('click', (e) => {
-                this.selectedFilter = e.target.getAttribute('data-filter') || '';
+        document.querySelectorAll("[data-filter]").forEach((button) => {
+            button.addEventListener("click", (e) => {
+                this.selectedFilter =
+                    e.target.getAttribute("data-filter") || "";
                 this.updateFilterLabel(e.target.textContent.trim());
                 this.closeFilterDropdown();
             });
         });
 
         // Search input
-        const searchInput = document.getElementById('searchInput');
+        const searchInput = document.getElementById("searchInput");
         if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
+            searchInput.addEventListener("input", (e) => {
                 const value = e.target.value.trim();
-                if (value === '') {
+                if (value === "") {
                     // Reset to full list
                     this.filteredPapers = [...this.papers];
                     this.displayPapers();
                 }
             });
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
+            searchInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
                     e.preventDefault();
                     this.performSearch();
                 }
@@ -131,34 +167,41 @@ class Dashboard {
 
     setupFormSubmissions() {
         // Profile update form
-        const profileForm = document.getElementById('updateProfileForm');
+        const profileForm = document.getElementById("updateProfileForm");
         if (profileForm) {
-            profileForm.addEventListener('submit', (e) => this.handleProfileUpdate(e));
+            profileForm.addEventListener("submit", (e) =>
+                this.handleProfileUpdate(e)
+            );
         }
 
         // Upload paper form
-        const uploadForm = document.getElementById('uploadPaperForm');
+        const uploadForm = document.getElementById("uploadPaperForm");
         if (uploadForm) {
-            uploadForm.addEventListener('submit', (e) => this.handlePaperUpload(e));
+            uploadForm.addEventListener("submit", (e) =>
+                this.handlePaperUpload(e)
+            );
         }
 
         // Edit paper form
-        const editForm = document.getElementById('editPaperForm');
+        const editForm = document.getElementById("editPaperForm");
         if (editForm) {
-            editForm.addEventListener('submit', (e) => this.handlePaperEdit(e));
+            editForm.addEventListener("submit", (e) => this.handlePaperEdit(e));
         }
 
         // Citation confirmation
-        const confirmCitationBtn = document.getElementById('confirmCitationBtn');
+        const confirmCitationBtn =
+            document.getElementById("confirmCitationBtn");
         if (confirmCitationBtn) {
-            confirmCitationBtn.addEventListener('click', () => this.handleCitationConfirm());
+            confirmCitationBtn.addEventListener("click", () =>
+                this.handleCitationConfirm()
+            );
         }
     }
 
     setupSearchAndFilters() {
         // Close filter dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('[x-data]')) {
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest("[x-data]")) {
                 this.closeFilterDropdown();
             }
         });
@@ -167,73 +210,95 @@ class Dashboard {
     async loadPapers() {
         try {
             this.showLoading(true);
-            const roleName = this.currentRole.replace(/^\d+/, '');
-            console.log('Loading papers for role:', roleName);
-            const endpoint = `/dashboard/papers?role=${encodeURIComponent(roleName)}`;
-            
+            const roleName = this.currentRole.replace(/^\d+/, "");
+            console.log("Loading papers for role:", roleName);
+            const endpoint = `/dashboard/papers?role=${encodeURIComponent(
+                roleName
+            )}`;
+
             const response = await fetch(endpoint, {
                 headers: {
                     // Get CSRF token from meta tag
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                    'Accept': 'application/json'
-                }
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
+                    Accept: "application/json",
+                },
             });
 
             const data = await response.json();
-            console.log('Papers loaded:', data);
+            console.log("Papers loaded:", data);
 
             if (data.success) {
                 this.papers = data.papers || [];
                 this.filteredPapers = [...this.papers];
-                console.log(`Loaded ${this.papers.length} papers for ${roleName} role`);
+                console.log(
+                    `Loaded ${this.papers.length} papers for ${roleName} role`
+                );
                 this.displayPapers();
+                // Update stats
+                if (data.stats) {
+                    document.getElementById("totalPapers").textContent =
+                        data.stats.totalPapers;
+                    document.getElementById("totalCitations").textContent =
+                        data.stats.totalCitations;
+                    document.getElementById("recentActivity").textContent =
+                        this.formatActivityDate(data.stats.recentActivity);
+                }
             } else {
-                this.showToast(data.message || 'Failed to load papers', true);
+                this.showToast(data.message || "Failed to load papers", true);
             }
         } catch (error) {
-            console.error('Error loading papers:', error);
-            this.showToast('Error loading papers', true);
+            console.error("Error loading papers:", error);
+            this.showToast("Error loading papers", true);
         } finally {
             this.showLoading(false);
         }
     }
 
     displayPapers() {
-        const container = document.getElementById('papersContainer');
-        const emptyState = document.getElementById('papersEmpty');
-        const countElement = document.getElementById('papersCount');
-        const emptyTitle = document.getElementById('emptyTitle');
-        const emptyMessage = document.getElementById('emptyMessage');
+        const container = document.getElementById("papersContainer");
+        const emptyState = document.getElementById("papersEmpty");
+        const countElement = document.getElementById("papersCount");
+        const emptyTitle = document.getElementById("emptyTitle");
+        const emptyMessage = document.getElementById("emptyMessage");
 
         if (!container) return;
 
         // Update count
         if (countElement) {
-            countElement.textContent = `${this.filteredPapers.length} paper${this.filteredPapers.length !== 1 ? 's' : ''}`;
+            countElement.textContent = `${this.filteredPapers.length} paper${
+                this.filteredPapers.length !== 1 ? "s" : ""
+            }`;
         }
 
         if (this.filteredPapers.length === 0) {
-            container.innerHTML = '';
-            if (emptyState) emptyState.classList.remove('hidden');
+            container.innerHTML = "";
+            if (emptyState) emptyState.classList.remove("hidden");
 
             if (emptyTitle && emptyMessage) {
-                if (this.currentRole === 'Funder') {
-                    emptyTitle.textContent = 'No papers published yet';
-                    emptyMessage.textContent = 'Upload your first research paper to get started.';
+                if (this.currentRole === "Funder") {
+                    emptyTitle.textContent = "No papers published yet";
+                    emptyMessage.textContent =
+                        "Upload your first research paper to get started.";
                 } else {
-                    emptyTitle.textContent = 'No papers available';
-                    emptyMessage.textContent = 'No research papers have been published by funders yet.';
+                    emptyTitle.textContent = "No papers available";
+                    emptyMessage.textContent =
+                        "No research papers have been published by funders yet.";
                 }
             }
         } else {
-            if (emptyState) emptyState.classList.add('hidden');
-            container.innerHTML = this.filteredPapers.map(paper => this.createPaperCard(paper)).join('');
+            if (emptyState) emptyState.classList.add("hidden");
+            container.innerHTML = this.filteredPapers
+                .map((paper) => this.createPaperCard(paper))
+                .join("");
         }
     }
 
     createPaperCard(paper) {
         const publishedDate = new Date(paper.created_at).toLocaleDateString();
-        const authorName = paper.author_name || 'Unknown Author';
+        const authorName = paper.author_name || "Unknown Author";
         const isCited = paper.is_paper_cited_by_current_user;
 
         return `
@@ -251,7 +316,9 @@ class Dashboard {
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-700">${authorName}</p>
-                                    <p class="text-xs text-gray-500">Author ID: ${paper.user_id}</p>
+                                    <p class="text-xs text-gray-500">Author ID: ${
+                                        paper.user_id
+                                    }</p>
                                 </div>
                             </div>
                             
@@ -261,7 +328,9 @@ class Dashboard {
                             </div>
                         </div>
                         
-                        ${this.currentRole === 'Funder' ? `
+                        ${
+                            this.currentRole === "Funder"
+                                ? `
                             <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                 <button onclick="dashboard.editPaper(${paper.id})" class="p-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-600 rounded-lg transition-colors" title="Edit Paper">
                                     <i class="fas fa-edit text-sm"></i>
@@ -270,25 +339,41 @@ class Dashboard {
                                     <i class="fas fa-trash text-sm"></i>
                                 </button>
                             </div>
-                        ` : ''}
+                        `
+                                : ""
+                        }
                     </div>
                 </div>
                 
                 <div class="px-6 pb-6">
                     <div class="flex justify-between items-center">
-                        <button onclick="dashboard.viewPaperDetails(${paper.id}, 'view')" 
+                        <button onclick="dashboard.viewPaperDetails(${
+                            paper.id
+                        }, 'view')" 
                             class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
                             <i class="fas fa-eye mr-2"></i>
                             View Details
                         </button>
                         
-                        ${this.currentRole === 'Citer' ? `
-                            <button onclick="dashboard.toggleCite(${paper.id}, ${isCited})" 
-                                class="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${isCited ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white' : 'bg-green-500 hover:bg-green-600 text-white'}">
-                                <i class="fas ${isCited ? 'fa-times' : 'fa-quote-left'} mr-2"></i>
-                                ${isCited ? 'Uncite' : 'Cite'}
+                        ${
+                            this.currentRole === "Citer"
+                                ? `
+                            <button onclick="dashboard.toggleCite(${
+                                paper.id
+                            }, ${isCited})" 
+                                class="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+                                    isCited
+                                        ? "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white"
+                                        : "bg-green-500 hover:bg-green-600 text-white"
+                                }">
+                                <i class="fas ${
+                                    isCited ? "fa-times" : "fa-quote-left"
+                                } mr-2"></i>
+                                ${isCited ? "Uncite" : "Cite"}
                             </button>
-                        ` : ''}
+                        `
+                                : ""
+                        }
                     </div>
                 </div>
                 
@@ -297,72 +382,88 @@ class Dashboard {
         `;
     }
 
-    viewPaperDetails(paperId, mode = 'view', action = 'cite') {
+    viewPaperDetails(paperId, mode = "view", action = "cite") {
         // Close sidebar and overlay if open (for mobile)
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
         if (sidebar && sidebarOverlay) {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
         }
-        const paper = this.papers.find(p => p.id === paperId);
+        const paper = this.papers.find((p) => p.id === paperId);
         if (!paper) return;
-        document.getElementById('paperModalTitle').textContent = paper.title;
-        const modalContent = document.getElementById('paperModalContent');
+        document.getElementById("paperModalTitle").textContent = paper.title;
+        const modalContent = document.getElementById("paperModalContent");
         modalContent.innerHTML = this.createPaperDetailsContent(paper);
         // Footer Buttons
-        const actionBtn = document.getElementById('paperModalActionBtn');
+        const actionBtn = document.getElementById("paperModalActionBtn");
         if (actionBtn) {
-            if (mode === 'view') {
-                actionBtn.textContent = 'Okay';
-                actionBtn.classList.remove('hidden');
+            if (mode === "view") {
+                actionBtn.textContent = "Okay";
+                actionBtn.classList.remove("hidden");
                 actionBtn.onclick = () => this.closePaperDetailsModal();
-            } else if (mode === 'cite') {
-                actionBtn.textContent = 'Proceed to Cite';
-                actionBtn.classList.remove('hidden');
-                actionBtn.onclick = () => this.confirmCitation(paper.id, action);
+            } else if (mode === "cite") {
+                actionBtn.textContent = "Proceed to Cite";
+                actionBtn.classList.remove("hidden");
+                actionBtn.onclick = () =>
+                    this.confirmCitation(paper.id, action);
             }
         }
-        document.getElementById('paperDetailsModal').classList.remove('hidden');
+        document.getElementById("paperDetailsModal").classList.remove("hidden");
     }
 
     createPaperDetailsContent(paper) {
         const citationFields = [
-            { key: 'mla', label: 'MLA Citation' },
-            { key: 'apa', label: 'APA Citation' },
-            { key: 'chicago', label: 'Chicago Citation' },
-            { key: 'harvard', label: 'Harvard Citation' },
-            { key: 'vancouver', label: 'Vancouver Citation' },
-            { key: 'doi', label: 'DOI' }
+            { key: "mla", label: "MLA Citation" },
+            { key: "apa", label: "APA Citation" },
+            { key: "chicago", label: "Chicago Citation" },
+            { key: "harvard", label: "Harvard Citation" },
+            { key: "vancouver", label: "Vancouver Citation" },
+            { key: "doi", label: "DOI" },
         ];
 
         const citationHTML = citationFields
-            .filter(field => paper[field.key])
-            .map(field => `
+            .filter((field) => paper[field.key])
+            .map(
+                (field) => `
                 <div class="relative group">
-                    <h4 class="font-semibold text-gray-800 mb-2">${field.label}</h4>
+                    <h4 class="font-semibold text-gray-800 mb-2">${
+                        field.label
+                    }</h4>
                     <div class="relative">
-                        <p class="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg" id="${field.key}Text">${paper[field.key]}</p>
-                        <button onclick="dashboard.handleCopy('${field.key}Text')" 
+                        <p class="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg" id="${
+                            field.key
+                        }Text">${paper[field.key]}</p>
+                        <button onclick="dashboard.handleCopy('${
+                            field.key
+                        }Text')" 
                             class="absolute top-2 right-2 p-1 bg-white hover:bg-gray-100 rounded transition-colors">
                             <i class="fas fa-copy text-gray-500 hover:text-gray-700"></i>
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `
+            )
+            .join("");
 
         return `
             <div class="space-y-6">
                 <div>
                     <h4 class="font-semibold text-gray-800 mb-2">Author Information</h4>
-                    <p class="text-gray-600">${paper.author_name || 'Unknown Author'}</p>
-                    <p class="text-sm text-gray-500">Author ID: ${paper.user_id}</p>
+                    <p class="text-gray-600">${
+                        paper.author_name || "Unknown Author"
+                    }</p>
+                    <p class="text-sm text-gray-500">Author ID: ${
+                        paper.user_id
+                    }</p>
                     <p class="text-sm text-gray-500">Paper ID: ${paper.id}</p>
                 </div>
                 
                 <div>
                     <h4 class="font-semibold text-gray-800 mb-2">Publication Date</h4>
-                    <p class="text-gray-600">${new Date(paper.created_at).toLocaleDateString()}</p>
+                    <p class="text-gray-600">${new Date(
+                        paper.created_at
+                    ).toLocaleDateString()}</p>
                 </div>
                 
                 ${citationHTML}
@@ -405,110 +506,129 @@ class Dashboard {
     }
 
     showCopyFeedback() {
-        const feedback = document.getElementById('copyFeedback');
+        const feedback = document.getElementById("copyFeedback");
         if (feedback) {
-            feedback.classList.remove('opacity-0');
+            feedback.classList.remove("opacity-0");
             setTimeout(() => {
-                feedback.classList.add('opacity-0');
+                feedback.classList.add("opacity-0");
             }, 1500);
         }
     }
 
     toggleCite(paperId, isCited) {
         if (isCited) {
-            this.confirmCitation(paperId, 'uncite');
+            this.confirmCitation(paperId, "uncite");
         } else {
-            this.viewPaperDetails(paperId, 'cite', 'cite');
+            this.viewPaperDetails(paperId, "cite", "cite");
         }
     }
 
-    confirmCitation(paperId, action = 'cite') {
+    confirmCitation(paperId, action = "cite") {
         this.citationPaperId = paperId;
         this.citationAction = action.toLowerCase();
 
-        const actionCapitalized = this.citationAction.charAt(0).toUpperCase() + this.citationAction.slice(1);
-        const modal = document.getElementById('confirmCitationModal');
-        const title = document.getElementById('modalTitle');
-        const message = document.getElementById('modalMessage');
-        const confirmBtn = document.getElementById('confirmCitationBtn');
+        const actionCapitalized =
+            this.citationAction.charAt(0).toUpperCase() +
+            this.citationAction.slice(1);
+        const modal = document.getElementById("confirmCitationModal");
+        const title = document.getElementById("modalTitle");
+        const message = document.getElementById("modalMessage");
+        const confirmBtn = document.getElementById("confirmCitationBtn");
 
         if (title) title.textContent = `Confirm ${actionCapitalized}`;
-        if (message) message.textContent = `Are you sure you want to ${actionCapitalized} this paper?`;
+        if (message)
+            message.textContent = `Are you sure you want to ${actionCapitalized} this paper?`;
         if (confirmBtn) {
-            const icon = this.citationAction === 'uncite' ? 'times' : 'check';
+            const icon = this.citationAction === "uncite" ? "times" : "check";
             confirmBtn.innerHTML = `<i class="fas fa-${icon} mr-2"></i>Yes, ${actionCapitalized}`;
-        
+
             // Remove all existing color classes
             confirmBtn.classList.remove(
-                'bg-green-600', 'hover:bg-green-700',
-                'bg-emerald-500', 'hover:bg-emerald-600',
-                'bg-red-600', 'hover:bg-red-700'
+                "bg-green-600",
+                "hover:bg-green-700",
+                "bg-emerald-500",
+                "hover:bg-emerald-600",
+                "bg-red-600",
+                "hover:bg-red-700"
             );
         }
 
-        if (modal) modal.classList.remove('hidden');
+        if (modal) modal.classList.remove("hidden");
     }
 
     async handleCitationConfirm() {
         if (!this.citationPaperId || !this.citationAction) return;
 
         try {
-            const response = await fetch(`/${this.citationAction}-paper/${this.citationPaperId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-                },
-            });
+            const response = await fetch(
+                `/${this.citationAction}-paper/${this.citationPaperId}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN":
+                            document
+                                .querySelector('meta[name="csrf-token"]')
+                                ?.getAttribute("content") || "",
+                    },
+                }
+            );
 
             const data = await response.json();
 
             if (data.success) {
-                this.showToast(`Paper ${this.citationAction === 'cite' ? 'Cited' : 'Uncited'} successfully!`);
+                this.showToast(
+                    `Paper ${
+                        this.citationAction === "cite" ? "Cited" : "Uncited"
+                    } successfully!`
+                );
                 this.loadPapers();
             } else {
-                this.showToast(data.message || `Failed to ${this.citationAction}.`, true);
+                this.showToast(
+                    data.message || `Failed to ${this.citationAction}.`,
+                    true
+                );
             }
-            
+
             this.closePaperDetailsModal();
             this.closeConfirmModal();
         } catch (err) {
             console.error(err);
             this.closePaperDetailsModal();
             this.closeConfirmModal();
-            this.showToast('Something went wrong.', true);
+            this.showToast("Something went wrong.", true);
         }
     }
 
     performSearch() {
-        const query = document.getElementById('searchInput')?.value.trim();
+        const query = document.getElementById("searchInput")?.value.trim();
         if (!query) return;
 
         const params = new URLSearchParams();
-        params.append('query', query);
+        params.append("query", query);
         if (this.selectedFilter) {
-            params.append('filter_type', this.selectedFilter);
+            params.append("filter_type", this.selectedFilter);
         }
-        params.append('role', this.currentRole);
+        params.append("role", this.currentRole);
 
         fetch(`/papers/search?${params.toString()}`, {
             headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json',
-            }
+                "X-Requested-With": "XMLHttpRequest",
+                Accept: "application/json",
+            },
         })
-        .then(res => res.json())
-        .then(data => {
-            this.filteredPapers = data;
-            this.displayPapers();
-        })
-        .catch(err => {
-            console.error("Search failed:", err);
-            this.showToast('Search failed', true);
-        });
+            .then((res) => res.json())
+            .then((data) => {
+                this.filteredPapers = data;
+                this.displayPapers();
+            })
+            .catch((err) => {
+                console.error("Search failed:", err);
+                this.showToast("Search failed", true);
+            });
     }
 
     updateFilterLabel(label) {
-        const filterLabel = document.getElementById('filterLabel');
+        const filterLabel = document.getElementById("filterLabel");
         if (filterLabel) {
             filterLabel.textContent = label;
         }
@@ -519,39 +639,39 @@ class Dashboard {
     }
 
     showLoading(show) {
-        const loading = document.getElementById('papersLoading');
-        const container = document.getElementById('papersContainer');
-        const emptyState = document.getElementById('papersEmpty');
+        const loading = document.getElementById("papersLoading");
+        const container = document.getElementById("papersContainer");
+        const emptyState = document.getElementById("papersEmpty");
 
         if (show) {
-            if (loading) loading.classList.remove('hidden');
-            if (container) container.classList.add('hidden');
-            if (emptyState) emptyState.classList.add('hidden');
+            if (loading) loading.classList.remove("hidden");
+            if (container) container.classList.add("hidden");
+            if (emptyState) emptyState.classList.add("hidden");
         } else {
-            if (loading) loading.classList.add('hidden');
-            if (container) container.classList.remove('hidden');
+            if (loading) loading.classList.add("hidden");
+            if (container) container.classList.remove("hidden");
         }
     }
 
     showToast(message, isError = false) {
         // Use Alpine.js toast if available
-        if (window.Alpine && window.Alpine.store('toast')) {
-            window.Alpine.store('toast').showToast(message, isError);
+        if (window.Alpine && window.Alpine.store("toast")) {
+            window.Alpine.store("toast").showToast(message, isError);
         } else {
             // Fallback to old toast
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
+            const toast = document.getElementById("toast");
+            const toastMessage = document.getElementById("toastMessage");
 
             if (toast && toastMessage) {
                 toastMessage.textContent = message;
-                toast.classList.remove('bg-green-600', 'bg-red-600');
-                toast.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
-                toast.classList.remove('opacity-0', 'pointer-events-none');
-                toast.classList.add('opacity-100');
+                toast.classList.remove("bg-green-600", "bg-red-600");
+                toast.classList.add(isError ? "bg-red-600" : "bg-green-600");
+                toast.classList.remove("opacity-0", "pointer-events-none");
+                toast.classList.add("opacity-100");
 
                 setTimeout(() => {
-                    toast.classList.remove('opacity-100');
-                    toast.classList.add('opacity-0', 'pointer-events-none');
+                    toast.classList.remove("opacity-100");
+                    toast.classList.add("opacity-0", "pointer-events-none");
                 }, 3000);
             }
         }
@@ -560,65 +680,98 @@ class Dashboard {
     // Modal functions
     openProfileModal() {
         // Close sidebar and overlay if open (for mobile)
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
         if (sidebar && sidebarOverlay) {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
         }
-        document.getElementById('updateProfileModal').classList.remove('hidden');
+        document
+            .getElementById("updateProfileModal")
+            .classList.remove("hidden");
         // Get user data from data attributes
-        const firstName = document.querySelector('[data-user-first-name]')?.getAttribute('data-user-first-name') || '';
-        const lastName = document.querySelector('[data-user-last-name]')?.getAttribute('data-user-last-name') || '';
-        const email = document.querySelector('[data-user-email]')?.getAttribute('data-user-email') || '';
-        document.getElementById('first_name').value = firstName;
-        document.getElementById('last_name').value = lastName;
-        document.getElementById('email').value = email;
+        const firstName =
+            document
+                .querySelector("[data-user-first-name]")
+                ?.getAttribute("data-user-first-name") || "";
+        const lastName =
+            document
+                .querySelector("[data-user-last-name]")
+                ?.getAttribute("data-user-last-name") || "";
+        const email =
+            document
+                .querySelector("[data-user-email]")
+                ?.getAttribute("data-user-email") || "";
+        document.getElementById("first_name").value = firstName;
+        document.getElementById("last_name").value = lastName;
+        document.getElementById("email").value = email;
     }
 
     closeProfileModal() {
-        document.getElementById('updateProfileModal').classList.add('hidden');
+        document.getElementById("updateProfileModal").classList.add("hidden");
     }
 
     openPaperModal() {
         // Close sidebar and overlay if open (for mobile)
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
         if (sidebar && sidebarOverlay) {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
         }
-        console.log('Opening upload paper modal');
-        const modal = document.getElementById('uploadPaperModal');
+        console.log("Opening upload paper modal");
+        const modal = document.getElementById("uploadPaperModal");
         if (modal) {
-            modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-            console.log('Upload paper modal opened successfully');
+            modal.classList.remove("hidden");
+            document.body.classList.add("overflow-hidden");
+            console.log("Upload paper modal opened successfully");
         } else {
-            console.error('Upload paper modal not found');
+            console.error("Upload paper modal not found");
         }
     }
 
     closePaperModal() {
-        console.log('Closing upload paper modal');
-        const modal = document.getElementById('uploadPaperModal');
+        console.log("Closing upload paper modal");
+        const modal = document.getElementById("uploadPaperModal");
         if (modal) {
-            modal.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-            console.log('Upload paper modal closed successfully');
+            modal.classList.add("hidden");
+            document.body.classList.remove("overflow-hidden");
+            console.log("Upload paper modal closed successfully");
         } else {
-            console.error('Upload paper modal not found');
+            console.error("Upload paper modal not found");
         }
     }
 
     closePaperDetailsModal() {
-        document.getElementById('paperDetailsModal').classList.add('hidden');
+        document.getElementById("paperDetailsModal").classList.add("hidden");
     }
 
     closeConfirmModal() {
-        document.getElementById('confirmCitationModal').classList.add('hidden');
+        document.getElementById("confirmCitationModal").classList.add("hidden");
         this.citationPaperId = null;
         this.citationAction = null;
+    }
+
+    async loadMyCitations() {
+        this.showLoading(true);
+
+        try {
+            const res = await fetch("/my-citations", {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    Accept: "application/json",
+                },
+            });
+
+            const papers = await res.json();
+            this.filteredPapers = papers || [];
+            this.showLoading(false);
+            this.displayPapers(); // reuse existing function to show cards
+        } catch (err) {
+            console.error("Failed to load citations:", err);
+            this.showToast("Failed to load citations", true);
+            this.showLoading(false);
+        }
     }
 
     // Form handlers
@@ -627,32 +780,39 @@ class Dashboard {
         const form = e.target;
 
         try {
-            const response = await fetch('/profile-update', {
-                method: 'POST',
+            const response = await fetch("/profile-update", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
                 },
                 body: JSON.stringify({
                     first_name: form.first_name.value,
                     last_name: form.last_name.value,
                     email: form.email.value,
-                })
+                }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                document.querySelectorAll('p.font-medium')[0].textContent = `${data.user.first_name} ${data.user.last_name}`;
-                document.querySelectorAll('p.text-sm.opacity-80')[0].textContent = data.user.email;
+                document.querySelectorAll(
+                    "p.font-medium"
+                )[0].textContent = `${data.user.first_name} ${data.user.last_name}`;
+                document.querySelectorAll(
+                    "p.text-sm.opacity-80"
+                )[0].textContent = data.user.email;
                 this.closeProfileModal();
-                this.showToast('Profile updated successfully!');
+                this.showToast("Profile updated successfully!");
             } else {
-                this.showToast('Update failed.', true);
+                this.showToast("Update failed.", true);
             }
         } catch (error) {
             console.error(error);
-            this.showToast('An error occurred.', true);
+            this.showToast("An error occurred.", true);
         }
     }
 
@@ -661,27 +821,30 @@ class Dashboard {
         const formData = new FormData(e.target);
 
         try {
-            const response = await fetch('/papers/upload', {
-                method: 'POST',
+            const response = await fetch("/papers/upload", {
+                method: "POST",
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
                 },
-                body: formData
+                body: formData,
             });
 
             const data = await response.json();
 
             if (data.success) {
                 this.closePaperModal();
-                this.showToast('Paper uploaded successfully!');
+                this.showToast("Paper uploaded successfully!");
                 this.loadPapers();
                 e.target.reset();
             } else {
-                this.showToast(data.message || 'Failed to upload paper.', true);
+                this.showToast(data.message || "Failed to upload paper.", true);
             }
         } catch (err) {
             console.error(err);
-            this.showToast('Something went wrong.', true);
+            this.showToast("Something went wrong.", true);
         }
     }
 
@@ -691,74 +854,81 @@ class Dashboard {
         const formData = new FormData(form);
         const paperId = form.paper_id.value;
 
-        formData.append('_method', 'PUT');
+        formData.append("_method", "PUT");
 
         try {
             const response = await fetch(`/papers/${paperId}`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                    'Accept': 'application/json'
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
+                    Accept: "application/json",
                 },
-                body: formData
+                body: formData,
             });
 
             const data = await response.json();
 
             if (data.success) {
-                this.showToast('Paper updated successfully');
+                this.showToast("Paper updated successfully");
                 this.closeEditModal();
                 this.loadPapers();
             } else {
-                this.showToast(data.message || 'Failed to update paper', true);
+                this.showToast(data.message || "Failed to update paper", true);
             }
         } catch (err) {
-            console.error('Update error:', err);
-            this.showToast('Error updating paper', true);
+            console.error("Update error:", err);
+            this.showToast("Error updating paper", true);
         }
     }
 
     editPaper(paperId) {
         // Close sidebar and overlay if open (for mobile)
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
         if (sidebar && sidebarOverlay) {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
         }
-        const paper = this.papers.find(p => p.id === paperId);
+        const paper = this.papers.find((p) => p.id === paperId);
         if (!paper) {
-            this.showToast('Paper not found', true);
+            this.showToast("Paper not found", true);
             return;
         }
-        const form = document.getElementById('editPaperForm');
+        const form = document.getElementById("editPaperForm");
         if (form) {
             form.paper_id.value = paper.id;
-            form.title.value = paper.title || '';
-            form.mla.value = paper.mla || '';
-            form.apa.value = paper.apa || '';
-            form.chicago.value = paper.chicago || '';
-            form.harvard.value = paper.harvard || '';
-            form.vancouver.value = paper.vancouver || '';
-            form.doi.value = paper.doi || '';
+            form.title.value = paper.title || "";
+            form.mla.value = paper.mla || "";
+            form.apa.value = paper.apa || "";
+            form.chicago.value = paper.chicago || "";
+            form.harvard.value = paper.harvard || "";
+            form.vancouver.value = paper.vancouver || "";
+            form.doi.value = paper.doi || "";
         }
-        document.getElementById('editPaperModal').classList.remove('hidden');
+        document.getElementById("editPaperModal").classList.remove("hidden");
     }
 
     closeEditModal() {
-        const form = document.getElementById('editPaperForm');
+        const form = document.getElementById("editPaperForm");
         if (form) form.reset();
-        document.getElementById('editPaperModal').classList.add('hidden');
+        document.getElementById("editPaperModal").classList.add("hidden");
     }
 
     deletePaper(paperId) {
         this.paperIdToDelete = paperId;
-        document.getElementById('deleteConfirmationModal').classList.remove('hidden');
+        document
+            .getElementById("deleteConfirmationModal")
+            .classList.remove("hidden");
     }
 
     closeDeletePaperModal() {
         this.paperIdToDelete = null;
-        document.getElementById('deleteConfirmationModal').classList.add('hidden');
+        document
+            .getElementById("deleteConfirmationModal")
+            .classList.add("hidden");
     }
 
     async confirmDeletePaper() {
@@ -766,10 +936,13 @@ class Dashboard {
 
         try {
             const response = await fetch(`/papers/${this.paperIdToDelete}`, {
-                method: 'DELETE',
+                method: "DELETE",
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                    'Accept': 'application/json',
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
+                    Accept: "application/json",
                 },
             });
 
@@ -777,17 +950,19 @@ class Dashboard {
             this.closeDeletePaperModal();
 
             if (data.success) {
-                this.showToast(data.message || 'Paper deleted');
-                this.papers = this.papers.filter(p => p.id !== this.paperIdToDelete);
+                this.showToast(data.message || "Paper deleted");
+                this.papers = this.papers.filter(
+                    (p) => p.id !== this.paperIdToDelete
+                );
                 this.filteredPapers = [...this.papers];
                 this.loadPapers();
             } else {
-                this.showToast(data.message || 'Delete failed', true);
+                this.showToast(data.message || "Delete failed", true);
             }
         } catch (error) {
-            console.error('Delete error:', error);
+            console.error("Delete error:", error);
             this.closeDeletePaperModal();
-            this.showToast('Error deleting paper', true);
+            this.showToast("Error deleting paper", true);
         }
     }
 
@@ -797,8 +972,10 @@ class Dashboard {
 
     openDeleteModal() {
         // Just open the modal directly, do NOT call window.dashboard.openDeleteModal()
-        const modal = document.getElementById('deleteConfirmModal') || document.getElementById('deleteConfirmationModal');
-        if (modal) modal.classList.remove('hidden');
+        const modal =
+            document.getElementById("deleteConfirmModal") ||
+            document.getElementById("deleteConfirmationModal");
+        if (modal) modal.classList.remove("hidden");
     }
 }
 

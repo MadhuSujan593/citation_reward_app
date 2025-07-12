@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaperCitation;
 use App\Models\PublishedPaper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -195,6 +196,28 @@ class PublishPaperController extends Controller
                 'message' => 'An unexpected error occurred while removing the citation.'
             ], 500);
         }
+    }
+
+    public function myCitations()
+    {
+        $userId = auth()->id();
+
+        // Get all citations by the current user, eager load paper
+        $citations = PaperCitation::with('paper.user')
+            ->where('user_id', $userId)
+            ->latest()
+            ->get();
+
+        // Map to papers and set is_paper_cited_by_current_user = true (for frontend consistency)
+        $citedPapers = $citations->map(function ($citation) {
+            if ($citation->paper) {
+                $citation->paper->setAttribute('is_paper_cited_by_current_user', true);
+                return $citation->paper;
+            }
+            return null;
+        })->filter()->values(); // Remove nulls and reindex
+
+        return response()->json($citedPapers);
     }
 
 }

@@ -50,4 +50,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/papers/search', [PublishPaperController::class, 'search'])->name('papers.search');
     Route::post('/cite-paper/{publishedPaper}', [PublishPaperController::class, 'cite'])->name('papers.cite');
     Route::post('/uncite-paper/{publishedPaper}', [PublishPaperController::class, 'unCite'])->name('papers.cite');
+    Route::get('/my-citations', [PublishPaperController::class, 'myCitations']);
 });

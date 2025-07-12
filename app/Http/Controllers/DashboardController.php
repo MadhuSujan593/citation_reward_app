@@ -12,8 +12,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $viewType = session('view_type', 'citer'); // Default to 'citer'
-        return view('dashboard-new', compact('viewType'));
+        $user = auth()->user();
+
+        // Fallback to 'Citer' if null
+        $userRole = $user->role ?? 'Citer';
+
+        return view('dashboard-new', compact('userRole'));
     }
 
     public function switchView($type)
@@ -29,11 +33,8 @@ class DashboardController extends Controller
 
     public function showPapers(Request $request)
     {
-         $role = preg_replace('/^\d+/', '', $request->query('role'));
-    
         $user = Auth::user();
-      
-
+        $role = $user->role;
         if ($role === 'Funder') {
             $papers = PublishedPaper::where('user_id', $user->id)
             ->latest()->get();
@@ -60,4 +61,22 @@ class DashboardController extends Controller
             ]
         ]);
     }
+
+    public function setRole(Request $request)
+    {
+        $user = Auth::user();
+        $role = $request->input('role');
+
+        $validRoles = ['Citer', 'Funder', 'Admin'];
+
+        if (!in_array($role, $validRoles)) {
+            return response()->json(['success' => false, 'message' => 'Invalid role.'], 400);
+        }
+
+        $user->role = $role;
+        $user->save();
+
+        return response()->json(['success' => true, 'message' => 'Dashboard role updated.']);
+    }
+
 }

@@ -25,69 +25,54 @@ class Dashboard {
     }
 
     setupRoleSwitching() {
-        // Listen for role changes from Alpine.js
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (
-                    mutation.type === "childList" &&
-                    mutation.target.id === "currentRole"
-                ) {
-                    const newRole = mutation.target.textContent.trim();
-                    if (newRole !== this.currentRole) {
-                        console.log(
-                            "Role changed from",
-                            this.currentRole,
-                            "to",
-                            newRole
-                        );
-                        this.currentRole = newRole;
-                        this.loadPapers();
-                    }
-                }
-            });
-        });
+        const buttons = {
+            Citer: document.getElementById("citerBtn"),
+            Funder: document.getElementById("funderBtn"),
+            Admin: document.getElementById("adminBtn"),
+        };
 
-        const currentRoleElement = document.getElementById("currentRole");
-        if (currentRoleElement) {
-            observer.observe(currentRoleElement, {
-                childList: true,
-                subtree: true,
-            });
-        }
-
-        // Also listen for clicks on role buttons to update immediately
-        document.addEventListener("click", (e) => {
-            if (
-                e.target.closest("#citerBtn") ||
-                e.target.closest("#funderBtn")
-            ) {
-                // Small delay to let Alpine.js update the DOM first
-                setTimeout(() => {
-                    const newRole = document
-                        .getElementById("currentRole")
-                        ?.textContent?.trim();
-                    if (newRole && newRole !== this.currentRole) {
-                        console.log(
-                            "Role button clicked, updating from",
-                            this.currentRole,
-                            "to",
-                            newRole
-                        );
-                        this.currentRole = newRole;
-                        this.loadPapers();
-                    }
-                }, 50);
+        Object.entries(buttons).forEach(([role, btn]) => {
+            if (btn) {
+                btn.addEventListener("click", () => this.updateRole(role));
             }
         });
     }
-
     // Method to update role programmatically
-    updateRole(newRole) {
-        if (newRole !== this.currentRole) {
-            console.log("Updating role from", this.currentRole, "to", newRole);
-            this.currentRole = newRole;
-            this.updateUIForRole();
-            this.loadPapers();
+    async updateRole(newRole) {
+        if (newRole === this.currentRole) return;
+
+        console.log("Updating role from", this.currentRole, "to", newRole);
+
+        try {
+            const response = await fetch("/dashboard/switch-role", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
+                },
+                body: JSON.stringify({ role: newRole }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.currentRole = newRole;
+                this.updateUIForRole();
+                this.loadPapers();
+
+                // Optionally redirect if role is "Admin"
+                if (newRole === "Admin") {
+                    window.location.href = "/admin/dashboard";
+                }
+            } else {
+                this.showToast(data.message || "Role update failed", true);
+            }
+        } catch (error) {
+            console.error("Failed to update role:", error);
+            this.showToast("Error updating role", true);
         }
     }
 
@@ -331,7 +316,7 @@ class Dashboard {
                         ${
                             this.currentRole === "Funder"
                                 ? `
-                            <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <div class="flex space-x-2">
                                 <button onclick="dashboard.editPaper(${paper.id})" class="p-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-600 rounded-lg transition-colors" title="Edit Paper">
                                     <i class="fas fa-edit text-sm"></i>
                                 </button>

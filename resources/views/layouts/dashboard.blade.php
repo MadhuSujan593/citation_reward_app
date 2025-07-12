@@ -65,13 +65,12 @@
         data-user-email="{{ auth()->user()->email }}"
         class="hidden"
     ></div>
-
     <!-- Mobile Header -->
     <x-dashboard.mobile-header />
     
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <x-dashboard.sidebar />
+        <x-dashboard.sidebar :userRole="$userRole" />
         
         <!-- Main Content -->
         <div id="mainContent" class="flex-1 flex flex-col">

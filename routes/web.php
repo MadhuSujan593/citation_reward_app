@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/switch/{type}', [DashboardController::class, 'switchView'])->name('dashboard.switch');
     Route::post('/profile-update', [ProfileController::class, 'update'])->name('profile.edit');
     Route::delete('/profile-delete', [AuthController::class, 'deleteUserAccount'])->name('profile.del');
+    Route::post('/dashboard/switch-role', [DashboardController::class, 'setRole'])->name('dashboard.setRole');
 
     //upload papers routes
     Route::post('/papers/upload', [PublishPaperController::class, 'store'])->name('papers.upload');

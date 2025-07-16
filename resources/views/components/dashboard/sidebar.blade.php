@@ -35,6 +35,11 @@
             if (window.dashboard) {
                 window.dashboard.updateRole(role);
             }
+
+            // If on wallet page and switching to Citer, redirect to dashboard
+            if (role === 'Citer' && window.location.pathname.includes('/wallet')) {
+                window.location.href = '{{ route('dashboard') }}';
+            }
         }
     }"
 >
@@ -91,7 +96,7 @@
             </a>
 
             <div id="citerMenu" class="{{ ($userRole ?? 'Citer') === 'Citer' ? '' : 'hidden' }}">
-            <a href="javascript:void(0);" onclick="dashboard.loadMyCitations()"
+            <a href="javascript:void(0);" onclick="if(window.dashboard && typeof window.dashboard.loadMyCitations === 'function'){ window.dashboard.loadMyCitations(); }"
                 class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
                 <i class="fas fa-file-alt w-5 group-hover:text-indigo-600"></i>
                 <span>My Citations</span>
@@ -107,13 +112,17 @@
             </div>
 
             <div id="funderMenu" class="{{ ($userRole ?? 'Citer') === 'Funder' ? '' : 'hidden' }}">
-                <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
+                <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
                     <i class="fas fa-project-diagram w-5 group-hover:text-indigo-600"></i>
                     <span>My Published Papers</span>
                 </a>
-                <a href="#" onclick="openPaperModal()" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
+                <a href="javascript:void(0);" onclick="if(window.location.pathname === '{{ route('dashboard', [], false) }}'){ openPaperModal(); } else { window.location.href='{{ route('dashboard') }}?upload=1'; }" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
                     <i class="fas fa-upload w-5 group-hover:text-indigo-600"></i>
                     <span>Upload Paper</span>
+                </a>
+                <a href="{{ route('wallet.index') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
+                    <i class="fas fa-wallet w-5 group-hover:text-indigo-600"></i>
+                    <span>My Wallet</span>
                 </a>
             </div>
         </nav>

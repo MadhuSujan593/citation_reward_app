@@ -55,4 +55,9 @@ class User extends Authenticatable
         return $this->belongsToMany(PublishedPaper::class, 'paper_citations', 'user_id', 'published_paper_id')
             ->withTimestamps();
     }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
 }

@@ -1,4 +1,4 @@
-<div class="bg-white/80 backdrop-blur-xl border-b border-white/20 p-6 mt-16 md:mt-0">
+<div class="bg-white/80 backdrop-blur-xl border-b border-white/20 p-6 {{ !Request::is('wallet*') ? 'mt-16' : 'mt-0' }} md:mt-0">
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
         <!-- Page Header -->
         <div class="fade-in">

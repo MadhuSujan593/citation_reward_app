@@ -962,7 +962,10 @@ class Dashboard {
 
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    window.dashboard = new Dashboard();
+    // Only initialize dashboard logic on dashboard page
+    if (window.location.pathname === '/dashboard' || window.location.pathname === '/dashboard-new') {
+        window.dashboard = new Dashboard();
+    }
 
     const modalOverlay = document.getElementById('modalOverlay');
     if (modalOverlay) {
@@ -1016,6 +1019,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-open upload modal if ?upload=1 is present
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('upload') === '1' && typeof openPaperModal === 'function') {
+        openPaperModal();
+    }
+});
 // Global functions for backward compatibility
 function loadPapers() { window.dashboard?.loadPapers(); }
 function refreshPapers() { window.dashboard?.refreshPapers(); }

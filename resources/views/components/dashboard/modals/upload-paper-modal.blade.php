@@ -2,7 +2,7 @@
     id="uploadPaperModal"
     class="fixed inset-0 flex justify-center items-start sm:items-center pt-16 sm:pt-0 z-[11010] px-2 sm:px-6 hidden"
 >
-    <div class="bg-white w-full h-full sm:h-auto sm:max-w-lg mx-2 rounded-2xl shadow-2xl p-0 sm:p-0 relative max-h-[90vh] flex flex-col">
+    <div class="bg-white w-full h-full sm:h-auto sm:max-w-lg mx-2 rounded-2xl shadow-2xl p-0 sm:p-0 relative max-h-[60vh] flex flex-col">
         <!-- Sticky Header -->
         <div class="sticky top-0 z-10 bg-white flex justify-between items-center p-4 sm:p-6 border-b">
             <h2 class="text-xl font-semibold text-gray-800">Upload Published Paper</h2>

@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublishPaperController;
+use App\Http\Controllers\WalletController;
 
 // Guest-only routes
 Route::middleware('guest')->group(function () {
@@ -52,4 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/cite-paper/{publishedPaper}', [PublishPaperController::class, 'cite'])->name('papers.cite');
     Route::post('/uncite-paper/{publishedPaper}', [PublishPaperController::class, 'unCite'])->name('papers.cite');
     Route::get('/my-citations', [PublishPaperController::class, 'myCitations']);
+    
+    // Wallet routes
+    Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
+    Route::post('/wallet/add-funds', [WalletController::class, 'addFunds'])->name('wallet.add-funds');
+    Route::get('/wallet/transactions', [WalletController::class, 'getTransactions'])->name('wallet.transactions');
+    Route::get('/wallet/stats', [WalletController::class, 'getWalletStats'])->name('wallet.stats');
 });

@@ -75,8 +75,10 @@
         <!-- Main Content -->
         <div id="mainContent" class="flex-1 flex flex-col">
             <!-- Top Navigation -->
-            <x-dashboard.top-nav />
-            
+            @if (!Request::is('wallet*'))
+                <x-dashboard.top-nav />
+            @endif
+
             <!-- Page Content -->
             <main class="flex-1 p-6 overflow-auto">
                 @yield('content')
@@ -95,6 +97,7 @@
     </div>
     <!-- Scripts -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="{{ asset('js/dashboard.js') }}" defer></script>
     @stack('scripts')
 </body>
 </html> 

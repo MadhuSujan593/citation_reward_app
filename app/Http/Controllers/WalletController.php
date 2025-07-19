@@ -15,13 +15,18 @@ class WalletController extends Controller
     {
         $user = Auth::user();
         
+        // Check if user is a Funder
+        if ($user->role !== 'Funder') {
+            abort(403, 'Access denied. Wallet is only available for Funder role.');
+        }
+        
         // Ensure user has a wallet
         $wallet = $user->wallet;
         if (!$wallet) {
             $wallet = Wallet::create([
                 'user_id' => $user->id,
                 'balance' => 0.00,
-                'currency' => 'USD',
+                'currency' => 'INR',
                 'is_active' => true
             ]);
         }
@@ -50,6 +55,12 @@ class WalletController extends Controller
 
     public function addFunds(Request $request)
     {
+        $user = Auth::user();
+        
+        // Check if user is a Funder
+        if ($user->role !== 'Funder') {
+            return response()->json(['success' => false, 'message' => 'Access denied. Wallet is only available for Funder role.'], 403);
+        }
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|min:1|max:10000',
             'description' => 'nullable|string|max:255'

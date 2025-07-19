@@ -22,7 +22,7 @@ class Wallet extends Model
         'is_active' => 'boolean'
     ];
 
-    protected $appends = ['formatted_balance'];
+    protected $appends = ['formatted_balance', 'currency_symbol'];
 
     public function user()
     {
@@ -37,6 +37,18 @@ class Wallet extends Model
     public function getFormattedBalanceAttribute()
     {
         return '$' . number_format($this->balance, 2);
+    }
+
+    public function getCurrencySymbolAttribute()
+    {
+        return match (strtoupper($this->currency)) {
+            'INR' => '₹',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            default => '$',
+        };
     }
 
     public function addFunds($amount, $description = 'Funds added')

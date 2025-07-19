@@ -8,6 +8,7 @@
     
     <!-- Modern CSS Framework -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
     
     <!-- Custom Styles -->
@@ -33,6 +34,17 @@
         
         .sidebar-transition {
             transition: transform 0.3s ease-in-out;
+        }
+
+        /* FontAwesome icon fix */
+        .fas, .fa-solid {
+            font-family: "Font Awesome 5 Free", "Font Awesome 6 Free" !important;
+            font-weight: 900 !important;
+            display: inline-block !important;
+            font-style: normal !important;
+            font-variant: normal !important;
+            text-rendering: auto !important;
+            line-height: 1 !important;
         }
         
         .fade-in {
@@ -95,6 +107,8 @@
         class="fixed bottom-6 right-4 z-[9999] isolation-isolate text-white px-4 py-3 rounded-lg shadow-lg opacity-0 pointer-events-none transform translate-x-full transition-all duration-300 ease-in-out">
         <span id="toastMessage"></span>
     </div>
+
+    
     <!-- Scripts -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="{{ asset('js/dashboard.js') }}" defer></script>

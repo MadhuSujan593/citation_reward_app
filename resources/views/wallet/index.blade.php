@@ -33,7 +33,12 @@
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
                                 <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
-                                    <i class="fas fa-dollar-sign text-white text-xl"></i>
+                                    <!-- Absolutely guaranteed visible content -->
+                                    <div class="text-white text-center flex items-center justify-center w-full h-full">
+                                        <!-- Simple text that MUST be visible -->
+                                        <span class="text-2xl font-bold" style="line-height: 1; color: white !important; display: block !important;">💰</span>
+                                    </div>
+
                                 </div>
                                 <div>
                                     <h2 class="text-xl font-bold text-gray-800">Available Balance</h2>
@@ -102,10 +107,11 @@
                 <div class="group bg-white/90 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
                     <div class="flex items-center justify-between mb-4">
                         <!-- ICON IN COLORED SQUARE -->
-                        <div class="w-12 h-12 bg-gradient-to-br from-slate-400 to-gray-600 rounded-2xl flex items-center justify-center shadow-lg">
-                            <i class="fa-solid fa-arrow-down text-white"></i>
+                        <div class="w-12 h-12 bg-gradient-to-br from-slate-400 to-gray-600 rounded-2xl flex items-center justify-center shadow-lg" id="debit-icon-container">
+                            <i class="fas fa-arrow-down text-white" id="debit-icon"></i>
                         </div>
-                        <div class="text-slate-600 text-sm font-medium bg-slate-100 px-3 py-1 rounded-full">
+                        <div class="text-red-600 text-sm font-medium bg-red-50 px-3 py-1 rounded-full">
+                            <i class="fa-solid fa-arrow-down mr-1"></i>
                             Debit
                         </div>
                     </div>
@@ -548,6 +554,40 @@ function refreshWallet() {
 
 // Initialize wallet manager
 const walletManager = new WalletManager();
+
+// Immediately show fallback icon, then try FontAwesome
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('debit-icon-container');
+    if (container) {
+        // Immediately apply fallback
+        container.style.cssText = `
+            width: 48px !important;
+            height: 48px !important;
+            background: linear-gradient(to bottom right, rgb(148, 163, 184), rgb(75, 85, 99)) !important;
+            border-radius: 1rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+            position: relative !important;
+            overflow: visible !important;
+        `;
+        
+        container.innerHTML = `
+            <span style="
+                color: white !important;
+                font-size: 20px !important;
+                font-weight: bold !important;
+                font-family: system-ui, -apple-system, sans-serif !important;
+                display: block !important;
+                text-align: center !important;
+                line-height: 1 !important;
+                z-index: 10 !important;
+                position: relative !important;
+            ">−</span>
+        `;
+    }
+});
 
 // Close modals when clicking outside
 document.addEventListener('click', (e) => {

@@ -31,10 +31,10 @@ class WalletController extends Controller
             ]);
         }
 
-        // Get recent transactions
+        // Get recent transactions (top 5 only)
         $transactions = $wallet->transactions()
             ->orderBy('created_at', 'desc')
-            ->limit(10)
+            ->limit(5)
             ->get();
 
         // Get wallet statistics

@@ -51,7 +51,7 @@ class Wallet extends Model
         };
     }
 
-    public function addFunds($amount, $description = 'Funds added')
+    public function addFunds($amount, $description = 'Funds added', $referenceId = null, $referenceType = null)
     {
         $this->balance += $amount;
         $this->save();
@@ -61,13 +61,15 @@ class Wallet extends Model
             'type' => 'credit',
             'amount' => $amount,
             'description' => $description,
-            'balance_after' => $this->balance
+            'balance_after' => $this->balance,
+            'reference_id' => $referenceId,
+            'reference_type' => $referenceType
         ]);
 
         return $this;
     }
 
-    public function deductFunds($amount, $description = 'Funds deducted')
+    public function deductFunds($amount, $description = 'Funds deducted', $referenceId = null, $referenceType = null)
     {
         if ($this->balance < $amount) {
             throw new \Exception('Insufficient funds');
@@ -81,7 +83,9 @@ class Wallet extends Model
             'type' => 'debit',
             'amount' => $amount,
             'description' => $description,
-            'balance_after' => $this->balance
+            'balance_after' => $this->balance,
+            'reference_id' => $referenceId,
+            'reference_type' => $referenceType
         ]);
 
         return $this;

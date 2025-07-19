@@ -152,10 +152,17 @@ class PublishPaperController extends Controller
                 return response()->json(['message' => 'You have already cited this paper.'], 409);
             }
 
+            // Process payment for citation (deduct from paper funder)
+            $paymentResult = \App\Services\CitationPaymentService::processCitationPayment($user->id, $publishedPaper->id);
+            
+            if (!$paymentResult['success']) {
+                return response()->json(['message' => $paymentResult['message']], 400);
+            }
+
             // Attach the user as a citer
             $publishedPaper->citers()->attach($user->id);
 
-            return response()->json(['success' => true,]);
+            return response()->json(['success' => true]);
         } catch (\Throwable $e) {
             Log::error('Citation error: '.$e->getMessage(), [
                 'user_id' => Auth::id(),
@@ -180,6 +187,13 @@ class PublishPaperController extends Controller
             // Check if the user has cited the paper
             if (! $publishedPaper->citers()->where('user_id', $user->id)->exists()) {
                 return response()->json(['message' => 'You have not cited this paper.'], 409);
+            }
+
+            // Process refund for uncitation (refund to paper funder)
+            $refundResult = \App\Services\CitationPaymentService::processCitationRefund($user->id, $publishedPaper->id);
+            
+            if (!$refundResult['success']) {
+                return response()->json(['message' => $refundResult['message']], 400);
             }
 
             // Detach the user as a citer

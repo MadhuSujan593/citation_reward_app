@@ -283,6 +283,7 @@ class Dashboard {
         const publishedDate = new Date(paper.created_at).toLocaleDateString();
         const authorName = paper.author_name || "Unknown Author";
         const isCited = paper.is_paper_cited_by_current_user;
+        const hasPendingClaim = paper.has_pending_claim;
 
         return `
             <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 card-hover border border-white/20 overflow-hidden group relative">
@@ -341,18 +342,18 @@ class Dashboard {
                         ${
                             this.currentRole === "Citer"
                                 ? `
-                            <button onclick="dashboard.toggleCite(${
-                                paper.id
-                            }, ${isCited})" 
+                            <button onclick="${isCited && hasPendingClaim ? '' : `dashboard.toggleCite(${paper.id}, ${isCited})`}" 
                                 class="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${
-                                    isCited
+                                    isCited && hasPendingClaim
+                                        ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                                        : isCited
                                         ? "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white"
                                         : "bg-green-500 hover:bg-green-600 text-white"
-                                }">
+                                }" ${isCited && hasPendingClaim ? 'disabled' : ''}>
                                 <i class="fas ${
                                     isCited ? "fa-times" : "fa-quote-left"
                                 } mr-2"></i>
-                                ${isCited ? "Uncite" : "Cite"}
+                                ${isCited && hasPendingClaim ? "Claimed" : isCited ? "Uncite" : "Cite"}
                             </button>
                         `
                                 : ""
@@ -499,6 +500,14 @@ class Dashboard {
     }
 
     toggleCite(paperId, isCited) {
+        // Find the paper to check if it has pending claim
+        const paper = this.papers.find(p => p.id === paperId);
+        
+        if (isCited && paper && paper.has_pending_claim) {
+            this.showToast('Cannot uncite - you have a pending or approved claim for this paper', true);
+            return;
+        }
+        
         if (isCited) {
             this.confirmCitation(paperId, "uncite");
         } else {

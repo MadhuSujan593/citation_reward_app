@@ -10,7 +10,7 @@ class PublishedPaper extends Model
 {
     use HasFactory;
 
-    protected $appends = ['author_name','is_paper_cited_by_current_user'];
+    protected $appends = ['author_name','is_paper_cited_by_current_user', 'has_pending_claim'];
 
     protected $fillable = [
         'title',
@@ -50,5 +50,19 @@ class PublishedPaper extends Model
         }
 
         return $this->citers->contains('id', $user->id);
+    }
+
+    public function getHasPendingClaimAttribute()
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return \App\Models\ClaimRequest::where('user_id', $user->id)
+            ->where('referenced_paper_id', $this->id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->exists();
     }
 }

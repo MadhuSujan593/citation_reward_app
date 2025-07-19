@@ -36,6 +36,21 @@
                 window.dashboard.updateRole(role);
             }
 
+            // If on claim request page, redirect when switching to Funder
+            if (window.location.pathname.includes('/claim-requests')) {
+                if (role === 'Funder') {
+                    // Redirect to dashboard when switching to Funder from claim requests
+                    window.location.href = '{{ route('dashboard') }}';
+                    return;
+                } else {
+                    // Stay on claim request page for Citer role
+                    const claimPageData = document.querySelector('[x-data]');
+                    if (claimPageData && claimPageData.__x) {
+                        claimPageData.__x.$data.switchRole(role);
+                    }
+                }
+            }
+
             // If on wallet page and switching to Citer, redirect to dashboard
             if (role === 'Citer' && window.location.pathname.includes('/wallet')) {
                 window.location.href = '{{ route('dashboard') }}';
@@ -86,6 +101,15 @@
                     <i class="fas fa-hand-holding-usd mr-2"></i>Funder
                 </button>
             </div>
+            
+            @if(auth()->user()->email === 'admin@citationapp.com')
+                <div class="mt-4 p-3 bg-red-50 rounded-lg border border-red-200">
+                    <p class="text-xs text-red-800 font-medium mb-2">🛡️ Admin Access</p>
+                    <a href="{{ route('admin.claim-requests') }}" class="block w-full py-2 px-3 bg-red-600 text-white text-center rounded-md hover:bg-red-700 transition-colors text-sm font-medium">
+                        Manage Claims
+                    </a>
+                </div>
+            @endif
         </div>
 
         <!-- Navigation Menu -->
@@ -96,19 +120,20 @@
             </a>
 
             <div id="citerMenu" class="{{ ($userRole ?? 'Citer') === 'Citer' ? '' : 'hidden' }}">
-            <a href="javascript:void(0);" onclick="if(window.dashboard && typeof window.dashboard.loadMyCitations === 'function'){ window.dashboard.loadMyCitations(); }"
+            <a href="javascript:void(0);" onclick="handleMyCitationsClick()"
                 class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
                 <i class="fas fa-file-alt w-5 group-hover:text-indigo-600"></i>
                 <span>My Citations</span>
             </a>
-                {{-- <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
-                    <i class="fas fa-search w-5 group-hover:text-indigo-600"></i>
-                    <span>Research Papers</span>
-                </a>
-                <a href="#" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 group">
-                    <i class="fas fa-bookmark w-5 group-hover:text-indigo-600"></i>
-                    <span>Saved Papers</span>
-                </a> --}}
+            <a href="javascript:void(0);" onclick="handleExplorePapersClick()"
+                class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group">
+                <i class="fas fa-search w-5 group-hover:text-blue-600"></i>
+                <span>Explore Papers</span>
+            </a>
+            <a href="{{ route('claim-requests.index') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-emerald-50 rounded-xl transition-all duration-200 group">
+                <i class="fas fa-hand-holding-usd w-5 group-hover:text-emerald-600"></i>
+                <span>Claim Requests</span>
+            </a>
             </div>
 
             <div id="funderMenu" class="{{ ($userRole ?? 'Citer') === 'Funder' ? '' : 'hidden' }}">

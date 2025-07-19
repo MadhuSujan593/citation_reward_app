@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ClaimRequestController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublishPaperController;
@@ -58,5 +59,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
     Route::post('/wallet/add-funds', [WalletController::class, 'addFunds'])->name('wallet.add-funds');
     Route::get('/wallet/transactions', [WalletController::class, 'getTransactions'])->name('wallet.transactions');
+    
+    // Claim Request routes
+    Route::get('/claim-requests', [ClaimRequestController::class, 'index'])->name('claim-requests.index');
+    Route::post('/claim-requests', [ClaimRequestController::class, 'store'])->name('claim-requests.store');
+    
+    // Admin routes
+    Route::middleware('admin')->group(function() {
+        Route::get('/admin/claim-requests', [ClaimRequestController::class, 'adminIndex'])->name('admin.claim-requests');
+        Route::post('/admin/claim-requests/{claimRequest}/approve', [ClaimRequestController::class, 'approve'])->name('admin.claim-requests.approve');
+        Route::post('/admin/claim-requests/{claimRequest}/reject', [ClaimRequestController::class, 'reject'])->name('admin.claim-requests.reject');
+    });
     Route::get('/wallet/stats', [WalletController::class, 'getWalletStats'])->name('wallet.stats');
 });

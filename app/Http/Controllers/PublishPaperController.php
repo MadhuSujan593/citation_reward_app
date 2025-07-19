@@ -189,6 +189,16 @@ class PublishPaperController extends Controller
                 return response()->json(['message' => 'You have not cited this paper.'], 409);
             }
 
+            // Check if user has submitted a claim for this paper
+            $existingClaim = \App\Models\ClaimRequest::where('user_id', $user->id)
+                ->where('referenced_paper_id', $publishedPaper->id)
+                ->whereIn('status', ['pending', 'approved'])
+                ->exists();
+                
+            if ($existingClaim) {
+                return response()->json(['message' => 'Cannot uncite - you have a pending or approved claim for this paper.'], 400);
+            }
+
             // Process refund for uncitation (refund to paper funder)
             $refundResult = \App\Services\CitationPaymentService::processCitationRefund($user->id, $publishedPaper->id);
             

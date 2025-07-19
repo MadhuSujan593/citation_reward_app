@@ -70,4 +70,31 @@
 
 <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script src="{{ asset('js/dashboard.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Check URL parameters for auto-actions
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('citations') === '1') {
+        // Wait for dashboard to be initialized, then load citations
+        setTimeout(function() {
+            if (window.dashboard && typeof window.dashboard.loadMyCitations === 'function') {
+                window.dashboard.loadMyCitations();
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }, 500);
+    } else if (urlParams.get('explore') === '1') {
+        // Wait for dashboard to be initialized, then load all papers
+        setTimeout(function() {
+            if (window.dashboard && typeof window.dashboard.loadPapers === 'function') {
+                window.dashboard.loadPapers();
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }, 500);
+    }
+});
+</script>
 @endpush

@@ -60,4 +60,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Wallet::class);
     }
+
+    public function claimRequests()
+    {
+        return $this->hasMany(ClaimRequest::class);
+    }
+
+    public function reviewedClaims()
+    {
+        return $this->hasMany(ClaimRequest::class, 'reviewed_by');
+    }
 }

@@ -113,5 +113,35 @@
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="{{ asset('js/dashboard.js') }}" defer></script>
     @stack('scripts')
+    
+    <script>
+    // Global function to handle My Citations click from sidebar
+    function handleMyCitationsClick() {
+        // Check if we're on the dashboard page
+        const isDashboardPage = window.location.pathname === '{{ route("dashboard", [], false) }}';
+        
+        if (isDashboardPage && window.dashboard && typeof window.dashboard.loadMyCitations === 'function') {
+            // We're on dashboard, just load citations
+            window.dashboard.loadMyCitations();
+        } else {
+            // We're on another page, redirect to dashboard with citations flag
+            window.location.href = '{{ route("dashboard") }}?citations=1';
+        }
+    }
+    
+    // Global function to handle Explore Papers click from sidebar
+    function handleExplorePapersClick() {
+        // Check if we're on the dashboard page
+        const isDashboardPage = window.location.pathname === '{{ route("dashboard", [], false) }}';
+        
+        if (isDashboardPage && window.dashboard && typeof window.dashboard.loadPapers === 'function') {
+            // We're on dashboard, just load all papers normally
+            window.dashboard.loadPapers();
+        } else {
+            // We're on another page, redirect to dashboard with explore flag
+            window.location.href = '{{ route("dashboard") }}?explore=1';
+        }
+    }
+    </script>
 </body>
 </html> 

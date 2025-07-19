@@ -334,10 +334,15 @@
 </div>
 
 <!-- Toast Notification -->
-<div id="toast" class="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-[9999] px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-lg transform transition-all duration-300 ease-in-out opacity-0 translate-x-full max-w-[calc(100vw-2rem)] sm:max-w-none">
-    <span id="toastMessage" class="font-medium text-sm sm:text-base"></span>
+<div id="toast" class="fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 pointer-events-none translate-x-full text-white">
+    <span id="toastMessage" class="font-medium text-sm"></span>
 </div>
 @endsection
+
+@push('modals')
+    <x-dashboard.modals.profile-modal />
+    <x-dashboard.modals.delete-confirmation-modal />
+@endpush
 
 @push('scripts')
 <script>
@@ -522,27 +527,14 @@ class WalletManager {
     }
 
     showToast(message, isError = false) {
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        
-        toast.className = `fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-[9999] px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-lg transform transition-all duration-300 ease-in-out ${
-            isError ? 'bg-red-500' : 'bg-green-500'
-        } text-white`;
-        
-        toastMessage.textContent = message;
-        
-        // Show toast
-        setTimeout(() => {
-            toast.classList.remove('opacity-0', 'translate-x-full');
-            toast.classList.add('opacity-100', 'translate-x-0');
-        }, 100);
-        
-        // Hide toast after 3 seconds
-        setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-x-full');
-            toast.classList.remove('opacity-100', 'translate-x-0');
-        }, 3000);
+        // Use Dashboard's showToast method for consistency
+        if (window.dashboard && window.dashboard.showToast) {
+            window.dashboard.showToast(message, isError);
+        } else {
+            console.log('Dashboard showToast not available:', message);
+        }
     }
+
 }
 
 function openAddFundsModal() {
@@ -605,6 +597,35 @@ function refreshWallet() {
 
 // Initialize wallet manager
 const walletManager = new WalletManager();
+
+// Initialize minimal dashboard for profile functionality only
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        // Use existing Dashboard class but prevent papers loading for wallet page
+        if (typeof Dashboard !== 'undefined') {
+            try {
+                // Override loadPapers method temporarily to prevent loading papers
+                const originalLoadPapers = Dashboard.prototype.loadPapers;
+                Dashboard.prototype.loadPapers = function() {
+                    console.log('Skipping loadPapers on wallet page');
+                    // Do nothing - skip loading papers
+                };
+                
+                // Create Dashboard instance (now won't load papers)
+                window.dashboard = new Dashboard();
+                
+                // Restore original loadPapers method for other instances
+                Dashboard.prototype.loadPapers = originalLoadPapers;
+                
+                                                                  // Use the original Dashboard showToast method for consistency
+                
+                console.log('Dashboard initialized for wallet page (no papers loaded)');
+            } catch (error) {
+                console.warn('Dashboard initialization failed:', error);
+            }
+        }
+    }, 100);
+});
 
 // Immediately show fallback icon, then try FontAwesome
 document.addEventListener('DOMContentLoaded', function() {
@@ -670,5 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+
 </script>
 @endpush

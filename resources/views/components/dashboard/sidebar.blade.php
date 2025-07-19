@@ -134,10 +134,10 @@
                     <i class="fas fa-user text-white"></i>
                 </div>
                 <div>
-                    <p class="font-medium">
+                    <p class="font-medium sidebar-user-name">
                         {{ auth()->user()->first_name . ' ' . auth()->user()->last_name ?? 'John Doe' }}
                     </p>
-                    <p class="text-sm opacity-80">{{ auth()->user()->email ?? 'john@example.com' }}</p>
+                    <p class="text-sm opacity-80 sidebar-user-email">{{ auth()->user()->email ?? 'john@example.com' }}</p>
                 </div>
             </div>
             <div class="space-y-2">

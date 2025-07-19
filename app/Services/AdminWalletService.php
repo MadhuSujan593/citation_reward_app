@@ -21,7 +21,7 @@ class AdminWalletService
                 'last_name' => 'Admin',
                 'email' => 'admin@citationapp.com',
                 'password' => Hash::make('admin123'),
-                'role' => 'Admin'
+                'role' => 'Citer'
             ]);
         }
 

@@ -44,7 +44,7 @@ class CreateAdminUser extends Command
             'last_name' => 'Admin',
             'email' => 'admin@citationapp.com',
             'password' => Hash::make('admin123'),
-            'role' => 'Admin'
+            'role' => 'Citer'
         ]);
 
         // Create admin wallet with some initial funds

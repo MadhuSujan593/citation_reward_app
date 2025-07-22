@@ -160,7 +160,7 @@
                     <div>
                         <p class="text-gray-600 text-xs sm:text-sm mb-1">This Month</p>
                         <p class="text-lg sm:text-xl lg:text-2xl font-bold text-purple-600 break-all">
-                            {{ is_numeric($stats['this_month']) ? $wallet->currency_symbol . number_format($stats['this_month'], 2) : $stats['this_month'] }}
+                            {{ is_numeric($stats['this_month']) ?  number_format($stats['this_month']) : $stats['this_month'] }}
                         </p>
                     </div>
                 </div>

@@ -181,8 +181,8 @@ class ClaimRequestController extends Controller
             if (!$citerWallet) {
                 $citerWallet = \App\Models\Wallet::create([
                     'user_id' => $claimRequest->user->id,
-                    'balance' => 0.00,
-                    'currency' => 'INR',
+                    'balance' => 0,
+                    'currency' => 'Coins',
                     'is_active' => true
                 ]);
             }

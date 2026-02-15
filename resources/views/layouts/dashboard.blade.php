@@ -6,70 +6,99 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>{{ config('app.name') }} - @yield('title', 'Dashboard')</title>
     
-    <!-- Modern CSS Framework -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <!-- Modern CSS Framework & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
     
     <!-- Custom Styles -->
     <style>
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        .sidebar-transition {
-            transition: transform 0.3s ease-in-out;
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #818cf8;
+            --bg-main: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.8);
         }
 
-        /* FontAwesome icon fix */
-        .fas, .fa-solid {
-            font-family: "Font Awesome 5 Free", "Font Awesome 6 Free" !important;
-            font-weight: 900 !important;
-            display: inline-block !important;
-            font-style: normal !important;
-            font-variant: normal !important;
-            text-rendering: auto !important;
-            line-height: 1 !important;
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            background-color: var(--bg-main);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
+        .premium-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        }
+
+        .premium-shadow-hover:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+            transform: translateY(-2px);
+        }
+        
+        .gradient-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        .card-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .sidebar-item-active {
+            background: linear-gradient(to right, rgba(99, 102, 241, 0.1), transparent);
+            border-right: 3px solid var(--primary);
+            color: var(--primary);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
         .fade-in {
-            animation: fadeIn 0.5s ease-in;
+            animation: fadeIn 0.4s ease-out;
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .pulse-glow {
-            animation: pulseGlow 2s infinite;
-        }
-        
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.8); }
         }
     </style>
     
     @stack('styles')
 </head>
 
-<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-screen font-sans">
+<body class="bg-gray-50 min-h-screen font-sans antialiased text-slate-900">
     <!-- User Data Attributes -->
     <div 
         data-user-first-name="{{ auth()->user()->first_name }}"
@@ -87,7 +116,7 @@
         <!-- Main Content -->
         <div id="mainContent" class="flex-1 flex flex-col">
             <!-- Top Navigation -->
-            @if (!Request::is('wallet*'))
+            @if (!Request::is('wallet*') && !Request::is('claim-requests*') && !Request::is('admin/claim-requests*'))
                 <x-dashboard.top-nav />
             @endif
 
@@ -102,11 +131,58 @@
     @stack('modals')
     
    
-    <!-- Toast at bottom right -->
-    <div id="toast"
-        class="fixed bottom-6 right-4 z-[9999] isolation-isolate text-white px-4 py-3 rounded-lg shadow-lg opacity-0 pointer-events-none transform translate-x-full transition-all duration-300 ease-in-out">
-        <span id="toastMessage"></span>
+    <!-- Premium Global Toast (Tailwind 2 & 3 Compatible) -->
+    <div id="toast" class="fixed bottom-6 right-6 z-[100] transform transition-all duration-500 ease-out translate-x-full opacity-0 pointer-events-none">
+        <div class="flex items-center gap-4 bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-2xl min-w-[320px] border border-white/10">
+            <div id="toastIcon" class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm"></div>
+            <div>
+                <p id="toastTitle" class="text-[10px] font-bold uppercase tracking-widest mb-0.5">Notification</p>
+                <p id="toastMessage" class="text-sm font-bold"></p>
+            </div>
+        </div>
     </div>
+
+    <script>
+        window.showToast = function(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            if (!toast || !toastMessage) return;
+
+            // Reset and set styles based on type
+            toastIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm';
+            
+            if (type === 'success' || type === false) {
+                toastIcon.classList.add('bg-green-500', 'text-white');
+                toastIcon.innerHTML = '<i class="fas fa-check"></i>';
+                toastTitle.textContent = 'Success';
+                toastTitle.className = 'text-[10px] font-bold text-green-500 uppercase tracking-widest mb-0.5';
+            } else if (type === 'error' || type === true || type === 'isError') {
+                toastIcon.classList.add('bg-red-500', 'text-white');
+                toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                toastTitle.textContent = 'Error';
+                toastTitle.className = 'text-[10px] font-bold text-red-500 uppercase tracking-widest mb-0.5';
+            } else {
+                toastIcon.classList.add('bg-blue-500', 'text-white');
+                toastIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
+                toastTitle.textContent = 'Info';
+                toastTitle.className = 'text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-0.5';
+            }
+            
+            toastMessage.textContent = message;
+            
+            // Show
+            toast.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-x-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-x-0', 'opacity-100');
+            }, 4000);
+        }
+    </script>
 
     
     <!-- Scripts -->

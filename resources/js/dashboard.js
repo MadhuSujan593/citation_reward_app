@@ -5,16 +5,17 @@ class Dashboard {
         this.currentRole = document.getElementById('currentRole')?.textContent?.trim() || 'Citer';
         this.papers = [];
         this.filteredPapers = [];
-        this.selectedFilter = '';
-        this.citationPaperId = null;
-        this.citationAction = null;
         this.paperIdToDelete = null;
+        this.viewMode = "explore"; // 'explore' or 'citations'
+        this.currentPage = 1;
         
         this.init();
     }
 
     init() {
-        this.loadPapers();
+        if (document.getElementById('papersContainer')) {
+            this.loadPapers();
+        }
         this.setupEventListeners();
         this.setupSearchAndFilters();
     }
@@ -79,11 +80,15 @@ class Dashboard {
         });
     }
 
-    async loadPapers() {
+    async loadPapers(page = 1) {
+        if (!document.getElementById('papersContainer')) return;
+        this.viewMode = "explore";
+        this.currentPage = page;
+
         try {
             this.showLoading(true);
             const roleName = this.currentRole.replace(/^\d+/, '');
-            const endpoint = `/dashboard/papers?role=${encodeURIComponent(roleName)}`;
+            const endpoint = `/dashboard/papers?role=${encodeURIComponent(roleName)}&page=${page}`;
             
             const response = await fetch(endpoint, {
                 headers: {
@@ -99,6 +104,19 @@ class Dashboard {
                 this.papers = data.papers || [];
                 this.filteredPapers = [...this.papers];
                 this.displayPapers();
+
+                // Render pagination
+                if (data.pagination) {
+                    this.renderPagination(data.pagination);
+                }
+
+                // Update stats
+                if (data.stats) {
+                    const totalPapersEl = document.getElementById("totalPapers");
+                    const totalCitsEl = document.getElementById("totalCitations");
+                    if (totalPapersEl) totalPapersEl.textContent = data.stats.totalPapers;
+                    if (totalCitsEl) totalCitsEl.textContent = data.stats.totalCitations;
+                }
             } else {
                 this.showToast(data.message || 'Failed to load papers', true);
             }
@@ -132,6 +150,9 @@ class Dashboard {
                 if (this.currentRole === 'Funder') {
                     emptyTitle.textContent = 'No papers published yet';
                     emptyMessage.textContent = 'Upload your first research paper to get started.';
+                } else if (this.viewMode === 'citations') {
+                    emptyTitle.textContent = 'No citations found';
+                    emptyMessage.textContent = 'Explore research papers to find and cite interesting research.';
                 } else {
                     emptyTitle.textContent = 'No papers available';
                     emptyMessage.textContent = 'No research papers have been published by funders yet.';
@@ -140,6 +161,65 @@ class Dashboard {
         } else {
             if (emptyState) emptyState.classList.add('hidden');
             container.innerHTML = this.filteredPapers.map(paper => this.createPaperCard(paper)).join('');
+        }
+    }
+
+    renderPagination(pagination) {
+        const container = document.getElementById("paginationContainer");
+        if (!container || !pagination) return;
+
+        if (pagination.last_page <= 1) {
+            container.innerHTML = "";
+            return;
+        }
+
+        let html = `
+            <div class="flex items-center gap-1 bg-white p-1 rounded-xl shadow-sm border border-slate-100">
+                <button 
+                    onclick="dashboard.loadPage(${pagination.current_page - 1})"
+                    ${pagination.current_page === 1 ? 'disabled' : ''}
+                    class="p-2 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+                >
+                    <i class="fas fa-chevron-left text-sm"></i>
+                </button>
+        `;
+
+        for (let i = 1; i <= pagination.last_page; i++) {
+            html += `
+                <button 
+                    onclick="dashboard.loadPage(${i})"
+                    class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-semibold transition-all ${
+                        pagination.current_page === i 
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' 
+                        : 'text-slate-500 hover:bg-slate-50 hover:text-indigo-600'
+                    }"
+                >
+                    ${i}
+                </button>
+            `;
+        }
+
+        html += `
+                <button 
+                    onclick="dashboard.loadPage(${pagination.current_page + 1})"
+                    ${pagination.current_page === pagination.last_page ? 'disabled' : ''}
+                    class="p-2 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+                >
+                    <i class="fas fa-chevron-right text-sm"></i>
+                </button>
+            </div>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    async loadPage(page) {
+        if (page < 1) return;
+        this.currentPage = page;
+        if (this.viewMode === "citations") {
+            await this.loadMyCitations(page);
+        } else {
+            await this.loadPapers(page);
         }
     }
 
@@ -427,6 +507,51 @@ class Dashboard {
         // This will be handled by Alpine.js
     }
 
+    async loadMyCitations(page = 1) {
+        if (!document.getElementById('papersContainer')) return;
+        this.viewMode = 'citations';
+        this.currentPage = page;
+        this.showLoading(true);
+
+        try {
+            const res = await fetch(`/my-citations?page=${page}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+            });
+
+            const data = await res.json();
+            
+            if (data.success) {
+                this.papers = data.papers || [];
+                this.filteredPapers = [...this.papers];
+                this.showLoading(false);
+                this.displayPapers(); // reuse existing function to show cards
+                
+                // Render pagination
+                if (data.pagination) {
+                    this.renderPagination(data.pagination);
+                }
+
+                // Update stats
+                if (data.stats) {
+                    const totalPapersEl = document.getElementById("totalPapers");
+                    const totalCitsEl = document.getElementById("totalCitations");
+                    if (totalPapersEl) totalPapersEl.textContent = data.stats.totalPapers;
+                    if (totalCitsEl) totalCitsEl.textContent = data.stats.totalCitations;
+                }
+            } else {
+                this.showToast(data.message || 'Failed to load citations', true);
+                this.showLoading(false);
+            }
+        } catch (err) {
+            console.error('Failed to load citations:', err);
+            this.showToast('Failed to load citations', true);
+            this.showLoading(false);
+        }
+    }
+
     showLoading(show) {
         const loading = document.getElementById('papersLoading');
         const container = document.getElementById('papersContainer');
@@ -443,26 +568,10 @@ class Dashboard {
     }
 
     showToast(message, isError = false) {
-        // Use Alpine.js toast if available
-        if (window.Alpine && window.Alpine.store('toast')) {
-            window.Alpine.store('toast').showToast(message, isError);
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, isError);
         } else {
-            // Fallback to old toast
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-
-            if (toast && toastMessage) {
-                toastMessage.textContent = message;
-                toast.classList.remove('bg-green-600', 'bg-red-600');
-                toast.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
-                toast.classList.remove('opacity-0', 'pointer-events-none');
-                toast.classList.add('opacity-100');
-
-                setTimeout(() => {
-                    toast.classList.remove('opacity-100');
-                    toast.classList.add('opacity-0', 'pointer-events-none');
-                }, 3000);
-            }
+            console.log('Global showToast not available:', message);
         }
     }
 

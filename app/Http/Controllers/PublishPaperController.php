@@ -222,26 +222,37 @@ class PublishPaperController extends Controller
         }
     }
 
-    public function myCitations()
+    public function myCitations(Request $request)
     {
         $userId = auth()->id();
+        $page = $request->input('page', 1);
 
-        // Get all citations by the current user, eager load paper
-        $citations = PaperCitation::with('paper.user')
-            ->where('user_id', $userId)
-            ->latest()
-            ->get();
+        // Get paginated papers cited by the current user
+        $papers = PublishedPaper::whereHas('citers', function($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+        ->with(['user'])
+        ->latest()
+        ->paginate(6);
 
-        // Map to papers and set is_paper_cited_by_current_user = true (for frontend consistency)
-        $citedPapers = $citations->map(function ($citation) {
-            if ($citation->paper) {
-                $citation->paper->setAttribute('is_paper_cited_by_current_user', true);
-                return $citation->paper;
-            }
-            return null;
-        })->filter()->values(); // Remove nulls and reindex
+        // Map to set is_paper_cited_by_current_user = true
+        foreach($papers->items() as $paper) {
+            $paper->setAttribute('is_paper_cited_by_current_user', true);
+        }
 
-        return response()->json($citedPapers);
+        return response()->json([
+            'success' => true,
+            'papers' => $papers->items(),
+            'pagination' => [
+                'current_page' => $papers->currentPage(),
+                'last_page' => $papers->lastPage(),
+                'total' => $papers->total(),
+            ],
+            'stats' => [
+                'totalPapers' => PublishedPaper::where('user_id', '!=', $userId)->count(),
+                'totalCitations' => PaperCitation::where('user_id', $userId)->count(),
+            ]
+        ]);
     }
 
 }

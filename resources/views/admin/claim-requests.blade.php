@@ -3,340 +3,327 @@
 @section('title', 'Admin - Claim Requests')
 
 @section('content')
-<!-- Add top padding for mobile header -->
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-3 sm:p-6 pt-20 md:pt-6">
-    <div class="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-        <!-- Header -->
-        <div class="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<!-- Page Background and Content Wrapper -->
+<div class="min-h-screen bg-slate-50/50 p-4 sm:p-8 pt-20 md:pt-8">
+    <div class="max-w-7xl mx-auto space-y-8">
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-6">
             <div>
-                <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                    Admin Dashboard
-                </h1>
-                <p class="text-gray-600 mt-1 text-sm sm:text-base">Manage claim requests from citers</p>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Admin Dashboard</h1>
+                <p class="text-slate-500 mt-2 font-medium">Review and process verified citation claims</p>
             </div>
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i class="fas fa-user-shield text-white text-sm sm:text-lg"></i>
+            <div class="flex items-center gap-3">
+                <div class="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl shadow-lg flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-slate-300 tracking-wider">SYSTEM OVERSIGHT ACTIVE</span>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Title -->
-        <div class="md:hidden text-center mb-6">
-            <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                Admin Dashboard
-            </h1>
-            <p class="text-gray-600 mt-1 text-sm">Manage claim requests</p>
-        </div>
-
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
-            <div class="bg-white/90 backdrop-blur-xl rounded-2xl p-4 sm:p-6 shadow-xl border border-white/20">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-clock text-white"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-600">Pending</p>
-                        <p class="text-2xl font-bold text-yellow-600">{{ $claimRequests->where('status', 'pending')->count() }}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white/90 backdrop-blur-xl rounded-2xl p-4 sm:p-6 shadow-xl border border-white/20">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-check text-white"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-600">Approved</p>
-                        <p class="text-2xl font-bold text-green-600">{{ $claimRequests->where('status', 'approved')->count() }}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white/90 backdrop-blur-xl rounded-2xl p-4 sm:p-6 shadow-xl border border-white/20">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-times text-white"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-600">Rejected</p>
-                        <p class="text-2xl font-bold text-red-600">{{ $claimRequests->where('status', 'rejected')->count() }}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white/90 backdrop-blur-xl rounded-2xl p-4 sm:p-6 shadow-xl border border-white/20">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-list text-white"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-600">Total</p>
-                        <p class="text-2xl font-bold text-blue-600">{{ $claimRequests->total() }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Claim Requests Table -->
-        <div class="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl border border-white/20 overflow-hidden">
-            <div class="p-6 sm:p-8 border-b border-gray-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="fas fa-tasks text-white text-sm"></i>
+        <!-- Statistics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Pending Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+                        <i class="fas fa-clock text-base"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Claim Requests</h2>
-                        <p class="text-gray-600 text-xs sm:text-sm">Review and process citer claims</p>
+                        <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-0.5">PENDING REVIEW</p>
+                        <p class="text-2xl font-black text-slate-900">{{ $claimRequests->where('status', 'pending')->count() }}</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Approved Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+                        <i class="fas fa-check-circle text-base"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-0.5">PROCESSED</p>
+                        <p class="text-2xl font-black text-slate-900">{{ $claimRequests->where('status', 'approved')->count() }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rejected Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600">
+                        <i class="fas fa-times-circle text-base"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-0.5">REJECTED</p>
+                        <p class="text-2xl font-black text-slate-900">{{ $claimRequests->where('status', 'rejected')->count() }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+                        <i class="fas fa-layer-group text-base"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-0.5">TOTAL CLAIMS</p>
+                        <p class="text-2xl font-black text-slate-900">{{ $claimRequests->total() }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Claim Requests Table/List -->
+        <div class="space-y-4">
+            <div class="flex items-center justify-between px-2">
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-3">
+                    <i class="fas fa-tasks text-slate-300"></i>
+                    Pending Verification
+                </h2>
+                <div class="flex items-center gap-4 text-[10px] font-bold text-slate-400 tracking-wider">
+                    <span>FILTER:</span>
+                    <select class="bg-transparent border-none focus:ring-0 cursor-pointer hover:text-blue-600 transition-colors">
+                        <option>All Status</option>
+                        <option>Pending Only</option>
+                        <option>Processed Only</option>
+                    </select>
                 </div>
             </div>
 
             @if($claimRequests->count() > 0)
-                <div class="overflow-x-auto">
-                    <div class="space-y-4 p-6">
-                        @foreach($claimRequests as $claim)
-                            <div class="group bg-gradient-to-r from-gray-50/80 to-white/80 rounded-2xl p-6 border border-gray-100/50 hover:shadow-lg transition-all duration-300" id="claim-{{ $claim->id }}">
-                                <div class="flex flex-col lg:flex-row gap-6">
-                                    <!-- Main Details -->
-                                    <div class="flex-1">
-                                        <div class="flex items-start justify-between mb-4">
-                                            <div class="flex-1">
-                                                <h3 class="text-lg font-semibold text-gray-800 mb-2">
-                                                    {{ $claim->citer_paper_title }}
-                                                </h3>
-                                                <div class="flex items-center space-x-4 mb-3">
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border {{ $claim->status_badge_class }}">
-                                                        @if($claim->status === 'pending')
-                                                            <i class="fas fa-clock mr-1"></i>
-                                                        @elseif($claim->status === 'approved')
-                                                            <i class="fas fa-check mr-1"></i>
-                                                        @else
-                                                            <i class="fas fa-times mr-1"></i>
-                                                        @endif
-                                                        {{ ucfirst($claim->status) }}
-                                                    </span>
-                                                </div>
-                                            </div>
+                <div class="grid grid-cols-1 gap-4">
+                    @foreach($claimRequests as $claim)
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:border-blue-100 transition-all duration-300 group" id="claim-{{ $claim->id }}">
+                            <div class="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-slate-50">
+                                <!-- Main Info Section -->
+                                <div class="flex-1 p-6 lg:p-8">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-colors shadow-sm
+                                            @if($claim->status === 'pending') bg-amber-50 text-amber-600 border-amber-100
+                                            @elseif($claim->status === 'approved') bg-emerald-50 text-emerald-600 border-emerald-100
+                                            @else bg-rose-50 text-rose-600 border-rose-100 @endif">
+                                            <span class="w-1.5 h-1.5 rounded-full mr-2 
+                                                @if($claim->status === 'pending') bg-amber-400
+                                                @elseif($claim->status === 'approved') bg-emerald-400
+                                                @else bg-rose-400 @endif animate-pulse"></span>
+                                            {{ $claim->status }}
+                                        </span>
+                                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                            <i class="far fa-calendar-alt text-slate-300"></i>
+                                            {{ $claim->created_at->format('M d, Y H:i') }}
                                         </div>
-                                        
-                                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm">
-                                            <div class="space-y-3">
-                                                <div class="flex items-start">
-                                                    <i class="fas fa-user mr-3 text-blue-500 mt-1 flex-shrink-0"></i>
-                                                    <div>
-                                                        <p class="font-medium text-gray-800">Citer</p>
-                                                        <p class="text-gray-600">{{ $claim->user->first_name }} {{ $claim->user->last_name }}</p>
-                                                        <p class="text-gray-500 text-xs">{{ $claim->user->email }}</p>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="flex items-start">
-                                                    <i class="fas fa-link mr-3 text-green-500 mt-1 flex-shrink-0"></i>
-                                                    <div>
-                                                        <p class="font-medium text-gray-800">Paper Link</p>
-                                                        <a href="{{ $claim->paper_link }}" target="_blank" class="text-blue-600 hover:underline break-all">
-                                                            {{ Str::limit($claim->paper_link, 60) }}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="flex items-start">
-                                                    <i class="fas fa-hashtag mr-3 text-purple-500 mt-1 flex-shrink-0"></i>
-                                                    <div>
-                                                        <p class="font-medium text-gray-800">Reference ID</p>
-                                                        <p class="text-gray-600">{{ $claim->reference_id }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="space-y-3">
-                                                <div class="flex items-start">
-                                                    <i class="fas fa-file-alt mr-3 text-gray-500 mt-1 flex-shrink-0"></i>
-                                                    <div>
-                                                        <p class="font-medium text-gray-800">Referenced Paper</p>
-                                                        <p class="text-gray-600">{{ Str::limit($claim->referencedPaper->title ?? 'Unknown Paper', 50) }}</p>
-                                                        @if($claim->referencedPaper)
-                                                            <p class="text-gray-500 text-xs">by {{ $claim->referencedPaper->user->first_name }} {{ $claim->referencedPaper->user->last_name }}</p>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                
-                                                @if($claim->pdf_document)
-                                                    <div class="flex items-start">
-                                                        <i class="fas fa-file-pdf mr-3 text-red-500 mt-1 flex-shrink-0"></i>
-                                                        <div>
-                                                            <p class="font-medium text-gray-800">Supporting Document</p>
-                                                            <a href="{{ asset('storage/' . $claim->pdf_document) }}" target="_blank" class="text-red-600 hover:underline">
-                                                                <i class="fas fa-download mr-1"></i>View PDF
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                                
-                                                <div class="flex items-start">
-                                                    <i class="fas fa-calendar mr-3 text-indigo-500 mt-1 flex-shrink-0"></i>
-                                                    <div>
-                                                        <p class="font-medium text-gray-800">Submitted</p>
-                                                        <p class="text-gray-600">{{ $claim->created_at->format('M d, Y H:i') }}</p>
-                                                        @if($claim->reviewed_at)
-                                                            <p class="text-gray-500 text-xs">Reviewed {{ $claim->reviewed_at->format('M d, Y H:i') }}</p>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        @if($claim->admin_notes)
-                                            <div class="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                                                <p class="text-sm text-blue-800">
-                                                    <i class="fas fa-sticky-note mr-2"></i>
-                                                    <strong>Admin Notes:</strong> {{ $claim->admin_notes }}
-                                                </p>
-                                            </div>
-                                        @endif
                                     </div>
-                                    
-                                    <!-- Action Buttons -->
-                                    @if($claim->status === 'pending')
-                                        <div class="lg:w-64 flex flex-col space-y-3">
-                                            <button 
-                                                onclick="showApprovalModal({{ $claim->id }})"
-                                                class="w-full px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
-                                            >
-                                                <i class="fas fa-check mr-2"></i>
-                                                Approve Claim
-                                            </button>
-                                            
-                                            <button 
-                                                onclick="showRejectionModal({{ $claim->id }})"
-                                                class="w-full px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
-                                            >
-                                                <i class="fas fa-times mr-2"></i>
-                                                Reject Claim
-                                            </button>
+
+                                    <h3 class="text-xl font-bold text-slate-900 leading-tight mb-8 group-hover:text-blue-700 transition-colors">
+                                        {{ $claim->citer_paper_title }}
+                                    </h3>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div class="space-y-6">
+                                            <div class="flex items-start gap-4">
+                                                <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 shrink-0">
+                                                    <i class="fas fa-user-edit"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-1">CLAIMANT</p>
+                                                    <p class="text-sm font-bold text-slate-800">{{ $claim->user->first_name }} {{ $claim->user->last_name }}</p>
+                                                    <p class="text-[11px] text-slate-500">{{ $claim->user->email }}</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start gap-4">
+                                                <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 shrink-0">
+                                                    <i class="fas fa-link"></i>
+                                                </div>
+                                                <div class="overflow-hidden">
+                                                    <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-1">EXTERNAL SOURCE</p>
+                                                    <a href="{{ $claim->paper_link }}" target="_blank" class="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors truncate block">
+                                                        {{ str_replace(['http://', 'https://'], '', $claim->paper_link) }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-6">
+                                            <div class="flex items-start gap-4">
+                                                <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 shrink-0">
+                                                    <i class="fas fa-file-invoice"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-1">REFERENCED PAPER</p>
+                                                    <p class="text-sm font-bold text-slate-800">{{ Str::limit($claim->referencedPaper->title ?? 'N/A', 50) }}</p>
+                                                    <p class="text-[10px] font-bold text-emerald-600 tracking-wider uppercase mt-1">Payout: 95 Coins</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start gap-4">
+                                                <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 shrink-0">
+                                                    <i class="fas fa-key"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-1">REFERENCE ID</p>
+                                                    <p class="text-sm font-bold text-slate-800 font-mono">{{ $claim->reference_id ?? 'N/A' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if($claim->admin_notes)
+                                        <div class="mt-8 p-6 bg-slate-900 rounded-2xl relative overflow-hidden">
+                                            <div class="absolute top-0 right-0 p-4 opacity-10">
+                                                <i class="fas fa-sticky-note text-white text-4xl"></i>
+                                            </div>
+                                            <p class="text-[10px] font-bold text-slate-500 tracking-wider mb-2">INTERNAL NOTES</p>
+                                            <p class="text-sm font-medium text-white italic leading-relaxed">"{{ $claim->admin_notes }}"</p>
+                                            @if($claim->reviewed_at)
+                                                <p class="text-[9px] font-bold text-slate-600 tracking-wider mt-4 uppercase">Reviewed by {{ $claim->reviewedBy->first_name ?? 'System' }} • {{ $claim->reviewed_at->format('M d, Y') }}</p>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>
+
+                                <!-- Actions Section -->
+                                <div class="lg:w-64 p-6 bg-slate-50/50 flex flex-col justify-center gap-3">
+                                    @if($claim->pdf_document)
+                                        <a href="{{ asset('storage/' . $claim->pdf_document) }}" target="_blank"
+                                            class="flex items-center justify-center gap-3 w-full py-3.5 px-6 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 text-sm">
+                                            <i class="fas fa-file-pdf text-rose-500"></i>
+                                            <span>Review PDF</span>
+                                        </a>
+                                    @endif
+
+                                    @if($claim->status === 'pending')
+                                        <button onclick="showApprovalModal({{ $claim->id }})"
+                                            class="flex items-center justify-center gap-3 w-full py-3.5 px-6 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 hover:-translate-y-0.5 transition-all duration-300 text-sm">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Approve Claim</span>
+                                        </button>
+                                        <button onclick="showRejectionModal({{ $claim->id }})"
+                                            class="flex items-center justify-center gap-3 w-full py-3.5 px-6 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold hover:bg-rose-50 transition-all duration-300 text-sm">
+                                            <i class="fas fa-times-circle"></i>
+                                            <span>Reject Claim</span>
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
-                        @endforeach
-                    </div>
+                        </div>
+                    @endforeach
                 </div>
 
                 <!-- Pagination -->
                 @if($claimRequests->hasPages())
-                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
-                        {{ $claimRequests->links() }}
+                    <div class="pt-10 flex justify-center">
+                        <div class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-slate-100">
+                            {{ $claimRequests->links() }}
+                        </div>
                     </div>
                 @endif
             @else
-                <div class="text-center py-16">
-                    <div class="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                <div class="text-center py-20 bg-white rounded-[2rem] border-2 border-dashed border-slate-100">
+                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                        <i class="fas fa-inbox text-2xl"></i>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">No claim requests yet</h3>
-                    <p class="text-gray-500">Claim requests from citers will appear here</p>
+                    <h3 class="text-xl font-bold text-slate-800">No requests in queue</h3>
+                    <p class="text-slate-400 font-medium max-w-xs mx-auto mt-2">New citation claims from citers will appear here for verification.</p>
                 </div>
             @endif
         </div>
     </div>
 </div>
 
+<!-- Premium Modals -->
 <!-- Approval Modal -->
-<div id="approvalModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-95 opacity-0" id="approvalModalContent">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-bold text-gray-800">Approve Claim Request</h3>
-                <button onclick="closeApprovalModal()" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
-            
-            <div class="mb-6">
-                <p class="text-gray-600 mb-4">Are you sure you want to approve this claim? ₹95 will be transferred to the citer (₹5 commission retained).</p>
-                
-                <div>
-                    <label for="approvalNotes" class="block text-sm font-semibold text-gray-700 mb-2">Admin Notes (Optional)</label>
-                    <textarea 
-                        id="approvalNotes" 
-                        rows="3"
-                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 resize-none"
-                        placeholder="Optional notes about the approval..."
-                    ></textarea>
+<div id="approvalModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0 overflow-hidden" id="approvalModalContent">
+        <div class="p-10">
+            <div class="flex items-start justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                        <i class="fas fa-check-circle text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900">Confirm Approval</h3>
+                        <p class="text-slate-500 font-medium">Process 95 Coin reward transfer</p>
+                    </div>
                 </div>
+                <button onclick="closeApprovalModal()" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
             </div>
             
-            <div class="flex space-x-4">
-                <button 
-                    onclick="closeApprovalModal()"
-                    class="flex-1 px-4 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-semibold transition-all duration-200"
-                >
-                    Cancel
-                </button>
-                <button 
-                    onclick="confirmApproval()"
-                    class="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
-                >
-                    <i class="fas fa-check mr-2"></i>
-                    Approve
-                </button>
+            <div class="space-y-6">
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <p class="text-sm font-medium text-slate-600 leading-relaxed">
+                        By approving this claim, you verify the citation is valid. The claimant will receive **95 Coins** and the system will retain **5 Coins** as commission.
+                    </p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="approvalNotes" class="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Admin Feedback (Optional)</label>
+                    <textarea id="approvalNotes" rows="3"
+                        class="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium resize-none"
+                        placeholder="e.g. Citation verified via DOI"></textarea>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button onclick="closeApprovalModal()"
+                        class="flex-1 py-4 px-6 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all duration-300">
+                        Cancel
+                    </button>
+                    <button onclick="confirmApproval()"
+                        class="flex-2 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-100 hover:bg-blue-700 hover:-translate-y-1 active:scale-95 transition-all duration-300">
+                        Process Payout
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Rejection Modal -->
-<div id="rejectionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-95 opacity-0" id="rejectionModalContent">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-bold text-gray-800">Reject Claim Request</h3>
-                <button onclick="closeRejectionModal()" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
-            
-            <div class="mb-6">
-                <p class="text-gray-600 mb-4">Please provide a reason for rejecting this claim request.</p>
-                
-                <div>
-                    <label for="rejectionNotes" class="block text-sm font-semibold text-gray-700 mb-2">Rejection Reason *</label>
-                    <textarea 
-                        id="rejectionNotes" 
-                        rows="4"
-                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 resize-none"
-                        placeholder="Explain why this claim is being rejected..."
-                        required
-                    ></textarea>
+<div id="rejectionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0 overflow-hidden" id="rejectionModalContent">
+        <div class="p-10">
+            <div class="flex items-start justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600">
+                        <i class="fas fa-times-circle text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900">Reject Claim</h3>
+                        <p class="text-slate-500 font-medium">Specify verification failure</p>
+                    </div>
                 </div>
+                <button onclick="closeRejectionModal()" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
             </div>
             
-            <div class="flex space-x-4">
-                <button 
-                    onclick="closeRejectionModal()"
-                    class="flex-1 px-4 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-semibold transition-all duration-200"
-                >
-                    Cancel
-                </button>
-                <button 
-                    onclick="confirmRejection()"
-                    class="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
-                >
-                    <i class="fas fa-times mr-2"></i>
-                    Reject
-                </button>
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <label for="rejectionNotes" class="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Reason for Rejection *</label>
+                    <textarea id="rejectionNotes" required rows="4"
+                        class="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all duration-300 font-medium resize-none"
+                        placeholder="Please explain why the claim was rejected..."></textarea>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button onclick="closeRejectionModal()"
+                        class="flex-1 py-4 px-6 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all duration-300">
+                        Cancel
+                    </button>
+                    <button onclick="confirmRejection()"
+                        class="flex-2 py-4 px-8 bg-rose-600 text-white rounded-2xl font-bold shadow-xl shadow-rose-100 hover:bg-rose-700 hover:-translate-y-1 active:scale-95 transition-all duration-300">
+                        Confirm Rejection
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Toast Notification -->
-<div id="toast" class="fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 pointer-events-none translate-x-full text-white">
-    <span id="toastMessage" class="font-medium text-sm"></span>
-</div>
 @endsection
 
 @push('scripts')
@@ -399,7 +386,12 @@ async function confirmApproval() {
     if (!currentClaimId) return;
     
     const notes = document.getElementById('approvalNotes').value;
+    const btn = event.target;
+    const originalText = btn.innerHTML;
     
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    btn.disabled = true;
+
     try {
         const response = await fetch(`/admin/claim-requests/${currentClaimId}/approve`, {
             method: 'POST',
@@ -407,23 +399,24 @@ async function confirmApproval() {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify({
-                admin_notes: notes
-            })
+            body: JSON.stringify({ admin_notes: notes })
         });
         
         const data = await response.json();
         
         if (data.success) {
-            showToast(data.message, false);
+            showToast(data.message, 'success');
             closeApprovalModal();
-            setTimeout(() => location.reload(), 1000);
+            setTimeout(() => location.reload(), 1500);
         } else {
-            showToast(data.message || 'Failed to approve claim', true);
+            showToast(data.message || 'Approval failed', 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        showToast('An error occurred while approving the claim', true);
+        showToast('System error occurred', 'error');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     }
 }
 
@@ -431,12 +424,16 @@ async function confirmRejection() {
     if (!currentClaimId) return;
     
     const notes = document.getElementById('rejectionNotes').value.trim();
-    
     if (!notes) {
-        showToast('Please provide a rejection reason', true);
+        showToast('Please provide a reason', 'error');
         return;
     }
-    
+
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    btn.disabled = true;
+
     try {
         const response = await fetch(`/admin/claim-requests/${currentClaimId}/reject`, {
             method: 'POST',
@@ -444,55 +441,35 @@ async function confirmRejection() {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify({
-                admin_notes: notes
-            })
+            body: JSON.stringify({ admin_notes: notes })
         });
         
         const data = await response.json();
         
         if (data.success) {
-            showToast(data.message, false);
+            showToast(data.message, 'success');
             closeRejectionModal();
-            setTimeout(() => location.reload(), 1000);
+            setTimeout(() => location.reload(), 1500);
         } else {
-            showToast(data.message || 'Failed to reject claim', true);
+            showToast(data.message || 'Rejection failed', 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        showToast('An error occurred while rejecting the claim', true);
+        showToast('System error occurred', 'error');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     }
 }
 
-function showToast(message, isError = false) {
-    const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toastMessage');
-    
-    toastMessage.textContent = message;
-    toast.className = `fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${isError ? 'bg-red-500' : 'bg-green-500'} text-white`;
-    
-    // Show toast
-    toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-x-full');
-    toast.classList.add('opacity-100', 'translate-x-0');
-    
-    // Hide after 3 seconds
-    setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-x-full');
-        toast.classList.remove('opacity-100', 'translate-x-0');
-    }, 3000);
-}
 
 // Close modals when clicking outside
 document.addEventListener('click', (e) => {
-    if (e.target.id === 'approvalModal') {
-        closeApprovalModal();
-    }
-    if (e.target.id === 'rejectionModal') {
-        closeRejectionModal();
-    }
+    if (e.target.id === 'approvalModal') closeApprovalModal();
+    if (e.target.id === 'rejectionModal') closeRejectionModal();
 });
 
-// Initialize minimal dashboard for profile functionality only
+// Sync UI
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         if (typeof Dashboard !== 'undefined') {
@@ -501,16 +478,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 Dashboard.prototype.loadPapers = function() {
                     console.log('Skipping loadPapers on admin page');
                 };
-                
                 window.dashboard = new Dashboard();
-                Dashboard.prototype.loadPapers = originalLoadPapers;
-                
-                console.log('Dashboard initialized for admin page');
             } catch (error) {
-                console.warn('Dashboard initialization failed:', error);
+                console.warn('UI System Syncing...');
             }
         }
     }, 100);
 });
 </script>
-@endpush 
+@endpush

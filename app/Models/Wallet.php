@@ -36,19 +36,12 @@ class Wallet extends Model
 
     public function getFormattedBalanceAttribute()
     {
-        return '$' . number_format($this->balance, 2);
+        return number_format($this->balance, 0) . ' Coins';
     }
 
     public function getCurrencySymbolAttribute()
     {
-        return match (strtoupper($this->currency)) {
-            'INR' => '₹',
-            'USD' => '$',
-            'EUR' => '€',
-            'GBP' => '£',
-            'JPY' => '¥',
-            default => '$',
-        };
+        return '';
     }
 
     public function addFunds($amount, $description = 'Funds added', $referenceId = null, $referenceType = null)

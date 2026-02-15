@@ -5,29 +5,29 @@
     <div class="bg-white w-full max-w-sm mx-2 rounded-2xl shadow-2xl p-4 sm:p-6 relative overflow-y-auto max-h-[90vh]">
         <div class="text-center">
             <!-- Icon -->
-            <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-quote-left text-white text-lg"></i>
+            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-quote-left text-blue-600 text-lg"></i>
             </div>
             
-            <h3 id="modalTitle" class="text-lg font-semibold text-gray-800 mb-4">Confirm Citation</h3>
-            <p id="modalMessage" class="text-gray-700 mb-6 leading-relaxed">
+            <h3 id="modalTitle" class="text-xl font-bold text-slate-900 mb-4">Confirm Citation</h3>
+            <p id="modalMessage" class="text-slate-600 mb-8 leading-relaxed font-medium">
                 Are you sure you want to cite this paper?
             </p>
             
             <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+            <div class="flex flex-col sm:flex-row justify-center gap-3">
+                <button 
+                    onclick="closeConfirmModal()"
+                    class="flex-1 px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition-all duration-200"
+                >
+                    Cancel
+                </button>
                 <button 
                     id="confirmCitationBtn"
-                    class="w-full sm:w-auto px-4 py-2.5 text-sm rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                    class="flex-1 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-100 hover:-translate-y-0.5 transition-all duration-300"
                 >
                     <i class="fas fa-check mr-2"></i>
                     Yes, Cite
-                </button>
-                <button 
-                    onclick="closeConfirmModal()"
-                    class="w-full sm:w-auto px-4 py-2.5 text-sm rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium transition-all duration-200"
-                >
-                    Cancel
                 </button>
             </div>
         </div>

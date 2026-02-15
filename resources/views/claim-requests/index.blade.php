@@ -3,233 +3,220 @@
 @section('title', 'Claim Requests')
 
 @section('content')
-<!-- Add top padding for mobile header -->
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-3 sm:p-6 pt-20 md:pt-6"
+<!-- Page Background and Content Wrapper -->
+<div class="min-h-screen bg-slate-50/50 p-4 sm:p-8 pt-20 md:pt-8"
      x-data="{ 
-                currentRole: '{{ $userRole ?? 'Citer' }}',
+        currentRole: '{{ $userRole ?? 'Citer' }}',
         switchRole(role) {
             this.currentRole = role;
-            // Role switching on claim request page is handled by sidebar redirect
-            // This function is kept for consistency but Funder role redirects to dashboard
         }
      }">
-    <div class="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-                <!-- Header -->
-        <div class="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    
+    <div class="max-w-6xl mx-auto space-y-10">
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-8">
             <div>
-                <h1 id="pageTitle" class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                    Claim Requests
-                </h1>
-                <p id="pageDescription" class="text-gray-600 mt-1 text-sm sm:text-base">Submit claims for your cited papers</p>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Claim Requests</h1>
+                <p class="text-slate-500 mt-2 font-medium">Verify your citations and manage reward claims</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Active Protection</span>
+                </div>
             </div>
         </div>
 
-        <!-- Mobile Title -->
-        <div class="md:hidden text-center mb-6">
-            <h1 id="mobileTitle" class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                Claim Requests
-            </h1>
-            <p id="mobileDescription" class="text-gray-600 mt-1 text-sm">Submit claims for your cited papers</p>
-        </div>
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-10">
+            <div class="xl:col-span-12 space-y-10">
+                
+                <!-- Submission Form Card -->
+                <div class="bg-white rounded-[2rem] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02),0_20px_25px_-5px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden transform transition-all duration-300 hover:shadow-[0_4px_6px_-1px_rgba(37,99,235,0.05),0_20px_25px_-5px_rgba(37,99,235,0.1)]">
+                    <div class="p-8 sm:p-10">
+                        <div class="flex items-center gap-4 mb-10 pb-6 border-b border-slate-50">
+                            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-100 group shrink-0">
+                                <i class="fas fa-plus text-white text-base group-hover:rotate-90 transition-transform duration-300"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900">New Claim</h2>
+                                <p class="text-slate-500 text-sm font-medium">Step-by-step verification process</p>
+                            </div>
+                        </div>
 
-        <!-- Claim Request Form and List -->
-        <div id="claimSection">
-        <!-- Claim Request Form -->
-        <div class="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl border border-white/20">
-                         <div class="flex items-center space-x-3 mb-6">
-                 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg" id="submit-icon-container">
-                     <span class="text-white text-xl font-bold">+</span>
-                 </div>
-                                 <div>
-                     <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Submit New Claim</h2>
-                     <p class="text-gray-600 text-xs sm:text-sm">Submit your paper citation claim for review</p>
-                 </div>
-            </div>
-
-            <form id="claimRequestForm" class="space-y-6" enctype="multipart/form-data">
-                @csrf
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Your Paper Title -->
-                    <div>
-                        <label for="citer_paper_title" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Your Paper Title *
-                        </label>
-                        <input 
-                            type="text" 
-                            id="citer_paper_title" 
-                            name="citer_paper_title" 
-                            class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
-                            placeholder="Enter your paper title"
-                            required
-                        >
-                    </div>
-
-                    <!-- Paper Link -->
-                    <div>
-                        <label for="paper_link" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Your Paper Link *
-                        </label>
-                        <input 
-                            type="url" 
-                            id="paper_link" 
-                            name="paper_link" 
-                            class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
-                            placeholder="https://example.com/your-paper"
-                            required
-                        >
-                    </div>
-
-                    <!-- Referenced Paper -->
-                    <div>
-                        <label for="referenced_paper_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Paper You Cited *
-                        </label>
-                        <select 
-                            id="referenced_paper_id" 
-                            name="referenced_paper_id" 
-                            class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
-                            required
-                        >
-                            <option value="">Select a paper you cited</option>
-                            @foreach($citedPapers as $paper)
-                                <option value="{{ $paper->id }}">
-                                    {{ Str::limit($paper->title, 60) }} - by {{ $paper->author_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Reference ID -->
-                    <div>
-                        <label for="reference_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Reference ID
-                        </label>
-                        <input 
-                            type="text" 
-                            id="reference_id" 
-                            name="reference_id" 
-                            class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
-                            placeholder="e.g., REF001, Citation#123 (Optional)"
-                        >
-                    </div>
-                </div>
-
-                <!-- PDF Upload -->
-                <div>
-                    <label for="pdf_document" class="block text-sm font-semibold text-gray-700 mb-2">
-                        Supporting Document (PDF)
-                    </label>
-                    <div class="relative">
-                        <input 
-                            type="file" 
-                            id="pdf_document" 
-                            name="pdf_document" 
-                            accept=".pdf"
-                            class="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                        >
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Optional: Upload your paper or supporting document (PDF, max 10MB)</p>
-                </div>
-
-                                <!-- Submit Button -->
-                <div class="flex justify-end pt-4">
-                    <button 
-                        type="submit"
-                        class="px-8 py-3 bg-emerald-600 text-white rounded-2xl font-semibold shadow-lg hover:bg-emerald-700 transition-all duration-200 border-2 border-emerald-600"
-                        style="background-color: #059669 !important; color: white !important; min-height: 50px; display: flex; align-items: center; justify-content: center;"
-                    >
-                       
-                        <span style="color: white !important;">Submit Claim Request</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- My Claim Requests -->
-        <div class="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl border border-white/20">
-                         <div class="flex items-center space-x-3 mb-6">
-                 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg" id="list-icon-container">
-                     <span class="text-white text-lg font-bold">📋</span>
-                 </div>
-                <div>
-                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800">My Claim Requests</h2>
-                    <p class="text-gray-600 text-xs sm:text-sm">Track your submitted claims</p>
-                </div>
-            </div>
-
-            @if($claimRequests->count() > 0)
-                <div class="space-y-4">
-                    @foreach($claimRequests as $claim)
-                        <div class="group bg-gradient-to-r from-gray-50/80 to-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-100/50 hover:shadow-lg transition-all duration-300">
-                            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                <div class="flex-1">
-                                    <div class="flex items-start justify-between mb-3">
-                                        <h3 class="text-lg font-semibold text-gray-800 flex-1 pr-4">
-                                            {{ Str::limit($claim->citer_paper_title, 80) }}
-                                        </h3>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border {{ $claim->status_badge_class }} flex-shrink-0">
-                                            @if($claim->status === 'pending')
-                                                <i class="fas fa-clock mr-1"></i>
-                                            @elseif($claim->status === 'approved')
-                                                <i class="fas fa-check mr-1"></i>
-                                            @else
-                                                <i class="fas fa-times mr-1"></i>
-                                            @endif
-                                            {{ ucfirst($claim->status) }}
-                                        </span>
+                        <form id="claimRequestForm" class="space-y-8" enctype="multipart/form-data">
+                            @csrf
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-2">
+                                    <label for="citer_paper_title" class="text-sm font-bold text-slate-700 uppercase tracking-wider ml-1">Your Publication</label>
+                                    <div class="relative group">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <i class="fas fa-book-open text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                                        </div>
+                                        <input type="text" id="citer_paper_title" name="citer_paper_title" required
+                                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium"
+                                            placeholder="The title of your paper">
                                     </div>
-                                    
-                                    <div class="space-y-2 text-sm text-gray-600">
-                                        <p><i class="fas fa-link mr-2 text-blue-500"></i> <a href="{{ $claim->paper_link }}" target="_blank" class="text-blue-600 hover:underline">{{ Str::limit($claim->paper_link, 60) }}</a></p>
-                                        <p><i class="fas fa-file-alt mr-2 text-gray-500"></i> Cited: {{ Str::limit($claim->referencedPaper->title ?? 'Unknown Paper', 60) }}</p>
-                                        <p><i class="fas fa-hashtag mr-2 text-purple-500"></i> Ref ID: {{ $claim->reference_id }}</p>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label for="paper_link" class="text-sm font-bold text-slate-700 uppercase tracking-wider ml-1">Live URL</label>
+                                    <div class="relative group">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <i class="fas fa-link text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                                        </div>
+                                        <input type="url" id="paper_link" name="paper_link" required
+                                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium"
+                                            placeholder="https://example.com/publication">
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label for="referenced_paper_id" class="text-sm font-bold text-slate-700 uppercase tracking-wider ml-1">Supporting Reference</label>
+                                    <div class="relative group">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <i class="fas fa-search text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                                        </div>
+                                        <select id="referenced_paper_id" name="referenced_paper_id" required
+                                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 appearance-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium cursor-pointer">
+                                            <option value="">Select paper you cited</option>
+                                            @foreach($citedPapers as $paper)
+                                                <option value="{{ $paper->id }}">{{ Str::limit($paper->title, 50) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                            <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label for="reference_id" class="text-sm font-bold text-slate-700 uppercase tracking-wider ml-1">Reference Identifier</label>
+                                    <div class="relative group">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <i class="fas fa-hashtag text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                                        </div>
+                                        <input type="text" id="reference_id" name="reference_id"
+                                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium"
+                                            placeholder="e.g. DOI or Internal ID">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <label class="text-sm font-bold text-slate-700 uppercase tracking-wider ml-1">Verification Document (PDF)</label>
+                                <div class="relative group">
+                                    <input type="file" id="pdf_document" name="pdf_document" accept=".pdf"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                    <div class="w-full border-2 border-dashed border-slate-200 rounded-[1.5rem] p-8 flex flex-col items-center justify-center gap-3 bg-slate-50/50 group-hover:border-blue-400 group-hover:bg-blue-50/30 transition-all duration-300">
+                                        <div class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center text-blue-500">
+                                            <i class="fas fa-upload text-lg"></i>
+                                        </div>
+                                        <div class="text-center">
+                                            <p class="text-slate-700 font-bold" id="fileName">Drop PDF here or click to browse</p>
+                                            <p class="text-slate-400 text-xs mt-1">Maximum file size: 10MB</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex pt-4">
+                                <button type="submit"
+                                    class="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 text-sm">
+                                    <span>Submit Claim Request</span>
+                                    <i class="fas fa-arrow-right text-xs opacity-50"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- History Section -->
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between px-2">
+                        <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                            <i class="fas fa-history text-slate-300"></i>
+                            Recent Submissions
+                        </h2>
+                        <span class="text-sm font-bold text-slate-400 tracking-widest uppercase">{{ $claimRequests->count() }} Total</span>
+                    </div>
+
+                    @if($claimRequests->count() > 0)
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @foreach($claimRequests as $claim)
+                                <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all duration-300 group">
+                                    <div class="flex items-start justify-between mb-4">
+                                        <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-colors shadow-sm
+                                            @if($claim->status === 'pending') bg-amber-50 text-amber-600 border-amber-100
+                                            @elseif($claim->status === 'approved') bg-emerald-50 text-emerald-600 border-emerald-100
+                                            @else bg-rose-50 text-rose-600 border-rose-100 @endif">
+                                            <span class="w-1.5 h-1.5 rounded-full mr-2 
+                                                @if($claim->status === 'pending') bg-amber-400
+                                                @elseif($claim->status === 'approved') bg-emerald-400
+                                                @else bg-rose-400 @endif animate-pulse"></span>
+                                            {{ $claim->status }}
+                                        </span>
+                                        <div class="text-slate-300 group-hover:text-blue-200 transition-colors">
+                                            <i class="fas fa-quote-right italic"></i>
+                                        </div>
+                                    </div>
+
+                                    <h3 class="text-lg font-bold text-slate-900 leading-tight mb-4 group-hover:text-blue-700 transition-colors">
+                                        {{ Str::limit($claim->citer_paper_title, 70) }}
+                                    </h3>
+
+                                    <div class="space-y-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-50">
+                                        <a href="{{ $claim->paper_link }}" target="_blank" 
+                                            class="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors overflow-hidden">
+                                            <i class="fas fa-link text-blue-400 text-[10px]"></i>
+                                            <span class="truncate">{{ str_replace(['http://', 'https://'], '', $claim->paper_link) }}</span>
+                                        </a>
+                                        <div class="flex items-center gap-2 text-xs font-bold text-slate-500">
+                                            <i class="fas fa-file-invoice text-emerald-400 text-[10px]"></i>
+                                            <span class="truncate">Ref: {{ $claim->referencedPaper->title ?? 'N/A' }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6 flex items-center justify-between">
+                                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                            <i class="far fa-calendar-alt text-slate-300"></i>
+                                            {{ $claim->created_at->format('M d, Y') }}
+                                        </div>
                                         @if($claim->pdf_document)
-                                            <p><i class="fas fa-file-pdf mr-2 text-red-500"></i> 
-                                                <a href="{{ asset('storage/' . $claim->pdf_document) }}" target="_blank" class="text-red-600 hover:underline">View Document</a>
-                                            </p>
+                                            <a href="{{ asset('storage/' . $claim->pdf_document) }}" target="_blank"
+                                                class="flex items-center gap-2 text-[10px] font-extrabold text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors bg-blue-50 px-4 py-2 rounded-xl border border-blue-100">
+                                                <i class="fas fa-file-pdf"></i>
+                                                Review PDF
+                                            </a>
                                         @endif
                                     </div>
-                                </div>
-                                
-                                {{-- <div class="flex flex-col lg:items-end space-y-2">
-                
-                                    @if($claim->reviewed_at)
-                                        <div class="text-xs text-gray-500">
-                                            ✅ Reviewed {{ $claim->reviewed_at->format('M d, Y') }}
+
+                                    @if($claim->admin_notes)
+                                        <div class="mt-5 p-4 bg-slate-900 rounded-xl relative overflow-hidden">
+                                            <div class="absolute top-0 right-0 p-2 opacity-10">
+                                                <i class="fas fa-sticky-note text-white text-3xl"></i>
+                                            </div>
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Feedback</p>
+                                            <p class="text-xs font-medium text-slate-300 line-clamp-2 italic leading-relaxed">"{{ $claim->admin_notes }}"</p>
                                         </div>
                                     @endif
-                                </div> --}}
-                            </div>
-                            
-                            @if($claim->admin_notes)
-                                <div class="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-200">
-                                    <p class="text-sm text-blue-800">
-                                        <i class="fas fa-sticky-note mr-2"></i>
-                                        <strong>Admin Notes:</strong> {{ $claim->admin_notes }}
-                                    </p>
                                 </div>
-                            @endif
+                            @endforeach
                         </div>
-                    @endforeach
+                    @else
+                        <div class="text-center py-20 bg-white rounded-[2rem] border-2 border-dashed border-slate-100">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                                <i class="fas fa-folder-open text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800">No records found</h3>
+                            <p class="text-slate-400 font-medium max-w-xs mx-auto mt-2">Your verified citation claims will appear here.</p>
+                        </div>
+                    @endif
                 </div>
-            @else
-                                 <div class="text-center py-12">
-                     <div class="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                         <span class="text-gray-400 text-4xl">📨</span>
-                     </div>
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">No claim requests yet</h3>
-                    <p class="text-gray-500">Submit your first claim request above to get started</p>
-                </div>
-            @endif
-        </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Toast Notification -->
-<div id="toast" class="fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 pointer-events-none translate-x-full text-white">
-    <span id="toastMessage" class="font-medium text-sm"></span>
-</div>
 @endsection
 
 @push('modals')
@@ -241,7 +228,22 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const claimForm = document.getElementById('claimRequestForm');
+    const fileInput = document.getElementById('pdf_document');
+    const fileNameDisplay = document.getElementById('fileName');
     
+    // File input feedback
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                fileNameDisplay.textContent = this.files[0].name;
+                fileNameDisplay.classList.add('text-blue-600');
+            } else {
+                fileNameDisplay.textContent = 'Drop PDF here or click to browse';
+                fileNameDisplay.classList.remove('text-blue-600');
+            }
+        });
+    }
+
     claimForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -249,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const originalText = submitBtn.innerHTML;
         
         try {
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
             submitBtn.disabled = true;
             
             const formData = new FormData(claimForm);
@@ -265,59 +267,38 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (data.success) {
-                showToast(data.message, false);
+                showToast(data.message, 'success');
                 claimForm.reset();
+                if (fileNameDisplay) fileNameDisplay.textContent = 'Drop PDF here or click to browse';
                 setTimeout(() => location.reload(), 1500);
             } else {
-                showToast(data.message || 'Failed to submit claim request', true);
+                showToast(data.message || 'Verification failed', 'error');
             }
             
         } catch (error) {
             console.error('Error:', error);
-            showToast('An error occurred while submitting your claim', true);
+            showToast('Connection error occurred', 'error');
         } finally {
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         }
     });
     
-    function showToast(message, isError = false) {
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        
-        toastMessage.textContent = message;
-        toast.className = `fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${isError ? 'bg-red-500' : 'bg-green-500'} text-white`;
-        
-        // Show toast
-        toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-x-full');
-        toast.classList.add('opacity-100', 'translate-x-0');
-        
-        // Hide after 3 seconds
-        setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-x-full');
-            toast.classList.remove('opacity-100', 'translate-x-0');
-        }, 3000);
-    }
     
-    // Initialize minimal dashboard for profile functionality only
+    // Minimal dashboard for profile
     setTimeout(function() {
         if (typeof Dashboard !== 'undefined') {
             try {
-                // Override loadPapers to prevent any paper loading on claim request page
                 const originalLoadPapers = Dashboard.prototype.loadPapers;
                 Dashboard.prototype.loadPapers = function() {
-                    console.log('Papers functionality disabled on claim request page');
+                    console.log('Context preserved: Claim requests active');
                 };
-                
                 window.dashboard = new Dashboard();
-                
-                // Keep loadPapers disabled since Funder role redirects to dashboard
-                console.log('Minimal dashboard initialized for claim requests page');
             } catch (error) {
-                console.warn('Dashboard initialization failed:', error);
+                console.warn('UI System Syncing...');
             }
         }
     }, 100);
 });
 </script>
-@endpush 
+@endpush

@@ -25,8 +25,8 @@ class WalletController extends Controller
         if (!$wallet) {
             $wallet = Wallet::create([
                 'user_id' => $user->id,
-                'balance' => 0.00,
-                'currency' => 'INR',
+                'balance' => 0,
+                'currency' => 'Coins',
                 'is_active' => true
             ]);
         }
@@ -40,7 +40,7 @@ class WalletController extends Controller
         // Get wallet statistics
         $stats = [
             'total_credited' => $wallet->transactions()->where('type', 'credit')->sum('amount'),
-            'total_debited' => $wallet->transactions()->where('type', 'debit')->sum('amount'),
+            'total_debited' => abs($wallet->transactions()->where('type', 'debit')->sum('amount')),
             'transaction_count' => $wallet->transactions()->count(),
             'this_month' => $wallet->transactions()
                 ->whereMonth('created_at', now()->month)
@@ -83,8 +83,8 @@ class WalletController extends Controller
             if (!$wallet) {
                 $wallet = Wallet::create([
                     'user_id' => $user->id,
-                    'balance' => 0.00,
-                    'currency' => 'USD',
+                    'balance' => 0,
+                    'currency' => 'Coins',
                     'is_active' => true
                 ]);
             }
@@ -152,7 +152,7 @@ class WalletController extends Controller
             'balance' => $wallet->formatted_balance,
             'raw_balance' => $wallet->balance,
             'total_credited' => $wallet->transactions()->where('type', 'credit')->sum('amount'),
-            'total_debited' => $wallet->transactions()->where('type', 'debit')->sum('amount'),
+            'total_debited' => abs($wallet->transactions()->where('type', 'debit')->sum('amount')),
             'transaction_count' => $wallet->transactions()->count(),
             'this_month' => $wallet->transactions()
                 ->whereMonth('created_at', now()->month)

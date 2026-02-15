@@ -3,229 +3,109 @@
 @section('title', 'My Wallet')
 
 @section('content')
-<!-- Add top padding for mobile header -->
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-3 sm:p-6 pt-20 md:pt-6">
-    <div class="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-        <!-- Header - Hidden on mobile since mobile-header shows instead -->
-        <div class="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                    My Wallet
-                </h1>
-                <p class="text-gray-600 mt-1 text-sm sm:text-base">Manage your research funding</p>
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-2">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800">My Wallet</h1>
+            <p class="text-sm text-slate-500">Manage your research funding and transactions</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm">
+                <i class="fas fa-wallet text-slate-900"></i>
             </div>
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i class="fas fa-wallet text-white text-sm sm:text-lg"></i>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <!-- Balance Card -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.02),0_10px_20px_rgba(0,0,0,0.03)] p-8 h-full relative overflow-hidden group">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-slate-100 group-hover:bg-slate-900 transition-colors"></div>
+                
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-900 border border-slate-100">
+                        <i class="fas fa-coins text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Available Balance</p>
+                        <h2 class="text-3xl font-bold text-slate-900" id="walletBalance">
+                            {{ number_format($wallet->balance, 0) }}
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="openAddFundsModal()" class="w-auto px-10 h-11 flex items-center justify-center gap-2 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all shadow-md active:scale-95">
+                        <i class="fas fa-plus"></i>
+                        Add Funds
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Title - Show only on mobile -->
-        <div class="md:hidden text-center mb-6">
-            <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                My Wallet
-            </h1>
-            <p class="text-gray-600 mt-1 text-sm">Manage your research funding</p>
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-semibold text-slate-400 mb-1">Total Credited</p>
+                <p class="text-xl font-bold text-emerald-600">
+                    {{ number_format($stats['total_credited'], 0) }}
+                </p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-semibold text-slate-400 mb-1">Total Debited</p>
+                <p class="text-xl font-bold text-rose-500">
+                    {{ number_format($stats['total_debited'], 0) }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-history text-slate-400 text-sm"></i>
+                <h3 class="font-bold text-slate-800">Recent Transactions</h3>
+            </div>
+            <button onclick="loadAllTransactions()" class="text-xs font-bold text-slate-900 hover:underline">
+                View All
+            </button>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
-            <!-- Balance Card - Takes up 2 columns on large screens, centered on mobile -->
-            <div class="lg:col-span-2 lg:col-start-1">
-                <div class="group relative bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 overflow-hidden mx-auto max-w-md lg:max-w-none">
-                    <!-- Background decoration -->
-                    <div class="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-2xl"></div>
-                    <div class="absolute bottom-0 left-0 w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-tr from-emerald-500/10 to-teal-500/10 rounded-full blur-2xl"></div>
-                    
-                    <div class="relative">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                                    <!-- Absolutely guaranteed visible content -->
-                                    <div class="text-white text-center flex items-center justify-center w-full h-full">
-                                        <!-- Simple text that MUST be visible -->
-                                        <span class="text-xl sm:text-2xl font-bold" style="line-height: 1; color: white !important; display: block !important;">💰</span>
-                                    </div>
+        <div id="transactionsContainer" class="p-2">
+            @if($transactions->count() > 0)
+                <div class="space-y-1">
+                    @foreach($transactions as $transaction)
+                        <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 transition-all group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center {{ $transaction->type === 'credit' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-500' }}">
+                                    <i class="fas {{ $transaction->type === 'credit' ? 'fa-arrow-up' : 'fa-arrow-down' }} text-xs"></i>
                                 </div>
                                 <div>
-                                    <h2 class="text-lg sm:text-xl font-bold text-gray-800">Available Balance</h2>
-                                    <p class="text-xs sm:text-sm text-gray-500">Ready for research rewards</p>
+                                    <p class="text-sm font-bold text-slate-800 truncate max-w-[200px] sm:max-w-xs">{{ $transaction->description }}</p>
+                                    <p class="text-[10px] text-slate-500 font-medium">{{ $transaction->created_at->format('M d, Y • h:i A') }}</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="mb-6 sm:mb-8 text-center lg:text-left">
-                            <div class="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-2 break-all" id="walletBalance">
-                                {{ $wallet->currency_symbol }}{{ number_format($wallet->balance, 2) }}
+                            <div class="text-right">
+                                <p class="text-sm font-bold" style="color: {{ $transaction->type === 'credit' ? '#059669' : '#e11d48' }} !important;">
+                                    {{ $transaction->formatted_amount }}
+                                </p>
+                                <p class="text-[10px] text-slate-400 font-medium">Balance: {{ $transaction->formatted_balance_after }}</p>
                             </div>
-                            <div class="w-16 sm:w-24 h-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mx-auto lg:mx-0"></div>
                         </div>
-
-                        <!-- Action Buttons -->
-                        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-                            <button 
-                                id="addFundsBtn"
-                                onclick="openAddFundsModal()"
-                                class="group flex-1 relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                            >
-                                <span class="relative z-10 flex items-center justify-center space-x-2">
-                                    <i class="fa-solid fa-plus text-sm"></i>
-                                    <span>Add Funds</span>
-                                </span>
-                                <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </button>
-                            
-                            <button 
-                                onclick="refreshWallet()"
-                                class="group relative overflow-hidden bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl font-semibold transition-all duration-300 transform hover:-translate-y-1"
-                            >
-                                <span class="flex items-center justify-center space-x-2">
-                                    <i class="fa-solid fa-rotate-right text-sm group-hover:rotate-180 transition-transform duration-300"></i>
-                                    <span>Refresh</span>
-                                </span>
-                            </button>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
-            </div>
-
-            <!-- Stats Grid - Takes up 2 columns on large screens -->
-            <div class="lg:col-span-2 grid grid-cols-2 gap-3 sm:gap-6">
-                <!-- Total Credited -->
-                <div class="group bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                            <i class="fa-solid fa-arrow-trend-up text-white text-sm"></i>
-                        </div>
-                        <div class="text-indigo-500 text-xs sm:text-sm font-medium bg-indigo-50 px-2 sm:px-3 py-1 rounded-full">
-                            <i class="fa-solid fa-arrow-up mr-1"></i>
-                            Credit
-                        </div>
+            @else
+                <div class="text-center py-12">
+                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                        <i class="fas fa-receipt text-slate-300 text-xl"></i>
                     </div>
-                    <div>
-                        <p class="text-gray-600 text-xs sm:text-sm mb-1">Total Credited</p>
-                        <p class="text-lg sm:text-xl lg:text-2xl font-bold text-indigo-600 break-all">
-                            {{ $wallet->currency_symbol }}{{ number_format($stats['total_credited'], 2) }}
-                        </p>
-                    </div>
+                    <p class="text-sm font-bold text-slate-600">No transactions yet</p>
+                    <p class="text-xs text-slate-400 mt-1">Activities will appear here once you start using the wallet</p>
                 </div>
-
-                <!-- Total Debited -->
-                <div class="group bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
-                        <!-- ICON IN COLORED SQUARE -->
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-400 to-gray-600 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0" id="debit-icon-container">
-                            <i class="fas fa-arrow-down text-white text-sm" id="debit-icon"></i>
-                        </div>
-                        <div class="text-red-600 text-xs sm:text-sm font-medium bg-red-50 px-2 sm:px-3 py-1 rounded-full">
-                            <i class="fa-solid fa-arrow-down mr-1"></i>
-                            Debit
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-gray-600 text-xs sm:text-sm mb-1">Total Debited</p>
-                        <p class="text-lg sm:text-xl lg:text-2xl font-bold text-slate-700 break-all">
-                            {{ $wallet->currency_symbol }}{{ number_format($stats['total_debited'], 2) }}
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Transaction Count -->
-                <div class="group bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                            <i class="fa-solid fa-arrow-right-arrow-left text-white text-sm"></i>
-                        </div>
-                        <div class="text-blue-500 text-xs sm:text-sm font-medium bg-blue-50 px-2 sm:px-3 py-1 rounded-full">
-                            Total
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-gray-600 text-xs sm:text-sm mb-1">Transactions</p>
-                        <p class="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">{{ $stats['transaction_count'] }}</p>
-                    </div>
-                </div>
-
-                <!-- This Month -->
-                <div class="group bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                            <i class="fa-solid fa-calendar-days text-white text-sm"></i>
-                        </div>
-                        <div class="text-purple-500 text-xs sm:text-sm font-medium bg-purple-50 px-2 sm:px-3 py-1 rounded-full">
-                            Monthly
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-gray-600 text-xs sm:text-sm mb-1">This Month</p>
-                        <p class="text-lg sm:text-xl lg:text-2xl font-bold text-purple-600 break-all">
-                            {{ is_numeric($stats['this_month']) ?  number_format($stats['this_month']) : $stats['this_month'] }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Transactions -->
-        <div class="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl border border-white/20">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                        <i class="fas fa-history text-white text-sm"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Recent Transactions</h2>
-                        <p class="text-gray-600 text-xs sm:text-sm">Your latest financial activities</p>
-                    </div>
-                </div>
-                <button 
-                    onclick="loadAllTransactions()"
-                    class="group flex items-center justify-center space-x-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full sm:w-auto"
-                >
-                    <span>View All</span>
-                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
-                </button>
-            </div>
-
-            <div id="transactionsContainer">
-                @if($transactions->count() > 0)
-                    <div class="space-y-3 sm:space-y-4">
-                        @foreach($transactions as $transaction)
-                            <div class="group flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 bg-gradient-to-r from-gray-50/80 to-white/80 backdrop-blur-sm rounded-2xl hover:shadow-lg transition-all duration-300 border border-gray-100/50 gap-3 sm:gap-0">
-                                <div class="flex items-center space-x-3 sm:space-x-4">
-                                    <div class="w-12 h-12 sm:w-14 sm:h-14 {{ $transaction->type === 'credit' ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 to-rose-600' }} rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                                        <i class="{{ $transaction->type === 'credit' ? 'fas fa-plus text-white' : 'fas fa-minus text-white' }}"></i>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="font-semibold text-gray-800 mb-1 text-sm sm:text-base truncate">{{ $transaction->description }}</p>
-                                        <p class="text-xs sm:text-sm text-gray-500 flex items-center">
-                                            <i class="fa-solid fa-clock mr-1"></i>
-                                            {{ $transaction->created_at->format('M d, Y H:i') }}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="text-left sm:text-right">
-                                    <p class="text-xl sm:text-2xl font-bold {{ $transaction->type === 'credit' ? 'text-green-600' : 'text-red-600' }} mb-1 break-all">
-                                        {{ $transaction->formatted_amount }}
-                                    </p>
-                                    <p class="text-xs sm:text-sm text-gray-500 break-all">
-                                        Balance: {{ $transaction->formatted_balance_after }}
-                                    </p>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="text-center py-12 sm:py-16">
-                        <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                            <i class="fas fa-receipt text-gray-400 text-2xl sm:text-3xl"></i>
-                        </div>
-                        <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-2">No transactions yet</h3>
-                        <p class="text-gray-500 text-sm sm:text-base px-4">Add funds to get started with your research funding</p>
-                    </div>
-                @endif
-            </div>
+            @endif
         </div>
     </div>
 </div>
@@ -236,7 +116,7 @@
         <div class="p-6 sm:p-8">
             <div class="flex items-center justify-between mb-6 sm:mb-8">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100 flex-shrink-0">
                         <i class="fa-solid fa-plus text-white text-sm"></i>
                     </div>
                     <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Add Funds</h3>
@@ -250,19 +130,19 @@
                 @csrf
                 <div>
                     <label for="amount" class="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
-                        Amount ({{ $wallet->currency }})
+                        Amount to Add
                     </label>
                     <div class="relative">
-                        <span class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium text-sm sm:text-base">{{ $wallet->currency_symbol }}</span>
+                        <span class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-bold text-sm sm:text-base"><i class="fas fa-coins text-blue-500"></i></span>
                         <input 
                             type="number" 
                             id="amount" 
                             name="amount" 
                             min="1" 
                             max="10000" 
-                            step="0.01"
-                            class="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 text-sm sm:text-base"
-                            placeholder="0.00"
+                            step="1"
+                            class="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 text-sm sm:text-base font-bold"
+                            placeholder="0"
                             required
                         >
                     </div>
@@ -289,11 +169,11 @@
                     </button>
                     <button 
                         type="submit"
-                        class="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 text-sm sm:text-base"
+                        class="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all duration-200 transform active:scale-95 text-sm sm:text-base"
                     >
                         <span class="flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-plus"></i>
-                            <span>Add Funds</span>
+                            <span>Add Coins</span>
                         </span>
                     </button>
                 </div>
@@ -333,10 +213,6 @@
     </div>
 </div>
 
-<!-- Toast Notification -->
-<div id="toast" class="fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 pointer-events-none translate-x-full text-white">
-    <span id="toastMessage" class="font-medium text-sm"></span>
-</div>
 @endsection
 
 @push('modals')
@@ -482,29 +358,30 @@ class WalletManager {
             <div class="group bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3 min-w-0 flex-1">
-                        <div class="w-10 h-10 ${transaction.type === 'credit' ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 to-rose-600'} rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
-                            <i class="${transaction.type === 'credit' ? 'fas fa-plus text-white text-xs' : 'fas fa-minus text-white text-xs'}"></i>
+                        <div class="w-10 h-10 ${transaction.type === 'credit' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'} rounded-full flex items-center justify-center shadow-sm flex-shrink-0">
+                            <i class="${transaction.type === 'credit' ? 'fas fa-arrow-up' : 'fas fa-arrow-down'} text-xs font-bold"></i>
                         </div>
                         <div class="min-w-0 flex-1">
                             <h4 class="font-medium text-gray-900 text-sm mb-0.5 truncate">${transaction.description}</h4>
                             <div class="flex items-center text-xs text-gray-500">
                                 <i class="fas fa-clock mr-1" style="font-size: 10px;"></i>
-                                <span>${new Date(transaction.created_at).toLocaleDateString('en-US', { 
+                                <span>${new Date(transaction.created_at).toLocaleString('en-US', { 
                                     year: 'numeric', 
                                     month: 'short', 
                                     day: 'numeric',
                                     hour: '2-digit',
-                                    minute: '2-digit'
+                                    minute: '2-digit',
+                                    hour12: true
                                 })}</span>
                             </div>
                         </div>
                     </div>
                     <div class="flex flex-col items-end ml-3">
-                        <div class="text-base font-bold ${transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'}">
-                            ${transaction.type === 'credit' ? '+' : '-'}${this.currencySymbol}${parseFloat(transaction.amount).toFixed(2)}
+                        <div class="text-base font-bold" style="color: ${transaction.type === 'credit' ? '#059669' : '#e11d48'} !important;">
+                            ${transaction.type === 'credit' ? '+' : '-'}${Math.abs(parseFloat(transaction.amount)).toFixed(0)} Coins
                         </div>
                         <div class="text-xs text-gray-500">
-                            ${this.currencySymbol}${parseFloat(transaction.balance_after).toFixed(2)}
+                            Balance: ${parseFloat(transaction.balance_after).toFixed(0)} Coins
                         </div>
                     </div>
                 </div>
@@ -519,9 +396,9 @@ class WalletManager {
         const numericBalance = parseFloat(balance);
 
         if (!isNaN(numericBalance)) {
-            walletBalanceEl.textContent = `${this.currencySymbol}${numericBalance.toFixed(2)}`;
+            walletBalanceEl.textContent = numericBalance.toLocaleString();
         } else {
-            walletBalanceEl.textContent = `${this.currencySymbol}0.00`;
+            walletBalanceEl.textContent = '0';
             console.warn('Invalid balance received:', balance);
         }
     }
@@ -604,22 +481,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Use existing Dashboard class but prevent papers loading for wallet page
         if (typeof Dashboard !== 'undefined') {
             try {
-                // Override loadPapers method temporarily to prevent loading papers
-                const originalLoadPapers = Dashboard.prototype.loadPapers;
-                Dashboard.prototype.loadPapers = function() {
-                    console.log('Skipping loadPapers on wallet page');
-                    // Do nothing - skip loading papers
-                };
+                // Create Dashboard instance (now won't load papers because of dashboard.js check)
                 
-                // Create Dashboard instance (now won't load papers)
+                // Create Dashboard instance (now won't load papers because of dashboard.js check)
                 window.dashboard = new Dashboard();
-                
-                // Restore original loadPapers method for other instances
-                Dashboard.prototype.loadPapers = originalLoadPapers;
-                
-                                                                  // Use the original Dashboard showToast method for consistency
-                
-                console.log('Dashboard initialized for wallet page (no papers loaded)');
+                console.log('Dashboard initialized for wallet page');
             } catch (error) {
                 console.warn('Dashboard initialization failed:', error);
             }

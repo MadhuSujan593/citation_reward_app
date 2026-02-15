@@ -4,63 +4,63 @@
 >
     <div class="bg-white w-full max-w-sm mx-2 rounded-2xl shadow-2xl p-4 sm:p-6 relative overflow-y-auto max-h-[90vh]">
         <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-800">Update Profile</h2>
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Update Profile</h2>
             <button 
                 onclick="closeProfileModal()" 
-                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors"
             >
-                <i class="fas fa-times text-gray-500"></i>
+                <i class="fas fa-times text-lg"></i>
             </button>
         </div>
         
         <!-- Form -->
-        <form id="updateProfileForm" class="space-y-4">
+        <form id="updateProfileForm" class="space-y-6">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">First Name</label>
                 <input 
                     type="text" 
                     id="first_name" 
                     name="first_name" 
                     required 
-                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/50 backdrop-blur-sm transition-all duration-200"
+                    class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium text-slate-900 placeholder-slate-400"
                 />
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Last Name</label>
                 <input 
                     type="text" 
                     id="last_name" 
                     name="last_name" 
                     required 
-                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/50 backdrop-blur-sm transition-all duration-200"
+                    class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium text-slate-900 placeholder-slate-400"
                 />
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Email Address</label>
                 <input 
                     type="email" 
                     id="email" 
                     name="email" 
                     required 
-                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/50 backdrop-blur-sm transition-all duration-200"
+                    class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium text-slate-900 placeholder-slate-400"
                 />
             </div>
             
             <!-- Action Buttons -->
-            <div class="flex justify-end space-x-3 pt-4">
+            <div class="flex gap-4 pt-4">
                 <button 
                     type="button" 
                     onclick="closeProfileModal()"
-                    class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-200"
+                    class="flex-1 py-4 px-6 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl font-bold transition-all duration-300"
                 >
                     Cancel
                 </button>
                 <button 
                     type="submit" 
-                    class="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+                    class="flex-1 py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-xl shadow-blue-100 hover:-translate-y-1 transition-all duration-300"
                 >
                     Save Changes
                 </button>

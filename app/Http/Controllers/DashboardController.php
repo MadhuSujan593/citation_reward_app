@@ -14,6 +14,11 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        // Redirect super admin to their management panel
+        if ($user->email === 'admin@citationapp.com') {
+            return redirect()->route('admin.claim-requests');
+        }
+
         // Fallback to 'Citer' if null
         $userRole = $user->role ?? 'Citer';
 
@@ -34,15 +39,26 @@ class DashboardController extends Controller
     public function showPapers(Request $request)
     {
         $user = Auth::user();
-        $role = $user->role;
+        $role = $request->input('role') ?? $user->role;
+
+        $query = PublishedPaper::with(['user']);
+
         if ($role === 'Funder') {
-            $papers = PublishedPaper::where('user_id', $user->id)
-            ->latest()->get();
-            $totalPapers = $papers->count();
-            $totalCitations = PaperCitation::whereIn('published_paper_id', $papers->pluck('id'))->count();
+            $query->where('user_id', $user->id);
+            
+            $papers = $query->withCount('citers')->latest()->paginate(6);
+            
+            $totalPapers = PublishedPaper::where('user_id', $user->id)->count();
+            $totalCitations = PaperCitation::whereIn('published_paper_id', function($q) use ($user) {
+                $q->select('id')->from('published_papers')->where('user_id', $user->id);
+            })->count();
+
         } elseif ($role === 'Citer') {
-            $papers = PublishedPaper::where('user_id', '!=', $user->id)->latest()->get();
-            $totalPapers = $papers->count();
+            $query->where('user_id', '!=', $user->id);
+            
+            $papers = $query->latest()->paginate(6);
+            
+            $totalPapers = PublishedPaper::where('user_id', '!=', $user->id)->count();
             $totalCitations = PaperCitation::where('user_id', $user->id)->count();
         } else {
             return response()->json([
@@ -53,7 +69,12 @@ class DashboardController extends Controller
 
         return response()->json([
             'success' => true,
-            'papers' => $papers,
+            'papers' => $papers->items(),
+            'pagination' => [
+                'current_page' => $papers->currentPage(),
+                'last_page' => $papers->lastPage(),
+                'total' => $papers->total(),
+            ],
             'stats' => [
                 'totalPapers' => $totalPapers,
                 'totalCitations' => $totalCitations,

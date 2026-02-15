@@ -58,13 +58,6 @@
                     </div>
                 </div>
 
-                <!-- Refresh Button -->
-                <button 
-                    onclick="refreshPapers()" 
-                    class="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                    <i class="fas fa-refresh"></i>
-                </button>
             </div>
         </div>
     </div>

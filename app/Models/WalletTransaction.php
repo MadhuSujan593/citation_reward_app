@@ -34,8 +34,7 @@ class WalletTransaction extends Model
     public function getFormattedAmountAttribute()
     {
         $prefix = $this->type === 'credit' ? '+' : '-';
-        $symbol = $this->getCurrencySymbol($this->currency);
-        return $symbol . number_format($this->amount, 2);
+        return $prefix . number_format($this->amount, 0) . ' Coins';
     }
 
     protected function getCurrencySymbol($currency)
@@ -50,9 +49,7 @@ class WalletTransaction extends Model
 
     public function getFormattedBalanceAfterAttribute()
     {
-        $symbol = $this->getCurrencySymbol($this->wallet->currency ?? 'INR');
-        
-        return $symbol . number_format($this->balance_after, 2);
+        return number_format($this->balance_after, 0) . ' Coins';
     }
 
     public function getTypeColorAttribute()

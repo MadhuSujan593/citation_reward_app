@@ -36,8 +36,8 @@ class CitationPaymentService
             if (!$funderWallet) {
                 $funderWallet = Wallet::create([
                     'user_id' => $funder->id,
-                    'balance' => 0.00,
-                    'currency' => 'INR',
+                    'balance' => 0,
+                    'currency' => 'Coins',
                     'is_active' => true
                 ]);
             }
@@ -101,8 +101,8 @@ class CitationPaymentService
             if (!$funderWallet) {
                 $funderWallet = Wallet::create([
                     'user_id' => $funder->id,
-                    'balance' => 0.00,
-                    'currency' => 'INR',
+                    'balance' => 0,
+                    'currency' => 'Coins',
                     'is_active' => true
                 ]);
             }

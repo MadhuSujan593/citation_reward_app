@@ -4,47 +4,46 @@
 @section('content')
 <div id="mainContent">
 <div class="space-y-6">
-    <!-- Welcome Section -->
-    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-xl">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold mb-2">Welcome back, {{ auth()->user()->first_name }}!</h1>
-                <p class="text-indigo-100" data-welcome-message>
-                    {{ ($userRole ?? 'Citer') === 'Citer' ? 'Manage your research citations and discover new papers.' : 'Manage your published papers and track citations.' }}
-                </p>
-            </div>
-            <div class="hidden md:block">
-                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                    <i class="fas fa-chart-line text-2xl"></i>
-                </div>
-            </div>
+    <!-- Simple Welcome Header (Minimalist) -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800">Welcome, {{ auth()->user()->first_name }}</h1>
+            <p class="text-sm text-slate-500" data-welcome-message>
+                {{ ($userRole ?? 'Citer') === 'Citer' ? 'Explore research papers and manage your citations.' : 'Control your publications and track citation growth.' }}
+            </p>
         </div>
-    </div> 
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-slate-400">Viewing as</span>
+            <span class="px-3 py-1 bg-white border border-blue-100 rounded-full text-[10px] font-bold text-blue-600 shadow-sm" id="currentRoleDisplay">
+                {{ $userRole ?? 'Citer' }}
+            </span>
+        </div>
+    </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div class="flex items-center justify-between">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600">Total Papers</p>
-                    <p class="text-2xl font-bold text-gray-800" id="totalPapers">0</p>
+                    <p class="text-xs font-semibold text-slate-400 mb-1">Total papers</p>
+                    <h3 class="text-2xl font-bold text-slate-800" id="totalPapers">0</h3>
                 </div>
-                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-file-alt text-white"></i>
+                <div class="w-9 h-9 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-file-alt text-sm"></i>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div class="flex items-center justify-between">
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600" data-stat="citations">
-                        {{ ($userRole ?? 'Citer') === 'Citer' ? 'My Citations' : 'Total Citations' }}
+                    <p class="text-xs font-semibold text-slate-400 mb-1" data-stat="citations">
+                        {{ ($userRole ?? 'Citer') === 'Citer' ? 'My citations' : 'Total citations' }}
                     </p>
-                    <p class="text-2xl font-bold text-gray-800" id="totalCitations">0</p>
+                    <h3 class="text-2xl font-bold text-slate-800" id="totalCitations">0</h3>
                 </div>
-                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-quote-left text-white"></i>
+                <div class="w-9 h-9 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-quote-left text-sm"></i>
                 </div>
             </div>
         </div>
@@ -52,6 +51,9 @@
 
     <!-- Papers Section -->
     <x-dashboard.papers-section :currentRole="$userRole ?? 'Citer'" />
+
+    <!-- Pagination -->
+    <div id="paginationContainer" class="flex justify-center mt-8 pb-10"></div>
 </div>
 </div>
 @endsection

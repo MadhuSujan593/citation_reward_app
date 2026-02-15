@@ -17,7 +17,7 @@
     <!-- Loading State -->
     <div id="papersLoading" class="hidden">
         <div class="text-center py-12">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-4">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full mb-4">
                 <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
             </div>
             <p class="text-gray-600 text-lg">Loading papers...</p>
@@ -38,7 +38,7 @@
             @if($currentRole === 'Funder')
             <button 
                 onclick="openPaperModal()" 
-                class="mt-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                class="mt-6 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
                 <i class="fas fa-plus mr-2"></i>
                 Upload Your First Paper

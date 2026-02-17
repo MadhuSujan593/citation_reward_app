@@ -5,7 +5,7 @@
     <div class="flex justify-between items-center">
         <div>
             <h3 class="text-2xl font-bold text-gray-800" id="papersTitle">
-                {{ $currentRole === 'Funder' ? 'My Published Papers' : 'Available Research Papers' }}
+                {{ trim($currentRole) === 'Funder' ? 'My Published Papers' : 'Available Research Papers' }}
             </h3>
             <p class="text-gray-600 mt-1">Browse and manage research papers</p>
         </div>
@@ -35,7 +35,7 @@
             <p class="text-gray-500 max-w-md mx-auto" id="emptyMessage">
                 No published papers available at the moment.
             </p>
-            @if($currentRole === 'Funder')
+            @if(trim($currentRole) === 'Funder')
             <button 
                 onclick="openPaperModal()" 
                 class="mt-6 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"

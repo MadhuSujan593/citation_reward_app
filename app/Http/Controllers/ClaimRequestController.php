@@ -126,7 +126,7 @@ class ClaimRequestController extends Controller
     /**
      * Admin dashboard - show all claim requests
      */
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
         $user = Auth::user();
         
@@ -135,9 +135,15 @@ class ClaimRequestController extends Controller
             abort(403, 'Access denied. Only admins can access this page.');
         }
 
-        $claimRequests = ClaimRequest::with(['user', 'referencedPaper.user', 'reviewedBy'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        $query = ClaimRequest::with(['user', 'referencedPaper.user', 'reviewedBy']);
+
+        if ($request->has('status') && in_array($request->status, ['pending', 'approved', 'rejected'])) {
+            $query->where('status', $request->status);
+        }
+
+        $claimRequests = $query->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
 
         $userRole = $user->role ?? 'Admin';
 

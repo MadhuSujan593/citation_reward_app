@@ -98,7 +98,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-gray-50 min-h-screen font-sans antialiased text-slate-900">
+<body class="bg-gray-50 min-h-screen font-sans antialiased text-slate-900" data-user-role="{{ trim(auth()->user()->role ?? 'Citer') }}">
     <!-- User Data Attributes -->
     <div 
         data-user-first-name="{{ auth()->user()->first_name }}"
@@ -133,8 +133,8 @@
    
     <!-- Premium Global Toast (Tailwind 2 & 3 Compatible) -->
     <div id="toast" class="fixed bottom-6 right-6 z-[100] transform transition-all duration-500 ease-out translate-x-full opacity-0 pointer-events-none">
-        <div class="flex items-center gap-4 bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-2xl min-w-[320px] border border-white/10">
-            <div id="toastIcon" class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm"></div>
+        <div class="flex items-center gap-3 bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-2xl min-w-fit max-w-xs border border-white/10">
+            <div id="toastIcon" class="w-8 h-8 rounded-xl flex items-center justify-center text-base shadow-sm"></div>
             <div>
                 <p id="toastTitle" class="text-[10px] font-bold uppercase tracking-widest mb-0.5">Notification</p>
                 <p id="toastMessage" class="text-sm font-bold"></p>
@@ -152,7 +152,7 @@
             if (!toast || !toastMessage) return;
 
             // Reset and set styles based on type
-            toastIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm';
+            toastIcon.className = 'w-8 h-8 rounded-xl flex items-center justify-center text-base shadow-sm';
             
             if (type === 'success' || type === false) {
                 toastIcon.classList.add('bg-green-500', 'text-white');
@@ -187,7 +187,7 @@
     
     <!-- Scripts -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="{{ asset('js/dashboard.js') }}" defer></script>
+    @vite(['resources/js/dashboard.js'])
     @stack('scripts')
     
     <script>

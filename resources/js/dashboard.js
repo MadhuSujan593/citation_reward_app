@@ -1,8 +1,8 @@
 // Dashboard JavaScript Module
 class Dashboard {
     constructor() {
-        // Get current role from DOM instead of Blade syntax
-        this.currentRole = document.getElementById('currentRole')?.textContent?.trim() || 'Citer';
+        // Source of truth: Body data attribute
+        this.currentRole = document.body.dataset.userRole?.trim() || 'Citer';
         this.papers = [];
         this.filteredPapers = [];
         this.paperIdToDelete = null;
@@ -16,8 +16,81 @@ class Dashboard {
         if (document.getElementById('papersContainer')) {
             this.loadPapers();
         }
+        this.updateUIForRole();
         this.setupEventListeners();
         this.setupSearchAndFilters();
+    }
+
+    updateRole(newRole) {
+        if (this.currentRole === newRole) return;
+        
+        this.currentRole = newRole;
+        
+        // Update body attribute for consistency
+        document.body.dataset.userRole = newRole;
+        document.body.setAttribute('data-user-role', newRole);
+        
+        // Update all UI elements
+        this.updateUIForRole();
+
+        // Persist to backend
+        fetch('/dashboard/switch-role', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            body: JSON.stringify({ role: newRole })
+        }).catch(err => console.error('Failed to persist role:', err));
+
+        // Refresh content
+        this.loadPapers();
+    }
+
+    updateUIForRole() {
+        // Update papers title
+        const papersTitle = document.getElementById("papersTitle");
+        if (papersTitle) {
+            papersTitle.textContent =
+                this.currentRole === "Funder"
+                    ? "My Published Papers"
+                    : "Available Research Papers";
+        }
+
+        // Update current role display in welcome banner
+        const roleDisplay = document.getElementById("currentRoleDisplay");
+        if (roleDisplay) {
+            roleDisplay.textContent = this.currentRole;
+        }
+
+        // Update dashboard subtitle if it exists
+        const dashboardSubtitle = document.getElementById("dashboardSubtitle");
+        if (dashboardSubtitle) {
+            dashboardSubtitle.textContent =
+                this.currentRole === "Funder"
+                    ? "Funder Portfolio Overview"
+                    : "Citation Management Overview";
+        }
+
+        // Update stats card labels
+        const citationsLabel = document.querySelector(
+            '[data-stat="citations"]'
+        );
+        if (citationsLabel) {
+            citationsLabel.textContent =
+                this.currentRole === "Citer"
+                    ? "My Citations"
+                    : "Total Citations";
+        }
+
+        // Update welcome message if it exists
+        const welcomeMessage = document.querySelector("[data-welcome-message]");
+        if (welcomeMessage) {
+            welcomeMessage.textContent =
+                this.currentRole === "Citer"
+                    ? "Explore research papers and manage your citations."
+                    : "Control your publications and track citation growth.";
+        }
     }
 
     setupEventListeners() {
@@ -224,67 +297,92 @@ class Dashboard {
     }
 
     createPaperCard(paper) {
-        const publishedDate = new Date(paper.created_at).toLocaleDateString();
-        const authorName = paper.author_name || 'Unknown Author';
+        const publishedDate = new Date(paper.created_at).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        const authorName = paper.author_name || "Unknown Author";
         const isCited = paper.is_paper_cited_by_current_user;
+        const hasPendingClaim = paper.has_pending_claim;
+        const citationsCount = paper.citers_count || 0;
 
         return `
-            <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 card-hover border border-white/20 overflow-hidden group relative">
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex-1">
-                            <h4 class="text-lg font-semibold text-gray-800 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                                ${paper.title}
-                            </h4>
-                            
-                            <div class="flex items-center space-x-3 mb-3">
-                                <div class="w-8 h-8 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-white text-xs"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-700">${authorName}</p>
-                                    <p class="text-xs text-gray-500">Author ID: ${paper.user_id}</p>
-                                </div>
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.02),0_10px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.06)] transition-all duration-300 overflow-hidden flex flex-col h-full group relative">
+                <!-- Subtle Accent -->
+                <div class="absolute top-0 left-0 w-1 h-full bg-slate-100 group-hover:bg-slate-900 transition-colors duration-300"></div>
+                
+                <div class="p-6 flex-1">
+                    <div class="flex justify-between items-start mb-2">
+                        ${
+                            this.currentRole === "Funder"
+                                ? `
+                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-auto">
+                                <button onclick="dashboard.editPaper(${paper.id})" class="p-1.5 text-slate-400 hover:text-slate-900 rounded-lg transition-all">
+                                    <i class="fas fa-pen text-[10px]"></i>
+                                </button>
+                                <button onclick="dashboard.deletePaper(${paper.id})" class="p-1.5 text-slate-400 hover:text-red-500 rounded-lg transition-all">
+                                    <i class="fas fa-trash text-[10px]"></i>
+                                </button>
                             </div>
-                            
-                            <div class="flex items-center text-sm text-gray-500">
-                                <i class="fas fa-calendar-alt mr-2 text-indigo-500"></i>
-                                <span>Published: ${publishedDate}</span>
-                            </div>
+                        `
+                                : ""
+                        }
+                    </div>
+                    
+                    <h4 class="text-[17px] font-bold text-slate-900 mb-5 line-clamp-2 leading-tight group-hover:text-slate-800 transition-colors">
+                        ${paper.title}
+                    </h4>
+                    
+                    <div class="flex items-center gap-4 mb-6 bg-slate-50/50 p-4 rounded-xl border border-slate-100/50">
+                        <div class="w-11 h-11 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-900 font-bold text-sm border border-slate-100 flex-shrink-0">
+                            ${authorName.split(' ').map(n => n[0]).join('')}
                         </div>
-                        
-                        ${this.currentRole === 'Funder' ? `
-                            <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <button onclick="dashboard.editPaper(${paper.id})" class="p-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-600 rounded-lg transition-colors" title="Edit Paper">
-                                    <i class="fas fa-edit text-sm"></i>
-                                </button>
-                                <button onclick="dashboard.deletePaper(${paper.id})" class="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors" title="Delete Paper">
-                                    <i class="fas fa-trash text-sm"></i>
-                                </button>
-                            </div>
-                        ` : ''}
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-800 truncate">${authorName}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold mb-1 tracking-tight">Published</p>
+                            <p class="text-[11px] font-bold text-slate-700 flex items-center">
+                                <i class="fas fa-calendar text-slate-400 mr-1.5"></i> ${publishedDate}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold mb-1 tracking-tight">Citations</p>
+                            <p class="text-[11px] font-bold text-slate-700 flex items-center">
+                                <i class="fas fa-quote-right text-slate-400 mr-1.5"></i> ${citationsCount}
+                            </p>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="px-6 pb-6">
-                    <div class="flex justify-between items-center">
-                        <button onclick="dashboard.viewPaperDetails(${paper.id}, 'view')" 
-                            class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
-                            <i class="fas fa-eye mr-2"></i>
-                            View Details
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center gap-3">
+                    <button onclick="dashboard.viewPaperDetails(${paper.id}, 'view')" 
+                        class="flex-1 h-10 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm active:scale-95">
+                        <i class="fas fa-eye text-slate-400"></i>
+                        Details
+                    </button>
+                    
+                    ${
+                        this.currentRole === "Citer"
+                            ? `
+                        <button onclick="${isCited && hasPendingClaim ? '' : `dashboard.toggleCite(${paper.id}, ${isCited})`}" 
+                            class="flex-1 h-10 flex items-center justify-center text-xs font-bold rounded-xl transition-all shadow-md active:scale-95 ${
+                                isCited && hasPendingClaim
+                                    ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
+                                    : isCited
+                                    ? "bg-rose-500 text-white hover:bg-rose-600 shadow-rose-100 font-bold"
+                                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200 font-bold"
+                            }" ${isCited && hasPendingClaim ? 'disabled' : ''} style="background-color: ${isCited && hasPendingClaim ? '#e2e8f0' : isCited ? '#f43f5e' : '#2563eb'} !important; color: white !important;">
+                            ${isCited && hasPendingClaim ? "Claimed" : isCited ? "Uncite" : "Cite paper"}
                         </button>
-                        
-                        ${this.currentRole === 'Citer' ? `
-                            <button onclick="dashboard.toggleCite(${paper.id}, ${isCited})" 
-                                class="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${isCited ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white' : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'}">
-                                <i class="fas ${isCited ? 'fa-times' : 'fa-quote-left'} mr-2"></i>
-                                ${isCited ? 'Uncite' : 'Cite'}
-                            </button>
-                        ` : ''}
-                    </div>
+                    `
+                            : ""
+                    }
                 </div>
-                
-                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             </div>
         `;
     }
@@ -503,6 +601,13 @@ class Dashboard {
         }
     }
 
+    updateFilterLabel(label) {
+        const filterLabel = document.getElementById("filterLabel");
+        if (filterLabel) {
+            filterLabel.textContent = label;
+        }
+    }
+
     closeFilterDropdown() {
         // This will be handled by Alpine.js
     }
@@ -593,7 +698,13 @@ class Dashboard {
     }
 
     openPaperModal() {
-        document.getElementById('uploadPaperModal').classList.remove('hidden');
+        console.log('Class openPaperModal called');
+        const modal = document.getElementById('uploadPaperModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        } else {
+            console.error('Modal element not found');
+        }
     }
 
     closePaperModal() {
@@ -785,21 +896,28 @@ document.addEventListener('DOMContentLoaded', function() {
     window.dashboard = new Dashboard();
 });
 
-// Global functions for backward compatibility
-function loadPapers() { window.dashboard?.loadPapers(); }
-function refreshPapers() { window.dashboard?.refreshPapers(); }
-function openProfileModal() { window.dashboard?.openProfileModal(); }
-function closeProfileModal() { window.dashboard?.closeProfileModal(); }
-function openPaperModal() { window.dashboard?.openPaperModal(); }
-function closePaperModal() { window.dashboard?.closePaperModal(); }
-function closePaperDetailsModal() { window.dashboard?.closePaperDetailsModal(); }
-function viewPaperDetails(paperId, mode, action) { window.dashboard?.viewPaperDetails(paperId, mode, action); }
-function toggleCite(paperId, isCited) { window.dashboard?.toggleCite(paperId, isCited); }
-function editPaper(paperId) { window.dashboard?.editPaper(paperId); }
-function deletePaper(paperId) { window.dashboard?.deletePaper(paperId); }
-function confirmDeletePaper() { window.dashboard?.confirmDeletePaper(); }
-function closeDeletePaperModal() { window.dashboard?.closeDeletePaperModal(); }
-function closeEditModal() { window.dashboard?.closeEditModal(); }
-function confirmCitation(paperId, action) { window.dashboard?.confirmCitation(paperId, action); }
-function closeConfirmModal() { window.dashboard?.closeConfirmModal(); }
-function handleCopy(targetId) { window.dashboard?.handleCopy(targetId); } 
+// Global functions for backward compatibility (Exposed to window for inline onclicks)
+window.loadPapers = function() { window.dashboard?.loadPapers(); };
+window.refreshPapers = function() { window.dashboard?.refreshPapers(); };
+window.openProfileModal = function() { window.dashboard?.openProfileModal(); };
+window.closeProfileModal = function() { window.dashboard?.closeProfileModal(); };
+window.openPaperModal = function() { 
+    console.log('Global openPaperModal called');
+    if (window.dashboard) {
+        window.dashboard.openPaperModal();
+    } else {
+        console.error('window.dashboard not initialized');
+    }
+};
+window.closePaperModal = function() { window.dashboard?.closePaperModal(); };
+window.closePaperDetailsModal = function() { window.dashboard?.closePaperDetailsModal(); };
+window.viewPaperDetails = function(paperId, mode, action) { window.dashboard?.viewPaperDetails(paperId, mode, action); };
+window.toggleCite = function(paperId, isCited) { window.dashboard?.toggleCite(paperId, isCited); };
+window.editPaper = function(paperId) { window.dashboard?.editPaper(paperId); };
+window.deletePaper = function(paperId) { window.dashboard?.deletePaper(paperId); };
+window.confirmDeletePaper = function() { window.dashboard?.confirmDeletePaper(); };
+window.closeDeletePaperModal = function() { window.dashboard?.closeDeletePaperModal(); };
+window.closeEditModal = function() { window.dashboard?.closeEditModal(); };
+window.confirmCitation = function(paperId, action) { window.dashboard?.confirmCitation(paperId, action); };
+window.closeConfirmModal = function() { window.dashboard?.closeConfirmModal(); };
+window.handleCopy = function(targetId) { window.dashboard?.handleCopy(targetId); }; 

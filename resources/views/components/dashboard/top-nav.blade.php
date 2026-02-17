@@ -6,7 +6,7 @@
                 Dashboard
             </h2>
             <p class="text-gray-600 mt-1" id="dashboardSubtitle">
-                {{ ($userRole ?? 'Citer') === 'Citer' ? 'Citation Management Overview' : 'Funder Portfolio Overview' }}
+                {{ (auth()->user()->role ?? 'Citer') === 'Citer' ? 'Citation Management Overview' : 'Funder Portfolio Overview' }}
             </p>
         </div>
 

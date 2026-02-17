@@ -9,16 +9,19 @@
         <div>
             <h1 class="text-2xl font-bold text-slate-800">Welcome, {{ auth()->user()->first_name }}</h1>
             <p class="text-sm text-slate-500" data-welcome-message>
-                {{ ($userRole ?? 'Citer') === 'Citer' ? 'Explore research papers and manage your citations.' : 'Control your publications and track citation growth.' }}
+                {{ trim(auth()->user()->role ?? 'Citer') === 'Citer' ? 'Explore research papers and manage your citations.' : 'Control your publications and track citation growth.' }}
             </p>
         </div>
         <div class="flex items-center gap-2">
             <span class="text-xs font-medium text-slate-400">Viewing as</span>
             <span class="px-3 py-1 bg-white border border-blue-100 rounded-full text-[10px] font-bold text-blue-600 shadow-sm" id="currentRoleDisplay">
-                {{ $userRole ?? 'Citer' }}
+                {{ auth()->user()->role ?? 'Citer' }}
             </span>
         </div>
     </div>
+
+    <!-- Stats Overview -->
+
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
@@ -38,7 +41,7 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xs font-semibold text-slate-400 mb-1" data-stat="citations">
-                        {{ ($userRole ?? 'Citer') === 'Citer' ? 'My citations' : 'Total citations' }}
+                        {{ trim(auth()->user()->role ?? 'Citer') === 'Citer' ? 'My citations' : 'Total citations' }}
                     </p>
                     <h3 class="text-2xl font-bold text-slate-800" id="totalCitations">0</h3>
                 </div>
@@ -50,7 +53,7 @@
     </div>
 
     <!-- Papers Section -->
-    <x-dashboard.papers-section :currentRole="$userRole ?? 'Citer'" />
+    <x-dashboard.papers-section :currentRole="trim(auth()->user()->role ?? 'Citer')" />
 
     <!-- Pagination -->
     <div id="paginationContainer" class="flex justify-center mt-8 pb-10"></div>
@@ -70,8 +73,7 @@
 
 @push('scripts')
 
-<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-<script src="{{ asset('js/dashboard.js') }}"></script>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

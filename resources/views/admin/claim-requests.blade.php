@@ -7,18 +7,7 @@
 <div class="min-h-screen bg-slate-50/50 p-4 sm:p-8 pt-20 md:pt-8">
     <div class="max-w-7xl mx-auto space-y-8">
         <!-- Header Section -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-6">
-            <div>
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Admin Dashboard</h1>
-                <p class="text-slate-500 mt-2 font-medium">Review and process verified citation claims</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl shadow-lg flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-[10px] font-bold text-slate-300 tracking-wider">SYSTEM OVERSIGHT ACTIVE</span>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Statistics Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -84,11 +73,14 @@
                 </h2>
                 <div class="flex items-center gap-4 text-[10px] font-bold text-slate-400 tracking-wider">
                     <span>FILTER:</span>
-                    <select class="bg-transparent border-none focus:ring-0 cursor-pointer hover:text-blue-600 transition-colors">
-                        <option>All Status</option>
-                        <option>Pending Only</option>
-                        <option>Processed Only</option>
-                    </select>
+                    <form action="{{ route('admin.claim-requests') }}" method="GET">
+                        <select name="status" onchange="this.form.submit()" class="bg-transparent border-none focus:ring-0 cursor-pointer hover:text-blue-600 transition-colors">
+                            <option value="">All Status</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending Only</option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Processed Only</option>
+                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected Only</option>
+                        </select>
+                    </form>
                 </div>
             </div>
 
@@ -172,13 +164,10 @@
 
                                     @if($claim->admin_notes)
                                         <div class="mt-8 p-6 bg-slate-900 rounded-2xl relative overflow-hidden">
-                                            <div class="absolute top-0 right-0 p-4 opacity-10">
-                                                <i class="fas fa-sticky-note text-white text-4xl"></i>
-                                            </div>
-                                            <p class="text-[10px] font-bold text-slate-500 tracking-wider mb-2">INTERNAL NOTES</p>
+                                            <p class="text-[10px] font-bold text-slate-300 tracking-wider mb-2">INTERNAL NOTES</p>
                                             <p class="text-sm font-medium text-white italic leading-relaxed">"{{ $claim->admin_notes }}"</p>
                                             @if($claim->reviewed_at)
-                                                <p class="text-[9px] font-bold text-slate-600 tracking-wider mt-4 uppercase">Reviewed by {{ $claim->reviewedBy->first_name ?? 'System' }} • {{ $claim->reviewed_at->format('M d, Y') }}</p>
+                                                <p class="text-[9px] font-bold text-slate-400 tracking-wider mt-4 uppercase">Reviewed by {{ $claim->reviewedBy->first_name ?? 'System' }} • {{ $claim->reviewed_at->format('M d, Y') }}</p>
                                             @endif
                                         </div>
                                     @endif

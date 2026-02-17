@@ -12,7 +12,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $user = auth()->user()->fresh();
+        
+        // Ensure the global auth instance mirrors the fresh user data
+        auth()->setUser($user);
 
         // Redirect super admin to their management panel
         if ($user->email === 'admin@citationapp.com') {
@@ -88,14 +91,19 @@ class DashboardController extends Controller
         $user = Auth::user();
         $role = $request->input('role');
 
+        Log::info("Attempting to switch role for user {$user->id} to {$role}");
+
         $validRoles = ['Citer', 'Funder', 'Admin'];
 
         if (!in_array($role, $validRoles)) {
+            Log::error("Invalid role attempted: {$role}");
             return response()->json(['success' => false, 'message' => 'Invalid role.'], 400);
         }
 
         $user->role = $role;
-        $user->save();
+        $saved = $user->save();
+        
+        Log::info("Role switch result for user {$user->id}: " . ($saved ? 'Success' : 'Failed'));
 
         return response()->json(['success' => true, 'message' => 'Dashboard role updated.']);
     }

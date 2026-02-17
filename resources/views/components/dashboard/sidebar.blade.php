@@ -3,9 +3,9 @@
 
 <div 
     id="sidebar"
-    class="fixed top-0 left-0 h-full w-full max-w-xs bg-white shadow-2xl z-50 pointer-events-auto transform -translate-x-full transition-transform duration-300 lg:relative lg:translate-x-0 lg:w-72 lg:h-auto lg:z-auto lg:shadow-none"
+    class="fixed top-0 left-0 h-full w-full max-w-xs bg-white shadow-2xl z-50 pointer-events-auto transform -translate-x-full transition-transform duration-300 lg:sticky lg:top-0 lg:translate-x-0 lg:w-72 lg:h-screen lg:z-auto lg:shadow-none"
     x-data="{ 
-        currentRole: '{{ $userRole ?? 'Citer' }}',
+        currentRole: '{{ auth()->user()->role ?? 'Citer' }}',
         switchRole(role) {
             this.currentRole = role;
             if (document.getElementById('currentRole')) {
@@ -81,8 +81,8 @@
             <div>
                 <p class="px-4 text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider">Main</p>
                 <div class="space-y-1">
-                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-bold transition-all {{ Request::is('dashboard') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }}">
-                        <i class="fas fa-grid-2 w-5 {{ Request::is('dashboard') ? 'text-blue-600' : 'text-slate-400' }}"></i>
+                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-bold transition-all {{ Request::routeIs('dashboard') || Request::routeIs('admin.claim-requests') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <i class="fas fa-th-large w-5 {{ Request::routeIs('dashboard') || Request::routeIs('admin.claim-requests') ? 'text-blue-600' : 'text-slate-400' }}"></i>
                         <span>Dashboard</span>
                     </a>
                     <a href="{{ route('wallet.index') }}" 
@@ -115,26 +115,21 @@
                 </div>
             </div>
 
-            <div x-show="currentRole === 'Funder'" x-cloak>
-                <p class="px-4 text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider">Funder Tools</p>
-                <div class="space-y-1">
-                    <a href="javascript:void(0);" onclick="if(window.location.pathname === '{{ route('dashboard', [], false) }}'){ openPaperModal(); } else { window.location.href='{{ route('dashboard') }}?upload=1'; }" 
-                        class="flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-xl transition-all font-bold">
-                        <i class="fas fa-plus-circle w-5 text-slate-400"></i>
-                        <span>Upload Paper</span>
-                    </a>
+            @if(auth()->user()->email !== 'admin@citationapp.com')
+                <div x-show="currentRole === 'Funder'" x-cloak>
+                    <p class="px-4 text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider">Funder Tools</p>
+                    <div class="space-y-1">
+                        <a href="javascript:void(0);" onclick="if(window.location.pathname === '{{ route('dashboard', [], false) }}'){ openPaperModal(); } else { window.location.href='{{ route('dashboard') }}?upload=1'; }" 
+                            class="flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-xl transition-all font-bold">
+                            <i class="fas fa-plus-circle w-5 text-slate-400"></i>
+                            <span>Upload Paper</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
+            @endif
         </nav>
 
-        @if(auth()->user()->email === 'admin@citationapp.com')
-            <div class="mt-4 mb-4">
-                <a href="{{ route('admin.claim-requests') }}" class="flex items-center justify-center space-x-2 w-full py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
-                    <i class="fas fa-shield-alt text-xs"></i>
-                    <span>Admin Panel</span>
-                </a>
-            </div>
-        @endif
+
 
         <!-- Profile Section -->
         <div class="mt-8 pt-6 border-t border-slate-100 pb-8">

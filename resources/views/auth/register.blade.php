@@ -2,137 +2,175 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Register - Ebolt</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    @vite('resources/css/app.css')
-    
+    <title>Register - ResearchHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-200 to-white bg-no-repeat bg-cover px-5">
-    <div class="bg-white/40 backdrop-blur-md rounded-3xl shadow-lg px-8 py-10 w-full max-w-md border border-white/20">
-        <div class="flex justify-center mb-6">
-            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
+<body class="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-6">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-xl border border-slate-200">
+        
+        <div class="flex flex-col items-center mb-6">
+            <div class="flex flex-col items-center justify-center mb-4">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-2" style="background-color: #2563eb;">
+                    <i class="fas fa-layer-group text-xl text-white"></i>
+                </div>
+                <h1 class="text-xl font-bold text-slate-800 tracking-tight">ResearchHub</h1>
             </div>
+            <h2 class="text-lg font-semibold text-slate-800">Create an account</h2>
+            <p class="text-xs text-slate-500 mt-1">Start your journey with us today</p>
         </div>
 
-        <h2 class="text-center text-2xl font-semibold text-gray-800">Create your account</h2>
-        <p class="text-center text-sm text-gray-500 mb-6">Start your journey with us today</p>
-        {{-- ✅ Success & Error Session Messages --}}
-@if (session('success'))
-    <div class="mb-4 text-sm text-green-700 bg-green-100 border border-green-300 px-4 py-2 rounded-lg">
-        {{ session('success') }}
-    </div>
-@endif
+        @if (session('success'))
+            <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            </div>
+        @endif
 
-@if (session('error'))
-    <div class="mb-4 text-sm text-red-700 bg-red-100 border border-red-300 px-4 py-2 rounded-lg">
-        {{ session('error') }}
-    </div>
-@endif
-        
-        <form id="registerForm" method="POST" action="{{ route('register.post') }}" novalidate>
+        @if (session('error'))
+            <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+            </div>
+        @endif
+
+        <form id="registerForm" method="POST" action="{{ route('register.post') }}" novalidate class="space-y-3">
             @csrf
-            <div class="mb-4">
-                <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
-                <input 
-                    type="text" 
-                    name="first_name" 
-                    id="first_name" 
-                    required
-                    placeholder="Enter your first name"
-                    pattern="^[A-Za-z\s'-]+$"
-                    title="First name should contain only letters, spaces, apostrophes, or hyphens."
-                    class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                />
-                <p class="text-red-600 text-sm mt-1 hidden" id="firstNameError">Please enter a valid first name.</p>
-            </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="first_name" class="block text-xs font-semibold text-slate-700 mb-1">First Name <span class="text-red-500">*</span></label>
+                    <input 
+                        type="text" 
+                        name="first_name" 
+                        id="first_name" 
+                        required
+                        placeholder="John"
+                        pattern="^[A-Za-z\s'-]+$"
+                        class="w-full px-4 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                    />
+                    <p class="text-red-500 text-xs mt-1 hidden font-medium" id="firstNameError">Invalid first name</p>
+                </div>
 
-            <div class="mb-4">
-                <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
-                <input 
-                    type="text" 
-                    name="last_name" 
-                    id="last_name" 
-                    required
-                    placeholder="Enter your last name"
-                    pattern="^[A-Za-z\s'-]+$"
-                    title="Last name should contain only letters, spaces, apostrophes, or hyphens."
-                    class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                />
-                <p class="text-red-600 text-sm mt-1 hidden" id="lastNameError">Please enter a valid last name.</p>
-            </div>
-
-            <div class="mb-4">
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input 
-                    type="email" 
-                    name="email" 
-                    id="email" 
-                    required
-                    placeholder="example@mail.com"
-                    class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                />
-                @error('email')
-                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-red-600 text-sm mt-1 hidden" id="emailError">Please enter a valid email address.</p>
-            </div>
-
-            <div class="mb-4 relative">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    required
-                    placeholder="Enter your password"
-                    minlength="8"
-                    class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 pr-12"
-                    autocomplete="new-password"
-                />
-                <p class="text-red-600 text-sm mt-1 hidden" id="passwordError">Password must be at least 8 characters.</p>
-                <div
-                    class="absolute inset-y-1/3 right-0 flex items-center pr-3 cursor-pointer select-none h-12"
-                    onclick="togglePassword()"
-                >
-                    <svg
-                        id="eyeIcon"
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7
-                                -1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                    </svg>
+                <div>
+                    <label for="last_name" class="block text-xs font-semibold text-slate-700 mb-1">Last Name <span class="text-red-500">*</span></label>
+                    <input 
+                        type="text" 
+                        name="last_name" 
+                        id="last_name" 
+                        required
+                        placeholder="Doe"
+                        pattern="^[A-Za-z\s'-]+$"
+                        class="w-full px-4 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                    />
+                    <p class="text-red-500 text-xs mt-1 hidden font-medium" id="lastNameError">Invalid last name</p>
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-900 transition">Create Account</button>
+            <div>
+                <label for="email" class="block text-xs font-semibold text-slate-700 mb-1">Email <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i class="fas fa-envelope text-slate-400"></i>
+                    </div>
+                    <input 
+                        type="email" 
+                        name="email" 
+                        id="email" 
+                        required
+                        placeholder="john@example.com"
+                        class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                    />
+                </div>
+                @error('email')
+                    <p class="text-red-500 text-xs mt-1 font-medium">{{ $message }}</p>
+                @enderror
+                <p class="text-red-500 text-xs mt-1 hidden font-medium" id="emailError">Please enter a valid email</p>
+            </div>
+
+            <div>
+                <label for="password" class="block text-xs font-semibold text-slate-700 mb-1">Password <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-slate-400"></i>
+                    </div>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        id="password" 
+                        required
+                        placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
+                        class="w-full pl-10 pr-10 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                    />
+                    <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+                <p class="text-red-500 text-xs mt-1 hidden font-medium" id="passwordError">Min 8 characters required</p>
+            </div>
+
+            <!-- Optional Links -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label for="google_scholar_link" class="block text-xs font-semibold text-slate-700 mb-1">Google Scholar Link (Optional)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i class="fas fa-link text-slate-400"></i>
+                        </div>
+                        <input 
+                            type="url" 
+                            name="google_scholar_link" 
+                            id="google_scholar_link" 
+                            placeholder="https://scholar.google.com/..."
+                            class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="scopus_id_link" class="block text-xs font-semibold text-slate-700 mb-1">Scopus ID Link (Optional)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i class="fas fa-link text-slate-400"></i>
+                        </div>
+                        <input 
+                            type="url" 
+                            name="scopus_id_link" 
+                            id="scopus_id_link" 
+                            placeholder="https://www.scopus.com/..."
+                            class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                        />
+                    </div>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label for="orcid_link" class="block text-xs font-semibold text-slate-700 mb-1">ORCID Link (Optional)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i class="fab fa-orcid text-slate-400"></i>
+                        </div>
+                        <input 
+                            type="url" 
+                            name="orcid_link" 
+                            id="orcid_link" 
+                            placeholder="https://orcid.org/..."
+                            class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full py-2.5 mt-3 transition-all active:scale-[0.98]">
+                Create Account
+            </button>
         </form>
         
-        <div class="text-center mt-6 text-sm text-gray-600">
-            Already have an account? <a href="{{ url('/login') }}" class="text-blue-600 hover:underline">Sign in</a>
-        </div>
+        <p class="mt-6 text-center text-sm text-slate-500">
+            Already have an account? <a href="{{ url('/login') }}" class="font-bold text-blue-600 hover:text-blue-700 transition">Sign in</a>
+        </p>
     </div>
 
     <script>
@@ -141,27 +179,24 @@
         const eyeIcon = document.getElementById('eyeIcon');
         if (password.type === 'password') {
             password.type = 'text';
-            eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7
-                a10.054 10.054 0 011.442-2.568m3.1-2.53A9.959 9.959 0 0112 5c4.477 0 8.268 2.943
-                9.542 7a9.972 9.972 0 01-4.043 5.317M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>`;
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
         } else {
             password.type = 'password';
-            eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943
-                9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
         }
     }
 
     function validateField(input, errorElement) {
         if (input.checkValidity() && input.value.trim() !== '') {
             errorElement.classList.add('hidden');
-            input.style.borderColor = '#d1d5db';
+            input.classList.remove('border-red-500');
+            input.classList.add('border-slate-200');
         } else if (input.value.trim() !== '') {
             errorElement.classList.remove('hidden');
-            input.style.borderColor = '#ef4444';
+            input.classList.remove('border-slate-200');
+            input.classList.add('border-red-500');
         }
     }
 
@@ -186,16 +221,8 @@
                     validateField(input, errorElement);
                 }
             });
-
-            input.addEventListener('focus', function() {
-                if (input.checkValidity()) {
-                    errorElement.classList.add('hidden');
-                    input.style.borderColor = '#3b82f6'; // Tailwind blue-500
-                }
-            });
         });
 
-        // Single submit handler
         document.getElementById('registerForm').addEventListener('submit', function(event) {
             let valid = true;
 
@@ -205,22 +232,21 @@
 
                 if (!input.checkValidity() || input.value.trim() === '') {
                     error.classList.remove('hidden');
-                    input.style.borderColor = '#ef4444';
+                    input.classList.remove('border-slate-200');
+                    input.classList.add('border-red-500');
                     valid = false;
                 } else {
                     error.classList.add('hidden');
-                    input.style.borderColor = '#d1d5db';
+                    input.classList.remove('border-red-500');
+                    input.classList.add('border-slate-200');
                 }
             });
 
             if (!valid) {
                 event.preventDefault();
             }
-          
-            // else form submits normally, no alert needed here
         });
     });
-</script>
-
+    </script>
 </body>
 </html>

@@ -22,7 +22,11 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
-        'role'
+        'role',
+        'google_scholar_link',
+        'scopus_id_link',
+        'orcid_link',
+        'profile_picture'
     ];
 
     /**
@@ -69,5 +73,16 @@ class User extends Authenticatable
     public function reviewedClaims()
     {
         return $this->hasMany(ClaimRequest::class, 'reviewed_by');
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\CustomResetPassword($token));
     }
 }

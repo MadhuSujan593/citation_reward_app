@@ -40,6 +40,16 @@
             background-color: var(--bg-main);
         }
 
+        /* Apply fully rounded design to all generic buttons and button-like links globally */
+        button, 
+        input[type="button"], 
+        input[type="submit"], 
+        input[type="reset"],
+        .btn,
+        a.btn {
+            border-radius: 9999px !important;
+        }
+
         .glass-effect {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
@@ -104,6 +114,10 @@
         data-user-first-name="{{ auth()->user()->first_name }}"
         data-user-last-name="{{ auth()->user()->last_name }}"
         data-user-email="{{ auth()->user()->email }}"
+        data-user-google-scholar="{{ auth()->user()->google_scholar_link }}"
+        data-user-scopus-id="{{ auth()->user()->scopus_id_link }}"
+        data-user-orcid="{{ auth()->user()->orcid_link }}"
+        data-user-profile-picture="{{ auth()->user()->profile_picture }}"
         class="hidden"
     ></div>
     <!-- Mobile Header -->

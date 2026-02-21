@@ -30,8 +30,11 @@ class AuthController extends Controller
             $validator = Validator::make($request->all(), [
                 'first_name' => 'required|string|max:255',
                 'last_name'  => 'required|string|max:255',
-                'email'      => 'required|email|unique:users,email',
-                'password'   => 'required|string|min:6',
+                'email'               => 'required|email|unique:users,email',
+                'password'            => 'required|string|min:6',
+                'google_scholar_link' => 'nullable|url|max:255',
+                'scopus_id_link'      => 'nullable|url|max:255',
+                'orcid_link'          => 'nullable|url|max:255',
             ]);
 
             if ($validator->fails()) {
@@ -43,8 +46,11 @@ class AuthController extends Controller
             User::create([
                 'first_name' => $request->first_name,
                 'last_name'  => $request->last_name,
-                'email'      => $request->email,
-                'password'   => Hash::make($request->password),
+                'email'               => $request->email,
+                'password'            => Hash::make($request->password),
+                'google_scholar_link' => $request->google_scholar_link,
+                'scopus_id_link'      => $request->scopus_id_link,
+                'orcid_link'          => $request->orcid_link,
             ]);
             Log::info('User registered: ' . $request->email);
             return redirect()->route('login')->with('success', 'Registration successful. Please login to continue!!.');

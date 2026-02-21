@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    /* Apply fully rounded design to all generic buttons and button-like links globally */
+    button, 
+    input[type="button"], 
+    input[type="submit"], 
+    input[type="reset"],
+    .btn,
+    a[href].bg-blue-600,
+    a[href].bg-black,
+    a[href].bg-sky-600,
+    a[href].bg-red-600,
+    a[href].bg-slate-800 {
+        @apply !rounded-full;
+    }
+}

@@ -44,7 +44,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile-delete', [AuthController::class, 'deleteUserAccount'])->name('profile.del');
     Route::post('/dashboard/switch-role', [DashboardController::class, 'setRole'])->name('dashboard.setRole');
 
+    Route::post('/dashboard/switch-role', [DashboardController::class, 'setRole'])->name('dashboard.setRole');
+
     //upload papers routes
+    Route::get('/upload-paper', [PublishPaperController::class, 'create'])->name('papers.create');
     Route::post('/papers/upload', [PublishPaperController::class, 'store'])->name('papers.upload');
     Route::put('/papers/{paper}', [PublishPaperController::class, 'update'])->name('papers.update');
     Route::get('/dashboard/papers', [DashboardController::class, 'showPapers'])->name('dashboard.papers');

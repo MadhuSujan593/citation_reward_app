@@ -77,54 +77,53 @@
         </div>
 
         <!-- Navigation Menu -->
-        <nav class="space-y-6">
-            <div>
-                <p class="px-4 text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider">Main</p>
-                <div class="space-y-1">
-                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-bold transition-all {{ Request::routeIs('dashboard') || Request::routeIs('admin.claim-requests') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }}">
-                        <i class="fas fa-th-large w-5 {{ Request::routeIs('dashboard') || Request::routeIs('admin.claim-requests') ? 'text-blue-600' : 'text-slate-400' }}"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="{{ route('wallet.index') }}" 
-                        x-show="currentRole === 'Funder'"
-                        class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-bold transition-all {{ Request::is('wallet*') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }}"
-                    >
-                        <i class="fas fa-wallet w-5 {{ Request::is('wallet*') ? 'text-blue-600' : 'text-slate-400' }}"></i>
-                        <span>Wallet</span>
-                    </a>
-                </div>
+        <nav class="space-y-4">
+            <div class="space-y-1">
+                <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-bold transition-all {{ Request::routeIs('dashboard') || Request::routeIs('admin.claim-requests') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }}">
+                    <i class="fas fa-th-large w-5 {{ Request::routeIs('dashboard') || Request::routeIs('admin.claim-requests') ? 'text-blue-600' : 'text-slate-400' }}"></i>
+                    <span>Dashboard</span>
+                </a>
             </div>
 
-            <div x-show="currentRole === 'Citer'" x-cloak>
-                <p class="px-4 text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider">Citer Tools</p>
-                <div class="space-y-1">
-                    <a href="javascript:void(0);" onclick="handleMyCitationsClick()"
-                        class="flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-xl transition-all font-bold">
-                        <i class="fas fa-quote-right w-5 text-slate-400"></i>
-                        <span>My Citations</span>
-                    </a>
-                    <a href="javascript:void(0);" onclick="handleExplorePapersClick()"
-                        class="flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-xl transition-all font-bold">
-                        <i class="fas fa-compass w-5 text-slate-400"></i>
-                        <span>Explore Papers</span>
-                    </a>
-                    <a href="{{ route('claim-requests.index') }}" class="flex items-center space-x-3 px-4 py-2.5 {{ Request::is('claim-requests*') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }} rounded-xl transition-all font-bold">
-                        <i class="fas fa-file-invoice-dollar w-5 {{ Request::is('claim-requests*') ? 'text-blue-600' : 'text-slate-400' }}"></i>
-                        <span>Claims</span>
-                    </a>
-                </div>
+            <div x-show="currentRole === 'Funder'" x-cloak class="space-y-1">
+                <a href="{{ route('wallet.index') }}" 
+                    class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-bold transition-all {{ Request::is('wallet*') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }}"
+                >
+                    <i class="fas fa-wallet w-5 {{ Request::is('wallet*') ? 'text-blue-600' : 'text-slate-400' }}"></i>
+                    <span>Wallet</span>
+                </a>
+            </div>
+
+            <div x-show="currentRole === 'Citer'" x-cloak class="space-y-1">
+                <a href="javascript:void(0);" onclick="handleMyCitationsClick()"
+                    class="flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-xl transition-all font-bold">
+                    <i class="fas fa-quote-right w-5 text-slate-400"></i>
+                    <span>My Citations</span>
+                </a>
+            </div>
+
+            <div x-show="currentRole === 'Citer'" x-cloak class="space-y-1">
+                <a href="javascript:void(0);" onclick="handleExplorePapersClick()"
+                    class="flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-xl transition-all font-bold">
+                    <i class="fas fa-compass w-5 text-slate-400"></i>
+                    <span>Explore Papers</span>
+                </a>
+            </div>
+
+            <div x-show="currentRole === 'Citer'" x-cloak class="space-y-1">
+                <a href="{{ route('claim-requests.index') }}" class="flex items-center space-x-3 px-4 py-2.5 {{ Request::is('claim-requests*') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }} rounded-xl transition-all font-bold">
+                    <i class="fas fa-file-invoice-dollar w-5 {{ Request::is('claim-requests*') ? 'text-blue-600' : 'text-slate-400' }}"></i>
+                    <span>Claims</span>
+                </a>
             </div>
 
             @if(auth()->user()->email !== 'admin@citationapp.com')
-                <div x-show="currentRole === 'Funder'" x-cloak>
-                    <p class="px-4 text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider">Funder Tools</p>
-                    <div class="space-y-1">
-                        <a href="javascript:void(0);" onclick="if(window.location.pathname === '{{ route('dashboard', [], false) }}'){ openPaperModal(); } else { window.location.href='{{ route('dashboard') }}?upload=1'; }" 
-                            class="flex items-center space-x-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 rounded-xl transition-all font-bold">
-                            <i class="fas fa-plus-circle w-5 text-slate-400"></i>
-                            <span>Upload Paper</span>
-                        </a>
-                    </div>
+                <div x-show="currentRole === 'Funder'" x-cloak class="space-y-1">
+                    <a href="{{ route('papers.create') }}" 
+                        class="flex items-center space-x-3 px-4 py-2.5 {{ Request::is('upload-paper') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }} rounded-xl transition-all font-bold">
+                        <i class="fas fa-plus-circle w-5 {{ Request::is('upload-paper') ? 'text-blue-600' : 'text-slate-400' }}"></i>
+                        <span>Upload Paper</span>
+                    </a>
                 </div>
             @endif
         </nav>
@@ -134,8 +133,12 @@
         <!-- Profile Section -->
         <div class="mt-8 pt-6 border-t border-slate-100 pb-8">
             <div class="flex items-center space-x-3 px-2 mb-4">
-                <div class="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center overflow-hidden">
-                    <i class="fas fa-user text-slate-400"></i>
+                <div class="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center overflow-hidden border-2 border-slate-200">
+                    @if(auth()->user()->profile_picture)
+                        <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" alt="Profile Picture" class="w-full h-full object-cover">
+                    @else
+                        <i class="fas fa-user text-slate-400"></i>
+                    @endif
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-semibold text-slate-800 truncate">{{ auth()->user()->first_name }}</p>

@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Log;
 
 class PublishPaperController extends Controller
 {
+    public function create()
+    {
+        $userRole = auth()->user()->role ?? 'Citer';
+        return view('papers.create', compact('userRole'));
+    }
+
     public function store(Request $request)
     {
         try {

@@ -51,10 +51,13 @@ class Dashboard {
         // Update papers title
         const papersTitle = document.getElementById("papersTitle");
         if (papersTitle) {
-            papersTitle.textContent =
-                this.currentRole === "Funder"
-                    ? "My Published Papers"
-                    : "Available Research Papers";
+            if (this.currentRole === "Funder") {
+                papersTitle.textContent = "My Published Papers";
+            } else if (this.viewMode === "citations") {
+                papersTitle.textContent = "My Citations";
+            } else {
+                papersTitle.textContent = "Available Research Papers";
+            }
         }
 
         // Update current role display in welcome banner
@@ -176,6 +179,7 @@ class Dashboard {
             if (data.success) {
                 this.papers = data.papers || [];
                 this.filteredPapers = [...this.papers];
+                this.updateUIForRole(); // Add this to update title when viewMode changes
                 this.displayPapers();
 
                 // Render pagination
@@ -310,7 +314,7 @@ class Dashboard {
         return `
             <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.02),0_10px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.06)] transition-all duration-300 overflow-hidden flex flex-col h-full group relative">
                 <!-- Subtle Accent -->
-                <div class="absolute top-0 left-0 w-1 h-full bg-slate-100 group-hover:bg-slate-900 transition-colors duration-300"></div>
+                <div class="absolute top-0 left-0 w-1 h-full bg-slate-100 group-hover:bg-blue-600 transition-colors duration-300"></div>
                 
                 <div class="p-6 flex-1">
                     <div class="flex justify-between items-start mb-2">
@@ -335,8 +339,10 @@ class Dashboard {
                     </h4>
                     
                     <div class="flex items-center gap-4 mb-6 bg-slate-50/50 p-4 rounded-xl border border-slate-100/50">
-                        <div class="w-11 h-11 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-900 font-bold text-sm border border-slate-100 flex-shrink-0">
-                            ${authorName.split(' ').map(n => n[0]).join('')}
+                        <div class="w-11 h-11 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-900 font-bold text-sm border border-slate-100 flex-shrink-0 overflow-hidden">
+                            ${paper.user && paper.user.profile_picture 
+                                ? `<img src="/storage/${paper.user.profile_picture}" alt="${authorName}" class="w-full h-full object-cover" onerror="this.outerHTML='${authorName.split(' ').map(n => n[0]).join('')}'">` 
+                                : authorName.split(' ').map(n => n[0]).join('')}
                         </div>
                         <div class="min-w-0">
                             <p class="text-sm font-bold text-slate-800 truncate">${authorName}</p>
@@ -361,8 +367,8 @@ class Dashboard {
                 
                 <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center gap-3">
                     <button onclick="dashboard.viewPaperDetails(${paper.id}, 'view')" 
-                        class="flex-1 h-10 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm active:scale-95">
-                        <i class="fas fa-eye text-slate-400"></i>
+                        class="flex-1 h-10 flex items-center justify-center gap-2 text-xs font-bold text-white bg-blue-600 border border-transparent rounded-full hover:bg-blue-700 transition-all shadow-sm active:scale-95">
+                        <i class="fas fa-eye text-blue-100"></i>
                         Details
                     </button>
                     
@@ -632,6 +638,7 @@ class Dashboard {
                 this.papers = data.papers || [];
                 this.filteredPapers = [...this.papers];
                 this.showLoading(false);
+                this.updateUIForRole(); // Add this to update title when viewMode changes
                 this.displayPapers(); // reuse existing function to show cards
                 
                 // Render pagination
@@ -680,17 +687,58 @@ class Dashboard {
         }
     }
 
+    // Global helper for profile image preview
+    previewProfileImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                this.showToast('Image is too large. Max size is 5MB.', true);
+                event.target.value = ''; // Reset input
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('profileImagePreview');
+                if (preview) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="w-full h-full object-cover">`;
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
     // Modal functions
     openProfileModal() {
         document.getElementById('updateProfileModal').classList.remove('hidden');
         // Get user data from data attributes
-        const firstName = document.querySelector('[data-user-first-name]')?.getAttribute('data-user-first-name') || '';
-        const lastName = document.querySelector('[data-user-last-name]')?.getAttribute('data-user-last-name') || '';
-        const email = document.querySelector('[data-user-email]')?.getAttribute('data-user-email') || '';
+        const userDataContainer = document.querySelector('[data-user-first-name]');
+        const firstName = userDataContainer?.getAttribute('data-user-first-name') || '';
+        const lastName = userDataContainer?.getAttribute('data-user-last-name') || '';
+        const email = userDataContainer?.getAttribute('data-user-email') || '';
+        const googleScholar = userDataContainer?.getAttribute('data-user-google-scholar') || '';
+        const scopusId = userDataContainer?.getAttribute('data-user-scopus-id') || '';
+        const orcid = userDataContainer?.getAttribute('data-user-orcid') || '';
+        const profilePicture = userDataContainer?.getAttribute('data-user-profile-picture') || '';
         
         document.getElementById('first_name').value = firstName;
         document.getElementById('last_name').value = lastName;
         document.getElementById('email').value = email;
+        document.getElementById('google_scholar_link').value = googleScholar;
+        document.getElementById('scopus_id_link').value = scopusId;
+        document.getElementById('orcid_link').value = orcid;
+
+        // Display current picture
+        const preview = document.getElementById('profileImagePreview');
+        if (preview) {
+            if (profilePicture) {
+                // Ensure storage path format is correct. Assuming stored in 'profiles/...'
+                preview.innerHTML = `<img src="/storage/${profilePicture}" alt="Profile" class="w-full h-full object-cover">`;
+            } else {
+                preview.innerHTML = `<i class="fas fa-user text-2xl text-slate-400"></i>`;
+            }
+        }
     }
 
     closeProfileModal() {
@@ -725,30 +773,41 @@ class Dashboard {
     async handleProfileUpdate(e) {
         e.preventDefault();
         const form = e.target;
+        const formData = new FormData(form);
+
+        // Don't send empty file object
+        const picInput = form.querySelector('#profile_picture');
+        if (picInput && picInput.files.length === 0) {
+            formData.delete('profile_picture');
+        } else if (picInput && picInput.files.length > 0) {
+            if (picInput.files[0].size > 5 * 1024 * 1024) {
+                this.showToast('Profile picture exceeds the 5MB limit.', true);
+                return;
+            }
+        }
 
         try {
             const response = await fetch('/profile-update', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json'
                 },
-                body: JSON.stringify({
-                    first_name: form.first_name.value,
-                    last_name: form.last_name.value,
-                    email: form.email.value,
-                })
+                body: formData
             });
 
             const data = await response.json();
 
             if (data.success) {
-                document.querySelectorAll('p.font-medium')[0].textContent = `${data.user.first_name} ${data.user.last_name}`;
-                document.querySelectorAll('p.text-sm.opacity-80')[0].textContent = data.user.email;
                 this.closeProfileModal();
                 this.showToast('Profile updated successfully!');
+                setTimeout(() => window.location.reload(), 1000);
             } else {
-                this.showToast('Update failed.', true);
+                let errorMsg = data.message || 'Update failed.';
+                if (data.errors) {
+                    errorMsg = Object.values(data.errors).flat().join(' ');
+                }
+                this.showToast(errorMsg, true);
             }
         } catch (error) {
             console.error(error);
@@ -901,6 +960,7 @@ window.loadPapers = function() { window.dashboard?.loadPapers(); };
 window.refreshPapers = function() { window.dashboard?.refreshPapers(); };
 window.openProfileModal = function() { window.dashboard?.openProfileModal(); };
 window.closeProfileModal = function() { window.dashboard?.closeProfileModal(); };
+window.previewProfileImage = function(event) { window.dashboard?.previewProfileImage(event); };
 window.openPaperModal = function() { 
     console.log('Global openPaperModal called');
     if (window.dashboard) {

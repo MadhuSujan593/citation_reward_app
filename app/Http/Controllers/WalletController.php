@@ -26,7 +26,7 @@ class WalletController extends Controller
             $wallet = Wallet::create([
                 'user_id' => $user->id,
                 'balance' => 0,
-                'currency' => 'Coins',
+                'currency' => 'INR',
                 'is_active' => true
             ]);
         }

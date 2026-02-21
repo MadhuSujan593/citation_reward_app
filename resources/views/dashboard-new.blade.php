@@ -64,7 +64,6 @@
 @push('modals')
     <x-dashboard.modals.profile-modal />
     <x-dashboard.modals.paper-details-modal />
-    <x-dashboard.modals.upload-paper-modal />
     <x-dashboard.modals.edit-paper-modal />
     <x-dashboard.modals.delete-paper-modal />
     <x-dashboard.modals.delete-confirmation-modal />

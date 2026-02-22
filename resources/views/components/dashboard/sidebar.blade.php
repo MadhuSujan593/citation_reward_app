@@ -1,5 +1,4 @@
 <!-- Updated Sidebar with proper z-index and positioning -->
-<div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden lg:hidden"></div>
 
 <div 
     id="sidebar"
@@ -36,13 +35,19 @@
 >
     <div class="px-6 py-8 h-full flex flex-col overflow-y-auto">
         <!-- Logo Section -->
-        <div class="flex items-center space-x-3 mb-10">
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: #2563eb !important;">
-                <i class="fas fa-layer-group text-lg" style="color: white !important;"></i>
+        <div class="flex items-center justify-between mb-10">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: #2563eb !important;">
+                    <i class="fas fa-layer-group text-lg" style="color: white !important;"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800 tracking-tight">Citation Hub</h1>
+                </div>
             </div>
-            <div>
-                <h1 class="text-xl font-bold text-slate-800 tracking-tight">Citation Hub</h1>
-            </div>
+            <!-- Mobile Close Button -->
+            <button id="closeSidebarBtn" class="lg:hidden p-2 text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
         </div>
 
         <!-- Role Selector -->

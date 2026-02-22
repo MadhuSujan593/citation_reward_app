@@ -14,9 +14,9 @@
                 @if(Request::is('wallet*'))
                     My Wallet
                 @elseif(Request::is('dashboard*') || Request::is('/'))
-                    Research Hub
+                    Citation Hub
                 @else
-                    {{ config('app.name', 'Research Hub') }}
+                    {{ config('app.name', 'Citation Hub') }}
                 @endif
             </h1>
         </div>

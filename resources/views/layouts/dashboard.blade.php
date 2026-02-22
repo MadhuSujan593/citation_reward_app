@@ -115,6 +115,9 @@
         data-user-profile-picture="{{ auth()->user()->profile_picture }}"
         class="hidden"
     ></div>
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden lg:hidden"></div>
+
     <!-- Mobile Header -->
     <x-dashboard.mobile-header />
     
@@ -130,7 +133,7 @@
             @endif
 
             <!-- Page Content -->
-            <main class="flex-1 p-6 overflow-auto">
+            <main class="flex-1 p-4 sm:p-6 overflow-auto">
                 @yield('content')
             </main>
         </div>

@@ -36,7 +36,7 @@
                     </div>
                 </div>
 
-                @if(Auth::user()->role === 'Funder' || Auth::user()->email === 'admin@citationapp.com')
+                @if(in_array(Auth::user()->role, ['Funder', 'Citer', 'Admin']))
                 <div class="flex gap-3">
                     <button onclick="openAddFundsModal()" class="w-auto px-10 h-11 flex items-center justify-center gap-2 text-sm font-bold text-white bg-blue-600 rounded-xl transition-all shadow-sm">
                         <i class="fas fa-plus"></i>
@@ -48,15 +48,15 @@
         </div>
 
         <!-- Quick Stats -->
-        <div class="grid grid-cols-1 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-1 gap-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <p class="text-xs font-semibold text-slate-400 mb-1">Total Credited</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Total Credited</p>
                 <p class="text-xl font-bold text-emerald-600">
                     {{ number_format($stats['total_credited'], 0) }}
                 </p>
             </div>
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <p class="text-xs font-semibold text-slate-400 mb-1">Total Debited</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Total Debited</p>
                 <p class="text-xl font-bold text-rose-500">
                     {{ number_format($stats['total_debited'], 0) }}
                 </p>

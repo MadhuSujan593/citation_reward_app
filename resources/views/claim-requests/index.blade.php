@@ -12,17 +12,17 @@
         }
      }">
     
-    <div class="max-w-6xl mx-auto space-y-10">
+    <div class="max-w-6xl mx-auto space-y-6 sm:space-y-10">
         <!-- Header Section -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 border-b border-slate-200 pb-6 sm:pb-8">
             <div>
-                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Claim Requests</h1>
-                <p class="text-slate-500 mt-2 font-medium">Verify your citations and manage reward claims</p>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Claim Requests</h1>
+                <p class="text-slate-500 mt-1 sm:mt-2 font-medium text-sm sm:base">Verify your citations and manage reward claims</p>
             </div>
             <div class="flex items-center gap-3">
-                <div class="px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                    <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Active Protection</span>
+                <div class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-wider">Active Protection</span>
                 </div>
             </div>
         </div>

@@ -17,8 +17,45 @@ class Dashboard {
             this.loadPapers();
         }
         this.updateUIForRole();
-        this.setupEventListeners();
         this.setupSearchAndFilters();
+        this.setupMobileMenu();
+    }
+
+    setupMobileMenu() {
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+
+        if (!hamburgerBtn || !sidebar || !overlay) return;
+
+        const openSidebar = () => {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        };
+
+        const closeSidebar = () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        };
+
+        hamburgerBtn.addEventListener('click', openSidebar);
+        overlay.addEventListener('click', closeSidebar);
+        
+        if (closeSidebarBtn) {
+            closeSidebarBtn.addEventListener('click', closeSidebar);
+        }
+
+        // Close sidebar on navigation (for mobile)
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) {
+                    closeSidebar();
+                }
+            });
+        });
     }
 
     updateRole(newRole) {

@@ -11,7 +11,9 @@ use App\Http\Controllers\WalletController;
 // Guest-only routes
 Route::middleware('guest')->group(function () {
     // Welcome
-    Route::get('/', function () {
+    Route::get('/test-email', [App\Http\Controllers\EmailTestController::class, 'test']);
+
+Route::get('/', function () {
         return view('auth.login');
     });
 

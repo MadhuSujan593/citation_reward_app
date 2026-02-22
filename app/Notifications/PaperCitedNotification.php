@@ -7,18 +7,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class CustomResetPassword extends Notification
+class PaperCitedNotification extends Notification
 {
     use Queueable;
 
-    public $token;
+    public $paper;
+    public $citer;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($token)
+    public function __construct($paper, $citer)
     {
-        $this->token = $token;
+        $this->paper = $paper;
+        $this->citer = $citer;
     }
 
     /**
@@ -36,19 +38,13 @@ class CustomResetPassword extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $email = $notifiable->getEmailForPasswordReset();
-        \Illuminate\Support\Facades\Log::info('Routing Password Reset to: ' . $email);
-
-        $url = url(route('password.reset', [
-            'token' => $this->token,
-            'email' => $email,
-        ], false));
-
         return (new MailMessage)
-            ->subject('Citation Hub Password Reset')
-            ->view('emails.password-reset', [
-                'url' => $url,
-                'user' => $notifiable
+            ->subject("New Citation Claim: {$this->paper->title} - Citation Hub")
+            ->view('emails.paper-cited', [
+                'funder' => $notifiable,
+                'citer' => $this->citer,
+                'paper' => $this->paper,
+                'amount' => 100
             ]);
     }
 

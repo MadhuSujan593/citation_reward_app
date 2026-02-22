@@ -12,7 +12,7 @@
         <!-- Statistics Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Pending Card -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 transition-all duration-300">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
                         <i class="fas fa-clock text-base"></i>
@@ -25,7 +25,7 @@
             </div>
 
             <!-- Approved Card -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 transition-all duration-300">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
                         <i class="fas fa-check-circle text-base"></i>
@@ -38,7 +38,7 @@
             </div>
 
             <!-- Rejected Card -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 transition-all duration-300">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600">
                         <i class="fas fa-times-circle text-base"></i>
@@ -51,7 +51,7 @@
             </div>
 
             <!-- Total Card -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 transition-all duration-300">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
                         <i class="fas fa-layer-group text-base"></i>
@@ -87,7 +87,7 @@
             @if($claimRequests->count() > 0)
                 <div class="grid grid-cols-1 gap-4">
                     @foreach($claimRequests as $claim)
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:border-blue-100 transition-all duration-300 group" id="claim-{{ $claim->id }}">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden transition-all duration-300 group" id="claim-{{ $claim->id }}">
                             <div class="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-slate-50">
                                 <!-- Main Info Section -->
                                 <div class="flex-1 p-6 lg:p-8">
@@ -108,7 +108,7 @@
                                         </div>
                                     </div>
 
-                                    <h3 class="text-xl font-bold text-slate-900 leading-tight mb-8 group-hover:text-blue-700 transition-colors">
+                                    <h3 class="text-xl font-bold text-slate-900 leading-tight mb-8 transition-colors">
                                         {{ $claim->citer_paper_title }}
                                     </h3>
 
@@ -146,7 +146,7 @@
                                                 <div>
                                                     <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-1">REFERENCED PAPER</p>
                                                     <p class="text-sm font-bold text-slate-800">{{ Str::limit($claim->referencedPaper->title ?? 'N/A', 50) }}</p>
-                                                    <p class="text-[10px] font-bold text-emerald-600 tracking-wider uppercase mt-1">Payout: 95 Coins</p>
+                                                    <p class="text-[10px] font-bold text-emerald-600 tracking-wider uppercase mt-1">Payout: 95 INR</p>
                                                 </div>
                                             </div>
 
@@ -177,7 +177,7 @@
                                 <div class="lg:w-64 p-6 bg-slate-50/50 flex flex-col justify-center gap-3">
                                     @if($claim->pdf_document)
                                         <a href="{{ asset('storage/' . $claim->pdf_document) }}" target="_blank"
-                                            class="flex items-center justify-center gap-3 w-full py-3.5 px-6 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 text-sm">
+                                            class="flex items-center justify-center gap-3 w-full py-3.5 px-6 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold shadow-sm transition-all duration-300 text-sm">
                                             <i class="fas fa-file-pdf text-rose-500"></i>
                                             <span>Review PDF</span>
                                         </a>
@@ -185,12 +185,12 @@
 
                                     @if($claim->status === 'pending')
                                         <button onclick="showApprovalModal({{ $claim->id }})"
-                                            class="flex items-center justify-center gap-3 w-full py-3.5 px-6 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 hover:-translate-y-0.5 transition-all duration-300 text-sm">
+                                            class="flex items-center justify-center gap-3 w-full py-3.5 px-6 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-100 transition-all duration-300 text-sm">
                                             <i class="fas fa-check-circle"></i>
                                             <span>Approve Claim</span>
                                         </button>
                                         <button onclick="showRejectionModal({{ $claim->id }})"
-                                            class="flex items-center justify-center gap-3 w-full py-3.5 px-6 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold hover:bg-rose-50 transition-all duration-300 text-sm">
+                                            class="flex items-center justify-center gap-3 w-full py-3.5 px-6 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold transition-all duration-300 text-sm">
                                             <i class="fas fa-times-circle"></i>
                                             <span>Reject Claim</span>
                                         </button>
@@ -234,7 +234,7 @@
                     </div>
                     <div>
                         <h3 class="text-2xl font-bold text-slate-900">Confirm Approval</h3>
-                        <p class="text-slate-500 font-medium">Process 95 Coin reward transfer</p>
+                        <p class="text-slate-500 font-medium">Process 95 INR reward transfer</p>
                     </div>
                 </div>
                 <button onclick="closeApprovalModal()" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
@@ -245,7 +245,7 @@
             <div class="space-y-6">
                 <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                     <p class="text-sm font-medium text-slate-600 leading-relaxed">
-                        By approving this claim, you verify the citation is valid. The claimant will receive **95 Coins** and the system will retain **5 Coins** as commission.
+                        By approving this claim, you verify the citation is valid. The claimant will receive <strong class="text-indigo-600">95 INR</strong> and the system will retain <strong class="text-indigo-600">5 INR</strong> as commission.
                     </p>
                 </div>
                 
@@ -262,7 +262,7 @@
                         Cancel
                     </button>
                     <button onclick="confirmApproval()"
-                        class="flex-2 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-100 hover:bg-blue-700 hover:-translate-y-1 active:scale-95 transition-all duration-300">
+                        class="flex-2 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-100 active:scale-95 transition-all duration-300">
                         Process Payout
                     </button>
                 </div>
@@ -304,7 +304,7 @@
                         Cancel
                     </button>
                     <button onclick="confirmRejection()"
-                        class="flex-2 py-4 px-8 bg-rose-600 text-white rounded-2xl font-bold shadow-xl shadow-rose-100 hover:bg-rose-700 hover:-translate-y-1 active:scale-95 transition-all duration-300">
+                        class="flex-2 py-4 px-8 bg-rose-600 text-white rounded-2xl font-bold shadow-xl shadow-rose-100 active:scale-95 transition-all duration-300">
                         Confirm Rejection
                     </button>
                 </div>

@@ -166,10 +166,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     submitBtn.disabled = false;
                     submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
                     
+                    // Parse validation errors if present
+                    let errorMsg = data.message || 'Failed to publish paper.';
+                    if (data.errors) {
+                        const firstError = Object.values(data.errors)[0][0];
+                        errorMsg = firstError;
+                    }
+                    
                     if (window.showToast) {
-                        window.showToast(data.message || 'Failed to publish paper.', true);
+                        window.showToast(errorMsg, true);
                     } else {
-                        alert(data.message || 'Failed to publish paper.');
+                        alert(errorMsg);
                     }
                 }
             } catch (err) {

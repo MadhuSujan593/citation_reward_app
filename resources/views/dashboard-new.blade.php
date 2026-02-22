@@ -25,7 +25,7 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm transition-shadow">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xs font-semibold text-slate-400 mb-1">Total papers</p>
@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm transition-shadow">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xs font-semibold text-slate-400 mb-1" data-stat="citations">

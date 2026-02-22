@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reset Password - ResearchHub</title>
+    <title>Reset Password - Citation Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
@@ -19,7 +19,7 @@
                 <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style="background-color: #2563eb;">
                     <i class="fas fa-layer-group text-2xl text-white"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">ResearchHub</h1>
+                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Citation Hub</h1>
             </div>
             <h2 class="text-xl font-semibold text-slate-800">Reset your password</h2>
             <p class="text-sm text-slate-500 mt-1 text-center">Enter a new secure password for your account.</p>

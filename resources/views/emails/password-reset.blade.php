@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResearchHub Password Reset</title>
+    <title>Citation Hub Password Reset</title>
     <style>
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -80,7 +80,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>ResearchHub</h1>
+            <h1>Citation Hub</h1>
         </div>
         <div class="content">
             <h2>Reset Your Password</h2>
@@ -93,7 +93,7 @@
             
             <p>This link will expire in 60 minutes for your security. If you didn't request this, you can safely ignore this email.</p>
             
-            <p>Thanks,<br>The ResearchHub Team</p>
+            <p>Thanks,<br>The Citation Hub Team</p>
             
             <div class="link-alt">
                 Having trouble? Paste this link into your browser:<br>
@@ -101,7 +101,7 @@
             </div>
         </div>
         <div class="footer">
-            &copy; {{ date('Y') }} ResearchHub. All rights reserved.
+            &copy; {{ date('Y') }} Citation Hub. All rights reserved.
         </div>
     </div>
 </body>

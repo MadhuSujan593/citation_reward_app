@@ -36,12 +36,14 @@
                     </div>
                 </div>
 
+                @if(Auth::user()->role === 'Funder' || Auth::user()->email === 'admin@citationapp.com')
                 <div class="flex gap-3">
-                    <button onclick="openAddFundsModal()" class="w-auto px-10 h-11 flex items-center justify-center gap-2 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all shadow-md active:scale-95">
+                    <button onclick="openAddFundsModal()" class="w-auto px-10 h-11 flex items-center justify-center gap-2 text-sm font-bold text-white bg-blue-600 rounded-xl transition-all shadow-sm">
                         <i class="fas fa-plus"></i>
                         Add Funds
                     </button>
                 </div>
+                @endif
             </div>
         </div>
 
@@ -169,11 +171,11 @@
                     </button>
                     <button 
                         type="submit"
-                        class="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all duration-200 transform active:scale-95 text-sm sm:text-base"
+                        class="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-sm transition-all duration-200 text-sm sm:text-base"
                     >
                         <span class="flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-plus"></i>
-                            <span>Add Coins</span>
+                            <span>Add INR</span>
                         </span>
                     </button>
                 </div>
@@ -355,7 +357,7 @@ class WalletManager {
         }
 
         const transactionsHtml = transactions.map(transaction => `
-            <div class="group bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100">
+            <div class="group bg-white rounded-lg p-3 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3 min-w-0 flex-1">
                         <div class="w-10 h-10 ${transaction.type === 'credit' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'} rounded-full flex items-center justify-center shadow-sm flex-shrink-0">
@@ -378,10 +380,10 @@ class WalletManager {
                     </div>
                     <div class="flex flex-col items-end ml-3">
                         <div class="text-base font-bold" style="color: ${transaction.type === 'credit' ? '#059669' : '#e11d48'} !important;">
-                            ${transaction.type === 'credit' ? '+' : '-'}${Math.abs(parseFloat(transaction.amount)).toFixed(0)} Coins
+                            ${transaction.type === 'credit' ? '+' : '-'}${Math.abs(parseFloat(transaction.amount)).toFixed(0)} INR
                         </div>
                         <div class="text-xs text-gray-500">
-                            Balance: ${parseFloat(transaction.balance_after).toFixed(0)} Coins
+                            Balance: ${parseFloat(transaction.balance_after).toFixed(0)} INR
                         </div>
                     </div>
                 </div>

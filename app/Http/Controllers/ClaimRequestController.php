@@ -97,7 +97,7 @@ class ClaimRequestController extends Controller
                 $pdfPath = $request->file('pdf_document')->store('claim-documents', 'public');
             }
 
-            ClaimRequest::create([
+            $claim = ClaimRequest::create([
                 'user_id' => $user->id,
                 'citer_paper_title' => $request->citer_paper_title,
                 'paper_link' => $request->paper_link,
@@ -108,6 +108,18 @@ class ClaimRequestController extends Controller
             ]);
 
             DB::commit();
+
+            // Notify Paper Funder about the citation claim
+            try {
+                $referencedPaper = PublishedPaper::find($request->referenced_paper_id);
+                $funder = $referencedPaper->user;
+                if ($funder) {
+                    $funder->notify(new \App\Notifications\PaperCitedNotification($referencedPaper, $user));
+                    \Illuminate\Support\Facades\Log::info('Citation notification sent to funder on claim submission: ' . $funder->email);
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send citation notification on claim submission: ' . $e->getMessage());
+            }
 
             return response()->json([
                 'success' => true,
@@ -188,7 +200,7 @@ class ClaimRequestController extends Controller
                 $citerWallet = \App\Models\Wallet::create([
                     'user_id' => $claimRequest->user->id,
                     'balance' => 0,
-                    'currency' => 'Coins',
+                    'currency' => 'INR',
                     'is_active' => true
                 ]);
             }

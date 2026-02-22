@@ -6,6 +6,7 @@
     class="fixed top-0 left-0 h-full w-full max-w-xs bg-white shadow-2xl z-50 pointer-events-auto transform -translate-x-full transition-transform duration-300 lg:sticky lg:top-0 lg:translate-x-0 lg:w-72 lg:h-screen lg:z-auto lg:shadow-none"
     x-data="{ 
         currentRole: '{{ auth()->user()->role ?? 'Citer' }}',
+        isAdmin: {{ auth()->user()->email === 'admin@citationapp.com' ? 'true' : 'false' }},
         switchRole(role) {
             this.currentRole = role;
             if (document.getElementById('currentRole')) {
@@ -25,12 +26,10 @@
                 }
             }
 
-            // If on wallet page, redirect when switching to Citer
+            // If on wallet page, redirect only if something actually requires it
+            // (Previously it was redirecting Citers, but now Citers have access)
             if (window.location.pathname.includes('/wallet')) {
-                if (role === 'Citer') {
-                    window.location.href = '{{ route('dashboard') }}';
-                    return;
-                }
+                // No redirect needed for role switch on wallet page anymore
             }
         }
     }"
@@ -38,11 +37,11 @@
     <div class="px-6 py-8 h-full flex flex-col overflow-y-auto">
         <!-- Logo Section -->
         <div class="flex items-center space-x-3 mb-10">
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center shadow-lg shadow-blue-100" style="background-color: #2563eb !important;">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: #2563eb !important;">
                 <i class="fas fa-layer-group text-lg" style="color: white !important;"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold text-slate-800 tracking-tight">ResearchHub</h1>
+                <h1 class="text-xl font-bold text-slate-800 tracking-tight">Citation Hub</h1>
             </div>
         </div>
 
@@ -50,7 +49,7 @@
         <div class="mb-10 px-4">
             <p class="text-[11px] font-bold text-slate-400 mb-3 uppercase tracking-widest">Workspace Role</p>
             @if(auth()->user()->email === 'admin@citationapp.com')
-                <div class="p-3 rounded-2xl flex items-center gap-3 border shadow-lg" style="background-color: #0f172a; border-color: #1e293b;">
+                <div class="p-3 rounded-2xl flex items-center gap-3 border" style="background-color: #0f172a; border-color: #1e293b;">
                     <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: #2563eb;">
                         <i class="fas fa-shield-alt text-white text-xs"></i>
                     </div>
@@ -60,14 +59,14 @@
                 <div class="bg-gray-100 p-1.5 rounded-2xl flex gap-1 border border-gray-200">
                     <button 
                         class="flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all duration-300"
-                        :style="currentRole === 'Citer' ? 'background-color: #2563eb !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);' : 'background-color: transparent; color: #64748b;'"
+                        :style="currentRole === 'Citer' ? 'background-color: #2563eb !important; color: white !important;' : 'background-color: transparent; color: #64748b;'"
                         @click="switchRole('Citer')"
                     >
                         <i class="fas fa-quote-right mr-1.5" :style="currentRole === 'Citer' ? 'color: white !important;' : 'color: #94a3b8;'"></i> Citer
                     </button>
                     <button 
                         class="flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all duration-300"
-                        :style="currentRole === 'Funder' ? 'background-color: #2563eb !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);' : 'background-color: transparent; color: #64748b;'"
+                        :style="currentRole === 'Funder' ? 'background-color: #2563eb !important; color: white !important;' : 'background-color: transparent; color: #64748b;'"
                         @click="switchRole('Funder')"
                     >
                         <i class="fas fa-briefcase mr-1.5" :style="currentRole === 'Funder' ? 'color: white !important;' : 'color: #94a3b8;'"></i> Funder
@@ -85,7 +84,7 @@
                 </a>
             </div>
 
-            <div x-show="currentRole === 'Funder'" x-cloak class="space-y-1">
+            <div x-cloak class="space-y-1">
                 <a href="{{ route('wallet.index') }}" 
                     class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-bold transition-all {{ Request::is('wallet*') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }}"
                 >

@@ -312,9 +312,9 @@ class Dashboard {
         const citationsCount = paper.citers_count || 0;
 
         return `
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.02),0_10px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_8px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.06)] transition-all duration-300 overflow-hidden flex flex-col h-full group relative">
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.02),0_10px_20px_rgba(0,0,0,0.03)] transition-all duration-300 overflow-hidden flex flex-col h-full group relative">
                 <!-- Subtle Accent -->
-                <div class="absolute top-0 left-0 w-1 h-full bg-slate-100 group-hover:bg-blue-600 transition-colors duration-300"></div>
+                <div class="absolute top-0 left-0 w-1 h-full bg-slate-100 transition-colors duration-300"></div>
                 
                 <div class="p-6 flex-1">
                     <div class="flex justify-between items-start mb-2">
@@ -836,7 +836,12 @@ class Dashboard {
                 this.loadPapers();
                 e.target.reset();
             } else {
-                this.showToast(data.message || 'Failed to upload paper.', true);
+                let errorMsg = data.message || 'Failed to upload paper.';
+                if (data.errors) {
+                    const firstError = Object.values(data.errors)[0][0];
+                    errorMsg = firstError;
+                }
+                this.showToast(errorMsg, true);
             }
         } catch (err) {
             console.error(err);
@@ -869,7 +874,12 @@ class Dashboard {
                 this.closeEditModal();
                 this.loadPapers();
             } else {
-                this.showToast(data.message || 'Failed to update paper', true);
+                let errorMsg = data.message || 'Failed to update paper';
+                if (data.errors) {
+                    const firstError = Object.values(data.errors)[0][0];
+                    errorMsg = firstError;
+                }
+                this.showToast(errorMsg, true);
             }
         } catch (err) {
             console.error('Update error:', err);

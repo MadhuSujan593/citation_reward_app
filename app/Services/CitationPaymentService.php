@@ -37,7 +37,7 @@ class CitationPaymentService
                 $funderWallet = Wallet::create([
                     'user_id' => $funder->id,
                     'balance' => 0,
-                    'currency' => 'Coins',
+                    'currency' => 'INR',
                     'is_active' => true
                 ]);
             }
@@ -69,6 +69,9 @@ class CitationPaymentService
             );
 
             DB::commit();
+
+            // Notification moved to ClaimRequestController@store
+
             return ['success' => true, 'message' => 'Citation processed successfully'];
 
         } catch (\Exception $e) {
@@ -102,7 +105,7 @@ class CitationPaymentService
                 $funderWallet = Wallet::create([
                     'user_id' => $funder->id,
                     'balance' => 0,
-                    'currency' => 'Coins',
+                    'currency' => 'INR',
                     'is_active' => true
                 ]);
             }

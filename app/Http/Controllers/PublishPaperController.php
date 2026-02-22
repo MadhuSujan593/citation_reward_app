@@ -26,7 +26,7 @@ class PublishPaperController extends Controller
                 'chicago' => 'nullable|string',
                 'harvard' => 'nullable|string',
                 'vancouver' => 'nullable|string',
-                'doi' => 'nullable|string',
+                'doi' => 'nullable|string|unique:published_papers,doi',
             ]);
 
             PublishedPaper::create([
@@ -66,7 +66,7 @@ class PublishPaperController extends Controller
             'chicago' => 'nullable|string',
             'harvard' => 'nullable|string',
             'vancouver' => 'nullable|string',
-            'doi' => 'nullable|string',
+            'doi' => 'nullable|string|unique:published_papers,doi,' . $paper->id,
         ]);
 
         $paper->update($validated);

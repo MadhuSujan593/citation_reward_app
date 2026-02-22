@@ -38,7 +38,7 @@
             @if(trim($currentRole) === 'Funder')
             <button 
                 onclick="openPaperModal()" 
-                class="mt-6 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                class="mt-6 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-200"
             >
                 <i class="fas fa-plus mr-2"></i>
                 Upload Your First Paper

@@ -31,7 +31,7 @@
             <div class="xl:col-span-12 space-y-10">
                 
                 <!-- Submission Form Card -->
-                <div class="bg-white rounded-[2rem] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02),0_20px_25px_-5px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden transform transition-all duration-300 hover:shadow-[0_4px_6px_-1px_rgba(37,99,235,0.05),0_20px_25px_-5px_rgba(37,99,235,0.1)]">
+                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden transition-all duration-300">
                     <div class="p-8 sm:p-10">
                         <div class="flex items-center gap-4 mb-10 pb-6 border-b border-slate-50">
                             <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-100 group shrink-0">
@@ -121,7 +121,7 @@
 
                             <div class="flex pt-4">
                                 <button type="submit"
-                                    class="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 text-sm">
+                                    class="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-sm transition-all duration-300 flex items-center justify-center gap-3 text-sm">
                                     <span>Submit Claim Request</span>
                                     <i class="fas fa-arrow-right text-xs opacity-50"></i>
                                 </button>
@@ -143,7 +143,7 @@
                     @if($claimRequests->count() > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             @foreach($claimRequests as $claim)
-                                <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all duration-300 group">
+                                <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100 transition-all duration-300 group">
                                     <div class="flex items-start justify-between mb-4">
                                         <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-colors shadow-sm
                                             @if($claim->status === 'pending') bg-amber-50 text-amber-600 border-amber-100

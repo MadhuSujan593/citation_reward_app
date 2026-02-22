@@ -18,7 +18,7 @@ class DashboardController extends Controller
         auth()->setUser($user);
 
         // Redirect super admin to their management panel
-        if ($user->email === 'admin@citationapp.com') {
+        if ($user->role === 'Admin') {
             return redirect()->route('admin.claim-requests');
         }
 

@@ -19,7 +19,7 @@ class AdminMiddleware
         $user = Auth::user();
         
         // Check if user is logged in and has admin email
-        if (!$user || $user->email !== 'admin@citationapp.com') {
+        if (!$user || $user->role !== 'Admin') {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Access denied. Admin only.'], 403);
             }

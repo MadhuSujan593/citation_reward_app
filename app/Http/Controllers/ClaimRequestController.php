@@ -143,7 +143,7 @@ class ClaimRequestController extends Controller
         $user = Auth::user();
         
         // Check if user is admin
-        if ($user->email !== 'admin@citationapp.com') {
+        if ($user->role !== 'Admin') {
             abort(403, 'Access denied. Only admins can access this page.');
         }
 
@@ -169,7 +169,7 @@ class ClaimRequestController extends Controller
     {
         $user = Auth::user();
         
-        if ($user->email !== 'admin@citationapp.com') {
+        if ($user->role !== 'Admin') {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
@@ -251,7 +251,7 @@ class ClaimRequestController extends Controller
     {
         $user = Auth::user();
         
-        if ($user->email !== 'admin@citationapp.com') {
+        if ($user->role !== 'Admin') {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 

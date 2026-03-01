@@ -865,6 +865,7 @@ class Dashboard {
             const response = await fetch("/profile-update", {
                 method: "POST",
                 headers: {
+                    "Accept": "application/json",
                     "X-CSRF-TOKEN":
                         document
                             .querySelector('meta[name="csrf-token"]')
@@ -875,7 +876,7 @@ class Dashboard {
 
             const data = await response.json();
 
-            if (data.success) {
+            if (response.ok && data.success) {
                 if (data.user) {
                     const nameElements = document.querySelectorAll("p.font-medium");
                     if(nameElements.length > 0) nameElements[0].textContent = `${data.user.first_name} ${data.user.last_name}`;
@@ -894,11 +895,16 @@ class Dashboard {
                 this.showToast("Profile updated successfully!");
                 setTimeout(() => window.location.reload(), 1000); // Reload to ensure all images refresh
             } else {
-                this.showToast(data.message || "Update failed.", true);
+                // Formatting Laravel validation errors
+                let errorMsg = data.message || "Update failed.";
+                if (data.errors) {
+                    errorMsg = Object.values(data.errors).map(e => e.join(' ')).join('\n');
+                }
+                this.showToast(errorMsg, true);
             }
         } catch (error) {
-            console.error(error);
-            this.showToast("An error occurred during update.", true);
+            console.error("Profile update error:", error);
+            this.showToast("An error occurred during update. Please check your connection.", true);
         }
     }
 

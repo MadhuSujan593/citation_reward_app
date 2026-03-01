@@ -36,13 +36,13 @@
                 No published papers available at the moment.
             </p>
             @if(trim($currentRole) === 'Funder')
-            <button 
-                onclick="openPaperModal()" 
-                class="mt-6 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-200"
+            <a 
+                href="{{ route('papers.create') }}" 
+                class="mt-6 inline-flex items-center justify-center bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-200"
             >
                 <i class="fas fa-plus mr-2"></i>
                 Upload Your First Paper
-            </button>
+            </a>
             @endif
         </div>
     </div>

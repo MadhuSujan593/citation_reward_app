@@ -848,41 +848,57 @@ class Dashboard {
     async handleProfileUpdate(e) {
         e.preventDefault();
         const form = e.target;
+        
+        // Front-end File Size Validation (2MB)
+        const fileInput = form.querySelector('input[type="file"]');
+        if (fileInput && fileInput.files.length > 0) {
+            const fileSize = fileInput.files[0].size / 1024 / 1024; // in MB
+            if (fileSize > 2) {
+                this.showToast("Profile picture must be less than 2MB.", true);
+                return;
+            }
+        }
+
+        const formData = new FormData(form);
 
         try {
             const response = await fetch("/profile-update", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
                     "X-CSRF-TOKEN":
                         document
                             .querySelector('meta[name="csrf-token"]')
                             ?.getAttribute("content") || "",
                 },
-                body: JSON.stringify({
-                    first_name: form.first_name.value,
-                    last_name: form.last_name.value,
-                    email: form.email.value,
-                }),
+                body: formData,
             });
 
             const data = await response.json();
 
             if (data.success) {
-                document.querySelectorAll(
-                    "p.font-medium"
-                )[0].textContent = `${data.user.first_name} ${data.user.last_name}`;
-                document.querySelectorAll(
-                    "p.text-sm.opacity-80"
-                )[0].textContent = data.user.email;
+                if (data.user) {
+                    const nameElements = document.querySelectorAll("p.font-medium");
+                    if(nameElements.length > 0) nameElements[0].textContent = `${data.user.first_name} ${data.user.last_name}`;
+                    const emailElements = document.querySelectorAll("p.text-sm.opacity-80");
+                    if(emailElements.length > 0) emailElements[0].textContent = data.user.email;
+                }
+                
+                if (data.profile_image_url) {
+                    const sideProfile = document.getElementById('sidebarProfileImage');
+                    const topProfile = document.getElementById('topNavProfileImage');
+                    if(sideProfile) sideProfile.src = data.profile_image_url;
+                    if(topProfile) topProfile.src = data.profile_image_url;
+                }
+                
                 this.closeProfileModal();
                 this.showToast("Profile updated successfully!");
+                setTimeout(() => window.location.reload(), 1000); // Reload to ensure all images refresh
             } else {
-                this.showToast("Update failed.", true);
+                this.showToast(data.message || "Update failed.", true);
             }
         } catch (error) {
             console.error(error);
-            this.showToast("An error occurred.", true);
+            this.showToast("An error occurred during update.", true);
         }
     }
 

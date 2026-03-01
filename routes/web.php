@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/users', [\App\Http\Controllers\AdminController::class, 'manageUsers'])->name('admin.users');
     Route::post('/admin/users/{user}/role', [\App\Http\Controllers\AdminController::class, 'updateUserRole'])->name('admin.users.update-role');
     Route::post('/admin/users', [\App\Http\Controllers\AdminController::class, 'storeUser'])->name('admin.users.store');
+    Route::delete('/admin/users/{user}', [\App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.users.destroy');
     
     // Wallet routes
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');

@@ -55,4 +55,30 @@ class AdminController extends Controller
             'user' => $user
         ]);
     }
+
+    public function destroy(User $user)
+    {
+        // Prevent deleting oneself
+        if (auth()->id() === $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot delete your own account.'
+            ], 403);
+        }
+
+        try {
+            // Delete the user
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete user. They may have dependent records.'
+            ], 500);
+        }
+    }
 }

@@ -61,11 +61,16 @@
                                 </span>
                             </td>
                             <td class="p-4 pr-6 text-right">
-                                <select onchange="openRoleConfirmModal({{ $user->id }}, this.value, this)" data-original-role="{{ $user->role ?? 'Citer' }}" class="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white text-slate-600 font-medium focus:outline-none focus:border-blue-500 cursor-pointer" {{ $user->id === auth()->id() ? 'disabled' : '' }}>
-                                    <option value="Citer" {{ ($user->role ?? 'Citer') === 'Citer' ? 'selected' : '' }}>Citer</option>
-                                    <option value="Funder" {{ $user->role === 'Funder' ? 'selected' : '' }}>Funder</option>
-                                    <option value="Admin" {{ $user->role === 'Admin' ? 'selected' : '' }}>Admin</option>
-                                </select>
+                                <div class="flex items-center justify-end gap-2">
+                                    <select onchange="openRoleConfirmModal({{ $user->id }}, this.value, this)" data-original-role="{{ $user->role ?? 'Citer' }}" class="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white text-slate-600 font-medium focus:outline-none focus:border-blue-500 cursor-pointer" {{ $user->id === auth()->id() ? 'disabled' : '' }}>
+                                        <option value="Citer" {{ ($user->role ?? 'Citer') === 'Citer' ? 'selected' : '' }}>Citer</option>
+                                        <option value="Funder" {{ $user->role === 'Funder' ? 'selected' : '' }}>Funder</option>
+                                        <option value="Admin" {{ $user->role === 'Admin' ? 'selected' : '' }}>Admin</option>
+                                    </select>
+                                    <button onclick="openDeleteUserModal({{ $user->id }}, '{{ addslashes($user->first_name . ' ' . $user->last_name) }}')" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" {{ $user->id === auth()->id() ? 'disabled' : '' }} title="Delete User">
+                                        <i class="fas fa-trash-alt text-xs"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -143,6 +148,28 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div id="deleteUserModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm transform transition-all duration-300 scale-95 opacity-0 overflow-hidden" id="deleteUserModalContent">
+        <div class="p-8 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center text-red-500 mx-auto mb-6">
+                <i class="fas fa-exclamation-triangle text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Delete User?</h3>
+            <p class="text-slate-500 mb-8" id="deleteUserMessage">Are you sure you want to delete this user? This action cannot be undone.</p>
+            
+            <div class="flex gap-3">
+                <button type="button" onclick="closeDeleteUserModal()" class="flex-1 py-3 px-4 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors">
+                    Cancel
+                </button>
+                <button type="button" id="confirmDeleteBtn" class="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 shadow-lg shadow-red-200 transition-colors">
+                    Delete
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -340,5 +367,77 @@
             btn.disabled = false;
         }
     }
+
+    // Delete User Logic
+    let userToDelete = null;
+
+    function openDeleteUserModal(userId, userName) {
+        userToDelete = userId;
+        document.getElementById('deleteUserMessage').textContent = `Are you sure you want to delete ${userName}? This action cannot be undone and will remove all their data.`;
+        
+        const modal = document.getElementById('deleteUserModal');
+        const content = document.getElementById('deleteUserModalContent');
+        
+        modal.classList.remove('hidden');
+        // Small delay to allow display:block to apply before animating opacity
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeDeleteUserModal() {
+        userToDelete = null;
+        const modal = document.getElementById('deleteUserModal');
+        const content = document.getElementById('deleteUserModalContent');
+        
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+        if (!userToDelete) return;
+
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(`/admin/users/${userToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                if(typeof window.showToast === 'function') {
+                    window.showToast(data.message, false);
+                } else {
+                    alert(data.message);
+                }
+                closeDeleteUserModal();
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                alert(data.message || 'Failed to delete user.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    });
+
 </script>
 @endpush

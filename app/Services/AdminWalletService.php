@@ -13,15 +13,17 @@ class AdminWalletService
      */
     public static function getAdminWallet()
     {
-        // Find or create admin user
-        $admin = User::where('email', 'admin@citationapp.com')->first();
+        // Find the first admin user
+        $admin = User::where('role', 'Admin')->first();
+        
+        // Fallback: if somehow no admin exists, create the default one
         if (!$admin) {
             $admin = User::create([
                 'first_name' => 'System',
                 'last_name' => 'Admin',
                 'email' => 'admin@citationapp.com',
                 'password' => Hash::make('admin123'),
-                'role' => 'Citer'
+                'role' => 'Admin'
             ]);
         }
 

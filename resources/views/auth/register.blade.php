@@ -10,6 +10,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 </head>
 <body class="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-6">
     <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-xl border border-slate-200">

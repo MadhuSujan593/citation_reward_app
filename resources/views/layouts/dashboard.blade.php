@@ -101,6 +101,7 @@
     </style>
     
     @stack('styles')
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 </head>
 
 <body class="bg-gray-50 min-h-screen font-sans antialiased text-slate-900 overflow-x-hidden relative" data-user-role="{{ trim(auth()->user()->role ?? 'Citer') }}">

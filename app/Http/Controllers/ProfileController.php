@@ -34,7 +34,7 @@ class ProfileController extends Controller
             'google_scholar_link' => 'nullable|url|max:255',
             'scopus_id_link' => 'nullable|url|max:255',
             'orcid_link' => 'nullable|url|max:255',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,avif,webp|max:5120',
+            'profile_picture' => 'nullable|mimes:jpeg,png,jpg,gif,avif,webp|max:5120',
         ]);
 
         $user = auth()->user();

@@ -845,21 +845,100 @@ class Dashboard {
     }
 
     // Form handlers
+    // Helper to compress image before uploading
+    async compressImage(file, maxSizeInMB = 0.5) {
+        return new Promise((resolve, reject) => {
+            // Already small enough, return original
+            if (file.size / 1024 / 1024 <= maxSizeInMB) {
+                resolve(file);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Max dimensions
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            resolve(file); // fallback to original
+                            return;
+                        }
+                        const newFile = new File([blob], file.name, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        });
+                        resolve(newFile);
+                    }, 'image/jpeg', 0.8); // 80% quality
+                };
+                img.onerror = (err) => resolve(file); // fallback
+            };
+            reader.onerror = (err) => resolve(file); // fallback
+        });
+    }
+
     async handleProfileUpdate(e) {
         e.preventDefault();
         const form = e.target;
+        const submitBtn = form.querySelector('button[type="submit"]');
         
-        // Front-end File Size Validation (2MB)
-        const fileInput = form.querySelector('input[type="file"]');
+        let originalBtnHtml = '';
+        if (submitBtn) {
+            originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+            submitBtn.disabled = true;
+        }
+        
+        // Front-end File Size Validation (2MB) inside form data
+        let fileInput = form.querySelector('input[type="file"]');
+        let uploadFile = null;
+        
         if (fileInput && fileInput.files.length > 0) {
-            const fileSize = fileInput.files[0].size / 1024 / 1024; // in MB
-            if (fileSize > 2) {
-                this.showToast("Profile picture must be less than 2MB.", true);
+            uploadFile = fileInput.files[0];
+            const fileSize = uploadFile.size / 1024 / 1024; // in MB
+            if (fileSize > 5) {
+                this.showToast("Profile picture must be less than 5MB.", true);
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalBtnHtml;
+                    submitBtn.disabled = false;
+                }
                 return;
             }
+            // Compress the image down if it's over 500kb
+            uploadFile = await this.compressImage(uploadFile, 0.5);
         }
 
         const formData = new FormData(form);
+        if (uploadFile) {
+            // Overwrite the raw large file with our compressed one
+            formData.set('profile_picture', uploadFile);
+        }
 
         try {
             const response = await fetch("/profile-update", {
@@ -901,10 +980,18 @@ class Dashboard {
                     errorMsg = Object.values(data.errors).map(e => e.join(' ')).join('\n');
                 }
                 this.showToast(errorMsg, true);
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalBtnHtml;
+                    submitBtn.disabled = false;
+                }
             }
         } catch (error) {
             console.error("Profile update error:", error);
             this.showToast("An error occurred during update. Please check your connection.", true);
+            if (submitBtn) {
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+            }
         }
     }
 

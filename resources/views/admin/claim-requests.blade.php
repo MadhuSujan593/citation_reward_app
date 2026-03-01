@@ -222,6 +222,9 @@
     </div>
 </div>
 
+<!-- Profile Modal -->
+<x-dashboard.modals.profile-modal />
+
 <!-- Premium Modals -->
 <!-- Approval Modal -->
 <div id="approvalModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">

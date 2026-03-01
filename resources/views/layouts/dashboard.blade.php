@@ -196,14 +196,54 @@
             }, 4000);
         }
     </script>
-
     
+    <!-- Global Page Loader (Top Progress Bar) -->
+    <div id="globalPageLoader" class="fixed top-0 left-0 right-0 h-[3px] z-[99999] opacity-0 transition-opacity duration-300 pointer-events-none overflow-hidden">
+        <div class="h-full bg-blue-600 w-full origin-left -translate-x-[100%] animate-[indeterminate_1.5s_infinite_ease-in-out]"></div>
+    </div>
+    <style>
+        @keyframes indeterminate {
+            0% { transform: translateX(-100%) scaleX(0.2); }
+            50% { transform: translateX(0) scaleX(0.4); }
+            100% { transform: translateX(100%) scaleX(0.2); }
+        }
+    </style>
+
     <!-- Scripts -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     @vite(['resources/js/dashboard.js'])
     @stack('scripts')
     
     <script>
+    // Global Page Transition Logic
+    document.addEventListener('DOMContentLoaded', () => {
+        const loader = document.getElementById('globalPageLoader');
+        
+        // Hide loader when page is fully loaded
+        setTimeout(() => {
+            if (loader) {
+                loader.classList.replace('opacity-100', 'opacity-0');
+            }
+        }, 100);
+
+        // Show loader before navigating away (only on actual navigations)
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (link && link.href && !link.href.startsWith('#') && link.target !== '_blank' && !e.ctrlKey && !e.metaKey) {
+                if (loader) {
+                    loader.classList.replace('opacity-0', 'opacity-100');
+                }
+            }
+        });
+        
+        // Ensure reset if BFCache returns user to page
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                if (loader) loader.classList.replace('opacity-100', 'opacity-0');
+            }
+        });
+    });
+
     // Global function to handle My Citations click from sidebar
     function handleMyCitationsClick() {
         // Check if we're on the dashboard page

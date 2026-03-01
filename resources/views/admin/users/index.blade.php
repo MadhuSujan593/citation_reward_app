@@ -168,6 +168,9 @@
     </div>
 </div>
 
+<!-- Profile Modal -->
+<x-dashboard.modals.profile-modal />
+
 @endsection
 
 @push('scripts')

@@ -14,16 +14,7 @@
         </div>
     </div>
 
-    <!-- Loading State -->
-    <div id="papersLoading" class="hidden">
-        <div class="text-center py-12">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full mb-4">
-                <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
-            </div>
-            <p class="text-gray-600 text-lg">Loading papers...</p>
-            <p class="text-gray-400 text-sm mt-1">Please wait while we fetch the latest research</p>
-        </div>
-    </div>
+
 
     <!-- Empty State -->
     <div id="papersEmpty" class="hidden">

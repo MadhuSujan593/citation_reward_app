@@ -14,7 +14,18 @@ class Dashboard {
 
     init() {
         if (document.getElementById('papersContainer')) {
-            this.loadPapers();
+            // Check URL parameters for explicit view requests (e.g. from Wallet)
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.get('citations') === '1') {
+                this.loadMyCitations();
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (urlParams.get('explore') === '1') {
+                this.loadPapers();
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                this.loadPapers();
+            }
         }
         this.updateUIForRole();
         this.setupEventListeners();
@@ -716,16 +727,22 @@ class Dashboard {
     }
 
     showLoading(show) {
-        const loading = document.getElementById('papersLoading');
+        const globalLoader = document.getElementById('globalPageLoader');
         const container = document.getElementById('papersContainer');
         const emptyState = document.getElementById('papersEmpty');
 
         if (show) {
-            if (loading) loading.classList.remove('hidden');
+            if (globalLoader) {
+                globalLoader.classList.replace('opacity-0', 'opacity-100');
+                globalLoader.classList.replace('pointer-events-none', 'pointer-events-auto');
+            }
             if (container) container.classList.add('hidden');
             if (emptyState) emptyState.classList.add('hidden');
         } else {
-            if (loading) loading.classList.add('hidden');
+            if (globalLoader) {
+                globalLoader.classList.replace('opacity-100', 'opacity-0');
+                globalLoader.classList.replace('pointer-events-auto', 'pointer-events-none');
+            }
             if (container) container.classList.remove('hidden');
         }
     }

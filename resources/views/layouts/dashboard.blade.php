@@ -197,17 +197,10 @@
         }
     </script>
     
-    <!-- Global Page Loader (Top Progress Bar) -->
-    <div id="globalPageLoader" class="fixed top-0 left-0 right-0 h-[3px] z-[99999] opacity-0 transition-opacity duration-300 pointer-events-none overflow-hidden">
-        <div class="h-full bg-blue-600 w-full origin-left -translate-x-[100%] animate-[indeterminate_1.5s_infinite_ease-in-out]"></div>
+    <!-- Minimal Circle Spinner Loader -->
+    <div id="globalPageLoader" class="fixed inset-0 z-[99999] bg-white/60 backdrop-blur-[2px] flex items-center justify-center transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div class="w-10 h-10 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
     </div>
-    <style>
-        @keyframes indeterminate {
-            0% { transform: translateX(-100%) scaleX(0.2); }
-            50% { transform: translateX(0) scaleX(0.4); }
-            100% { transform: translateX(100%) scaleX(0.2); }
-        }
-    </style>
 
     <!-- Scripts -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -229,7 +222,7 @@
         // Show loader before navigating away (only on actual navigations)
         document.addEventListener('click', (e) => {
             const link = e.target.closest('a');
-            if (link && link.href && !link.href.startsWith('#') && link.target !== '_blank' && !e.ctrlKey && !e.metaKey) {
+            if (link && link.href && !link.href.includes('#') && !link.href.includes('javascript:') && link.target !== '_blank' && !e.ctrlKey && !e.metaKey) {
                 if (loader) {
                     loader.classList.replace('opacity-0', 'opacity-100');
                 }

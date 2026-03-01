@@ -192,9 +192,6 @@
 
                                     @if($claim->admin_notes)
                                         <div class="mt-5 p-4 bg-slate-900 rounded-xl relative overflow-hidden">
-                                            <div class="absolute top-0 right-0 p-2 opacity-10">
-                                                <i class="fas fa-sticky-note text-white text-3xl"></i>
-                                            </div>
                                             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Feedback</p>
                                             <p class="text-xs font-medium text-slate-300 line-clamp-2 italic leading-relaxed">"{{ $claim->admin_notes }}"</p>
                                         </div>

@@ -97,6 +97,30 @@
             color: #2563eb;
             font-weight: 700;
         }
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 15px;
+                border-radius: 16px;
+            }
+            .content {
+                padding: 24px;
+            }
+            .info-item {
+                flex-direction: column;
+            }
+            .info-label {
+                margin-bottom: 4px;
+            }
+            .info-value {
+                text-align: left;
+            }
+            .payment-info {
+                padding: 15px;
+            }
+            .header {
+                padding: 20px 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -107,7 +131,8 @@
         <div class="content">
             <h2>Citation Claim Requested</h2>
             <p>Hello <span class="emphasis">{{ $funder->first_name }}</span>,</p>
-            <p>A researcher has cited your work and submitted a claim request. To verify this citation and process the reward, a platform fee of ₹100 is required.</p>
+            <p>Thank you for using our platform.</p>
+            <p>We truly appreciate your support. Kindly proceed with donating the amount to the following account at your earliest convenience.</p>
             
             <div class="info-card">
                 <div class="info-item">
@@ -124,16 +149,17 @@
                 </div>
             </div>
 
-            <p>Please <span class="emphasis">pay ₹100 manually</span> to the Admin UPI ID below to process this citation.</p>
-
             <div class="payment-info">
-                <p style="margin-top: 0; font-weight: 600; color: #1e40af;">Payment Details (UPI)</p>
-                <div class="upi-id">madhusujan593@okaxis</div>
-                <p style="font-size: 12px; margin-top: 10px; color: #6b7280;">Please share the transaction screenshot with the admin for faster approval.</p>
+                <p style="margin-top: 0; font-weight: 600; color: #1e40af;">Payment Details</p>
+                <div class="upi-id" style="margin-bottom: 10px;">UPI ID: 9985327199@ybl</div>
+                <br>
+                <div class="upi-id">PhonePe/GPay: 9985327199</div>
+                <p style="font-size: 12px; margin-top: 15px; color: #6b7280;">Please share the transaction screenshot with the admin for faster approval.</p>
             </div>
 
-            <p style="margin-top: 30px;">Keep up the great work! Your contributions are making an impact.</p>
+            <p style="margin-top: 30px;">If you require any further details or assistance regarding the donation process, please feel free to contact us.</p>
             
+            <p>Thank you once again for your valuable contribution.</p>
             <p>Best regards,<br>The Citation Hub Team</p>
         </div>
         <div class="footer">

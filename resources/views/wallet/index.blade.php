@@ -175,7 +175,7 @@
                     >
                         <span class="flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-plus"></i>
-                            <span>Add INR</span>
+                            <span>Add Coins</span>
                         </span>
                     </button>
                 </div>
@@ -380,10 +380,10 @@ class WalletManager {
                     </div>
                     <div class="flex flex-col items-end ml-3">
                         <div class="text-base font-bold" style="color: ${transaction.type === 'credit' ? '#059669' : '#e11d48'} !important;">
-                            ${transaction.type === 'credit' ? '+' : '-'}${Math.abs(parseFloat(transaction.amount)).toFixed(0)} INR
+                            ${transaction.type === 'credit' ? '+' : '-'}${Math.abs(parseFloat(transaction.amount)).toFixed(0)} Coins
                         </div>
                         <div class="text-xs text-gray-500">
-                            Balance: ${parseFloat(transaction.balance_after).toFixed(0)} INR
+                            Balance: ${parseFloat(transaction.balance_after).toFixed(0)} Coins
                         </div>
                     </div>
                 </div>

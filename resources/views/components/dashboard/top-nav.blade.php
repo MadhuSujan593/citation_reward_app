@@ -11,12 +11,12 @@
         </div>
 
         <!-- Search and Filters -->
-        <div class="flex items-center space-x-4 w-full lg:w-auto">
-            <div class="flex items-center gap-3 flex-wrap lg:flex-nowrap w-full">
+        <div class="flex items-center w-full lg:w-auto mt-4 lg:mt-0">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
                 <!-- Search Input -->
-                <div class="relative flex-1 min-w-[250px]">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
+                <div class="relative flex-1 w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                        <i class="fas fa-search text-slate-400"></i>
                     </div>
                     <input 
                         type="text" 
@@ -27,14 +27,16 @@
                 </div>
 
                 <!-- Filter Button -->
-                <div class="relative" x-data="{ open: false }">
+                <div class="relative w-full sm:w-auto" x-data="{ open: false }">
                     <button 
                         id="advancedFilterBtn"
                         @click="open = !open"
-                        class="flex items-center gap-2 px-4 py-3 border border-gray-200 bg-white/50 backdrop-blur-sm rounded-xl hover:bg-white/70 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 whitespace-nowrap"
+                        class="flex items-center justify-between sm:justify-center w-full sm:w-auto gap-2 px-4 py-3 border border-gray-200 bg-white/50 backdrop-blur-sm rounded-xl hover:bg-white/70 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 whitespace-nowrap"
                     >
-                        <i class="fas fa-filter text-indigo-600"></i>
-                        <span id="filterLabel">All</span>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-filter text-indigo-600"></i>
+                            <span id="filterLabel">All</span>
+                        </div>
                         <i class="fas fa-chevron-down text-xs text-gray-500 transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
                     </button>
 
@@ -48,7 +50,7 @@
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 scale-100"
                         x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-50"
+                        class="absolute right-0 left-0 sm:left-auto mt-2 w-full sm:w-48 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-50 overflow-hidden"
                     >
                         <p class="text-sm font-medium text-gray-700 mb-2 px-3">Search By:</p>
                         <button class="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 rounded-lg transition-colors" data-filter="" @click="open = false">All</button>

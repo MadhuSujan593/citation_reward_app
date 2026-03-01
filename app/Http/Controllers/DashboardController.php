@@ -17,15 +17,34 @@ class DashboardController extends Controller
         // Ensure the global auth instance mirrors the fresh user data
         auth()->setUser($user);
 
+        // Normalize the role just in case it's fully capitalized in the database (e.g. 'ADMIN')
+        $userRole = ucfirst(strtolower(trim($user->role ?? 'Citer')));
+
         // Redirect super admin to their management panel
-        if ($user->role === 'Admin') {
-            return redirect()->route('admin.claim-requests');
+        if ($userRole === 'Admin') {
+            return redirect()->route('admin.dashboard');
         }
 
-        // Fallback to 'Citer' if null
-        $userRole = $user->role ?? 'Citer';
+        if ($userRole === 'Funder') {
+            return redirect()->route('funder.dashboard');
+        }
 
-        return view('dashboard-new', compact('userRole'));
+        return redirect()->route('citer.dashboard');
+    }
+
+    public function citerIndex() {
+        $userRole = 'Citer';
+        return view('citer-dashboard', compact('userRole'));
+    }
+
+    public function funderIndex() {
+        $userRole = 'Funder';
+        return view('funder-dashboard', compact('userRole'));
+    }
+
+    public function adminIndex() {
+        $userRole = 'Admin';
+        return view('admin-dashboard', compact('userRole'));
     }
 
     public function switchView($type)
@@ -42,11 +61,18 @@ class DashboardController extends Controller
     public function showPapers(Request $request)
     {
         $user = Auth::user();
-        $role = $request->input('role') ?? $user->role;
+        $rawRole = $request->input('role') ?? $user->role;
+        $role = ucfirst(strtolower(trim($rawRole)));
 
         $query = PublishedPaper::with(['user']);
 
-        if ($role === 'Funder') {
+        if ($role === 'Admin') {
+            // Admin sees all papers
+            $papers = $query->withCount('citers')->latest()->paginate(6);
+            $totalPapers = PublishedPaper::count();
+            $totalCitations = PaperCitation::count();
+            
+        } elseif ($role === 'Funder') {
             $query->where('user_id', $user->id);
             
             $papers = $query->withCount('citers')->latest()->paginate(6);
@@ -105,7 +131,13 @@ class DashboardController extends Controller
         
         Log::info("Role switch result for user {$user->id}: " . ($saved ? 'Success' : 'Failed'));
 
-        return response()->json(['success' => true, 'message' => 'Dashboard role updated.']);
+        $redirectUrl = $role === 'Funder' ? route('funder.dashboard') : route('citer.dashboard');
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Dashboard role updated.',
+            'redirect' => $redirectUrl
+        ]);
     }
 
 }

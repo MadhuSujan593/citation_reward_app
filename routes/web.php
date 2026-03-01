@@ -38,9 +38,9 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard-new', function () {
-        return view('dashboard-new');
-    })->name('dashboard.new');
+    Route::get('/admin-dashboard', [DashboardController::class, 'adminIndex'])->name('admin.dashboard');
+    Route::get('/citer-dashboard', [DashboardController::class, 'citerIndex'])->name('citer.dashboard');
+    Route::get('/funder-dashboard', [DashboardController::class, 'funderIndex'])->name('funder.dashboard');
     Route::get('/dashboard/switch/{type}', [DashboardController::class, 'switchView'])->name('dashboard.switch');
     Route::post('/profile-update', [ProfileController::class, 'update'])->name('profile.edit');
     Route::delete('/profile-delete', [AuthController::class, 'deleteUserAccount'])->name('profile.del');
@@ -59,6 +59,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/cite-paper/{publishedPaper}', [PublishPaperController::class, 'cite'])->name('papers.cite');
     Route::post('/uncite-paper/{publishedPaper}', [PublishPaperController::class, 'unCite'])->name('papers.cite');
     Route::get('/my-citations', [PublishPaperController::class, 'myCitations']);
+
+    // Admin Specific Routes
+    Route::get('/admin/users', [\App\Http\Controllers\AdminController::class, 'manageUsers'])->name('admin.users');
+    Route::post('/admin/users/{user}/role', [\App\Http\Controllers\AdminController::class, 'updateUserRole'])->name('admin.users.update-role');
+    Route::post('/admin/users', [\App\Http\Controllers\AdminController::class, 'storeUser'])->name('admin.users.store');
     
     // Wallet routes
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');

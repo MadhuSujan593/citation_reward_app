@@ -17,8 +17,8 @@ class Dashboard {
             this.loadPapers();
         }
         this.updateUIForRole();
+        this.setupEventListeners();
         this.setupSearchAndFilters();
-        this.setupMobileMenu();
     }
 
     setupMobileMenu() {
@@ -78,10 +78,14 @@ class Dashboard {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
             },
             body: JSON.stringify({ role: newRole })
-        }).catch(err => console.error('Failed to persist role:', err));
-
-        // Refresh content
-        this.loadPapers();
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            }
+        })
+        .catch(err => console.error('Failed to persist role:', err));
     }
 
     updateUIForRole() {
@@ -150,6 +154,13 @@ class Dashboard {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     this.performSearch();
+                }
+            });
+            
+            // Allow resetting search when input is cleared
+            searchInput.addEventListener('input', (e) => {
+                if (e.target.value.trim() === '') {
+                    this.performSearch(); // This will clear the search filter
                 }
             });
         }
@@ -611,7 +622,10 @@ class Dashboard {
 
     performSearch() {
         const query = document.getElementById('searchInput')?.value.trim();
-        if (!query) return;
+        if (!query) {
+            this.loadPapers();
+            return;
+        }
 
         const params = new URLSearchParams();
         params.append('query', query);

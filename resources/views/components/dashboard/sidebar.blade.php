@@ -15,20 +15,18 @@
             // Update the Dashboard class with the new role
             if (window.dashboard) {
                 window.dashboard.updateRole(role);
-            }
-
-            // If on claim request page, redirect when switching to Funder
-            if (window.location.pathname.includes('/claim-requests')) {
-                if (role === 'Funder') {
-                    window.location.href = '{{ route('dashboard') }}';
-                    return;
-                }
-            }
-
-            // If on wallet page, redirect only if something actually requires it
-            // (Previously it was redirecting Citers, but now Citers have access)
-            if (window.location.pathname.includes('/wallet')) {
-                // No redirect needed for role switch on wallet page anymore
+            } else {
+                // Fallback for pages without window.dashboard
+                fetch('/dashboard/switch-role', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({ role: role })
+                }).then(res => res.json()).then(data => {
+                    if (data.redirect) window.location.href = data.redirect;
+                });
             }
         }
     }"
@@ -50,41 +48,22 @@
             </button>
         </div>
 
-        <!-- Role Selector -->
-        <div class="mb-10 px-4">
-            <p class="text-[11px] font-bold text-slate-400 mb-3 uppercase tracking-widest">Workspace Role</p>
-            @if(auth()->user()->role === 'Admin')
-                <div class="p-3 rounded-2xl flex items-center gap-3 border" style="background-color: #0f172a; border-color: #1e293b;">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: #2563eb;">
-                        <i class="fas fa-shield-alt text-white text-xs"></i>
-                    </div>
-                    <span class="text-xs font-bold text-white uppercase tracking-widest">Super Admin</span>
-                </div>
-            @else
-                <div class="bg-gray-100 p-1.5 rounded-2xl flex gap-1 border border-gray-200">
-                    <button 
-                        class="flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all duration-300"
-                        :style="currentRole === 'Citer' ? 'background-color: #2563eb !important; color: white !important;' : 'background-color: transparent; color: #64748b;'"
-                        @click="switchRole('Citer')"
-                    >
-                        <i class="fas fa-quote-right mr-1.5" :style="currentRole === 'Citer' ? 'color: white !important;' : 'color: #94a3b8;'"></i> Citer
-                    </button>
-                    <button 
-                        class="flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all duration-300"
-                        :style="currentRole === 'Funder' ? 'background-color: #2563eb !important; color: white !important;' : 'background-color: transparent; color: #64748b;'"
-                        @click="switchRole('Funder')"
-                    >
-                        <i class="fas fa-briefcase mr-1.5" :style="currentRole === 'Funder' ? 'color: white !important;' : 'color: #94a3b8;'"></i> Funder
-                    </button>
-                </div>
-            @endif
-        </div>
+        <!-- Role Selector (Removed) -->
 
         <!-- Navigation Menu -->
         <nav class="space-y-4">
+            @php
+                $userRole = auth()->user()->role ?? 'Citer';
+                if ($userRole === 'Admin') {
+                    $dashboardRoute = route('admin.dashboard');
+                } else {
+                    $dashboardRoute = $userRole === 'Funder' ? route('funder.dashboard') : route('citer.dashboard');
+                }
+                $isDashboardActive = Request::routeIs('dashboard') || Request::routeIs('citer.dashboard') || Request::routeIs('funder.dashboard') || Request::routeIs('admin.dashboard');
+            @endphp
             <div class="space-y-1">
-                <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-bold transition-all {{ Request::routeIs('dashboard') || Request::routeIs('admin.claim-requests') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }}">
-                    <i class="fas fa-th-large w-5 {{ Request::routeIs('dashboard') || Request::routeIs('admin.claim-requests') ? 'text-blue-600' : 'text-slate-400' }}"></i>
+                <a href="{{ $dashboardRoute }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-bold transition-all {{ $isDashboardActive ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }}">
+                    <i class="fas fa-th-large w-5 {{ $isDashboardActive ? 'text-blue-600' : 'text-slate-400' }}"></i>
                     <span>Dashboard</span>
                 </a>
             </div>
@@ -120,6 +99,22 @@
                     <span>Claims</span>
                 </a>
             </div>
+
+            @if(auth()->user()->role === 'Admin')
+                <div class="space-y-1">
+                    <a href="{{ route('admin.claim-requests') }}" class="flex items-center space-x-3 px-4 py-2.5 {{ Request::is('admin/claim-requests*') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }} rounded-xl transition-all font-bold">
+                        <i class="fas fa-tasks w-5 {{ Request::is('admin/claim-requests*') ? 'text-blue-600' : 'text-slate-400' }}"></i>
+                        <span>Manage Claims</span>
+                    </a>
+                </div>
+                
+                <div class="space-y-1">
+                    <a href="{{ route('admin.users') }}" class="flex items-center space-x-3 px-4 py-2.5 {{ Request::is('admin/users*') ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'text-slate-600 hover:bg-slate-50' }} rounded-xl transition-all font-bold">
+                        <i class="fas fa-users w-5 {{ Request::is('admin/users*') ? 'text-blue-600' : 'text-slate-400' }}"></i>
+                        <span>Manage Users</span>
+                    </a>
+                </div>
+            @endif
 
             @if(auth()->user()->role !== 'Admin')
                 <div x-show="currentRole === 'Funder'" x-cloak class="space-y-1">

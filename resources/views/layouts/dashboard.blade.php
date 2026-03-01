@@ -103,7 +103,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-gray-50 min-h-screen font-sans antialiased text-slate-900" data-user-role="{{ trim(auth()->user()->role ?? 'Citer') }}">
+<body class="bg-gray-50 min-h-screen font-sans antialiased text-slate-900 overflow-x-hidden relative" data-user-role="{{ trim(auth()->user()->role ?? 'Citer') }}">
     <!-- User Data Attributes -->
     <div 
         data-user-first-name="{{ auth()->user()->first_name }}"
@@ -126,7 +126,7 @@
         <x-dashboard.sidebar :userRole="$userRole" />
         
         <!-- Main Content -->
-        <div id="mainContent" class="flex-1 flex flex-col">
+        <div id="mainContent" class="flex-1 flex flex-col min-w-0 w-full">
             <!-- Top Navigation -->
             @if (!Request::is('wallet*') && !Request::is('claim-requests*') && !Request::is('admin/claim-requests*'))
                 <x-dashboard.top-nav />
@@ -144,7 +144,7 @@
     
    
     <!-- Premium Global Toast (Tailwind 2 & 3 Compatible) -->
-    <div id="toast" class="fixed bottom-6 right-6 z-[100] transform transition-all duration-500 ease-out translate-x-full opacity-0 pointer-events-none">
+    <div id="toast" class="fixed bottom-6 right-6 z-[100] transform transition-all duration-300 ease-out translate-y-10 scale-95 opacity-0 pointer-events-none">
         <div class="flex items-center gap-3 bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-2xl min-w-fit max-w-xs border border-white/10">
             <div id="toastIcon" class="w-8 h-8 rounded-xl flex items-center justify-center text-base shadow-sm"></div>
             <div>
@@ -186,12 +186,12 @@
             toastMessage.textContent = message;
             
             // Show
-            toast.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none');
-            toast.classList.add('translate-x-0', 'opacity-100');
+            toast.classList.remove('translate-y-10', 'scale-95', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'scale-100', 'opacity-100');
             
             setTimeout(() => {
-                toast.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
-                toast.classList.remove('translate-x-0', 'opacity-100');
+                toast.classList.add('translate-y-10', 'scale-95', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
             }, 4000);
         }
     </script>
@@ -206,30 +206,77 @@
     // Global function to handle My Citations click from sidebar
     function handleMyCitationsClick() {
         // Check if we're on the dashboard page
-        const isDashboardPage = window.location.pathname === '{{ route("dashboard", [], false) }}';
+        const isDashboardPage = window.location.pathname === '{{ route("citer.dashboard", [], false) }}';
         
         if (isDashboardPage && window.dashboard && typeof window.dashboard.loadMyCitations === 'function') {
             // We're on dashboard, just load citations
             window.dashboard.loadMyCitations();
         } else {
             // We're on another page, redirect to dashboard with citations flag
-            window.location.href = '{{ route("dashboard") }}?citations=1';
+            window.location.href = '{{ route("citer.dashboard") }}?citations=1';
         }
     }
     
     // Global function to handle Explore Papers click from sidebar
     function handleExplorePapersClick() {
         // Check if we're on the dashboard page
-        const isDashboardPage = window.location.pathname === '{{ route("dashboard", [], false) }}';
+        const isDashboardPage = window.location.pathname === '{{ route("citer.dashboard", [], false) }}';
         
         if (isDashboardPage && window.dashboard && typeof window.dashboard.loadPapers === 'function') {
             // We're on dashboard, just load all papers normally
             window.dashboard.loadPapers();
         } else {
             // We're on another page, redirect to dashboard with explore flag
-            window.location.href = '{{ route("dashboard") }}?explore=1';
+            window.location.href = '{{ route("citer.dashboard") }}?explore=1';
         }
     }
+
+    // Initialize Mobile Menu Globally
+    document.addEventListener('DOMContentLoaded', function() {
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+
+        if (hamburgerBtn && sidebar && overlay) {
+            const openSidebar = () => {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            };
+
+            const closeSidebar = () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            };
+
+            hamburgerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openSidebar();
+            });
+            overlay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeSidebar();
+            });
+            
+            if (closeSidebarBtn) {
+                closeSidebarBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeSidebar();
+                });
+            }
+
+            // Close sidebar on navigation (for mobile)
+            sidebar.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) {
+                        closeSidebar();
+                    }
+                });
+            });
+        }
+    });
     </script>
 </body>
 </html> 

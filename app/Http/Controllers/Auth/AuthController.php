@@ -51,6 +51,7 @@ class AuthController extends Controller
                 'google_scholar_link' => $request->google_scholar_link,
                 'scopus_id_link'      => $request->scopus_id_link,
                 'orcid_link'          => $request->orcid_link,
+                'role'                => 'Funder',
             ]);
             Log::info('User registered: ' . $request->email);
             return redirect()->route('login')->with('success', 'Registration successful. Please login to continue!!.');

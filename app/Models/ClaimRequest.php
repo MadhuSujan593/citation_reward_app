@@ -20,12 +20,14 @@ class ClaimRequest extends Model
         'admin_notes',
         'claim_amount',
         'reviewed_at',
-        'reviewed_by'
+        'reviewed_by',
+        'selected_citations'
     ];
 
     protected $casts = [
         'claim_amount' => 'decimal:2',
-        'reviewed_at' => 'datetime'
+        'reviewed_at' => 'datetime',
+        'selected_citations' => 'array'
     ];
 
     protected $appends = ['formatted_claim_amount', 'status_badge_class'];

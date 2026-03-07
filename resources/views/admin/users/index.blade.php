@@ -32,6 +32,7 @@
                             <th class="p-4">Email</th>
                             <th class="p-4">Joined</th>
                             <th class="p-4">Role</th>
+                            <th class="p-4">Status</th>
                             <th class="p-4 pr-6 text-right">Actions</th>
                         </tr>
                     </thead>
@@ -59,6 +60,17 @@
                                     @else bg-blue-50 text-blue-600 border-blue-100 @endif">
                                     {{ $user->role ?? 'Citer' }}
                                 </span>
+                            </td>
+                            <td class="p-4">
+                                <button onclick="toggleUserStatus({{ $user->id }}, '{{ $user->status === 'active' ? 'inactive' : 'active' }}')" 
+                                    class="flex items-center gap-2 group cursor-pointer" {{ $user->id === auth()->id() ? 'disabled' : '' }}>
+                                    <div class="w-10 h-5 rounded-full relative transition-all duration-300 {{ $user->status === 'active' ? 'bg-emerald-500' : 'bg-slate-300' }}">
+                                        <div class="absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-all duration-300 {{ $user->status === 'active' ? 'translate-x-5' : 'translate-x-0' }}"></div>
+                                    </div>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider {{ $user->status === 'active' ? 'text-emerald-600' : 'text-slate-400' }}">
+                                        {{ $user->status }}
+                                    </span>
+                                </button>
                             </td>
                             <td class="p-4 pr-6 text-right">
                                 <div class="flex items-center justify-end gap-2">
@@ -128,14 +140,14 @@
                     
                     <div>
                         <label class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 block">Password</label>
-                        <input type="password" id="new_password" required minlength="8" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium">
+                        <input type="text" id="new_password" required minlength="8" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium">
                     </div>
 
                     <div>
                         <label class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 block">Assign Role</label>
                         <select id="new_role" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium appearance-none cursor-pointer">
                             <option value="Citer">Citer</option>
-                            <option value="Funder">Funder</option>
+                            <option value="Funder" selected>Funder</option>
                             <option value="Admin">Admin</option>
                         </select>
                     </div>
@@ -189,6 +201,28 @@
                 </button>
                 <button onclick="executeRoleChange()" id="confirmRoleBtn" class="flex-1 py-3 px-4 bg-amber-500 text-white rounded-xl font-bold shadow-lg shadow-amber-100 hover:bg-amber-600 active:scale-95 transition-all">
                     Yes, Change It
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Status Change Modal -->
+<div id="confirmStatusModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm transform transition-all duration-300 scale-95 opacity-0 overflow-hidden" id="confirmStatusModalContent">
+        <div class="p-8 text-center text-slate-800">
+            <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 mx-auto mb-6">
+                <i class="fas fa-user-shield text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Change User Status?</h3>
+            <p class="text-sm text-slate-500 mb-8 font-medium">Are you sure you want to change this user's status to <strong id="confirmStatusName" class="text-slate-900"></strong>?</p>
+            
+            <div class="flex gap-4">
+                <button onclick="closeStatusConfirmModal()" class="flex-1 py-3 px-4 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="executeStatusChange()" id="confirmStatusBtn" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all">
+                    Yes, Update Status
                 </button>
             </div>
         </div>
@@ -438,6 +472,88 @@
             btn.disabled = false;
         }
     });
+
+    // Status Toggle Logic
+    let pendingStatusUserId = null;
+    let pendingStatus = null;
+
+    window.toggleUserStatus = function(userId, newStatus) {
+        pendingStatusUserId = userId;
+        pendingStatus = newStatus;
+        
+        document.getElementById('confirmStatusName').textContent = newStatus;
+        
+        const modal = document.getElementById('confirmStatusModal');
+        const content = document.getElementById('confirmStatusModalContent');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    window.closeStatusConfirmModal = function() {
+        const modal = document.getElementById('confirmStatusModal');
+        const content = document.getElementById('confirmStatusModalContent');
+        
+        content.classList.add('scale-95', 'opacity-0');
+        content.classList.remove('scale-100', 'opacity-100');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            pendingStatusUserId = null;
+            pendingStatus = null;
+        }, 300);
+    }
+
+    window.executeStatusChange = async function() {
+        if (!pendingStatusUserId || !pendingStatus) return;
+        
+        const btn = document.getElementById('confirmStatusBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(`/admin/users/${pendingStatusUserId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ status: pendingStatus })
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                if(typeof window.showToast === 'function') {
+                    window.showToast(data.message, false);
+                } else {
+                    alert(data.message);
+                }
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                if(typeof window.showToast === 'function') {
+                    window.showToast(data.message || 'Failed to update status.', 'error');
+                } else {
+                    alert(data.message || 'Failed to update status.');
+                }
+                closeStatusConfirmModal();
+            }
+        } catch (error) {
+            console.error(error);
+            if(typeof window.showToast === 'function') {
+                window.showToast('An error occurred.', 'error');
+            } else {
+                alert('An error occurred.');
+            }
+            closeStatusConfirmModal();
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
 
 </script>
 @endpush

@@ -83,11 +83,17 @@ class DashboardController extends Controller
             })->count();
 
         } elseif ($role === 'Citer') {
-            $query->where('user_id', '!=', $user->id);
+            $query->where('user_id', '!=', $user->id)
+                  ->whereHas('user', function($q) {
+                      $q->where('status', 'active');
+                  });
             
             $papers = $query->latest()->paginate(6);
             
-            $totalPapers = PublishedPaper::where('user_id', '!=', $user->id)->count();
+            $totalPapers = PublishedPaper::where('user_id', '!=', $user->id)
+                ->whereHas('user', function($q) {
+                    $q->where('status', 'active');
+                })->count();
             $totalCitations = PaperCitation::where('user_id', $user->id)->count();
         } else {
             return response()->json([

@@ -13,14 +13,16 @@ class PaperCitedNotification extends Notification
 
     public $paper;
     public $citer;
+    public $amount;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($paper, $citer)
+    public function __construct($paper, $citer, $amount = 100)
     {
         $this->paper = $paper;
         $this->citer = $citer;
+        $this->amount = $amount;
     }
 
     /**
@@ -44,7 +46,7 @@ class PaperCitedNotification extends Notification
                 'funder' => $notifiable,
                 'citer' => $this->citer,
                 'paper' => $this->paper,
-                'amount' => 100
+                'amount' => $this->amount
             ]);
     }
 

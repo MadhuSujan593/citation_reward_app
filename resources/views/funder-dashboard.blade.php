@@ -65,6 +65,7 @@
     <x-dashboard.modals.delete-paper-modal />
     <x-dashboard.modals.delete-confirmation-modal />
     <x-dashboard.modals.citation-confirmation-modal />
+    <x-dashboard.modals.manage-citations-modal />
 @endpush
 
 @push('scripts')

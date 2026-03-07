@@ -369,6 +369,7 @@ class Dashboard {
         const isCited = paper.is_paper_cited_by_current_user;
         const hasPendingClaim = paper.has_pending_claim;
         const citationsCount = paper.citers_count || 0;
+        const allCitations = paper.all_citations || [];
 
         return `
             <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.02),0_10px_20px_rgba(0,0,0,0.03)] transition-all duration-300 overflow-hidden flex flex-col h-full group relative">
@@ -376,7 +377,22 @@ class Dashboard {
                 <div class="absolute top-0 left-0 w-1 h-full bg-slate-100 transition-colors duration-300"></div>
                 
                 <div class="p-6 flex-1">
-                    <div class="flex justify-between items-start mb-2">
+                    <div class="flex flex-col mb-4">
+                        ${allCitations.length > 0 ? `
+                            <button onclick="dashboard.openManageCitationsModal(${paper.id})" 
+                                class="bg-blue-50/50 hover:bg-blue-50 px-4 py-3 rounded-2xl border border-blue-100 mb-4 w-full flex items-center justify-between group/manage transition-all active:scale-[0.98]">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600">
+                                        <i class="fas fa-quote-left text-[10px]"></i>
+                                    </div>
+                                    <div class="text-left">
+                                        <p class="text-[10px] text-blue-500 font-bold uppercase tracking-wider leading-none mb-1">Manage citations</p>
+                                        <p class="text-xs font-bold text-blue-900 leading-none">${allCitations.length} cited title${allCitations.length !== 1 ? 's' : ''}</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-arrow-right text-[10px] text-blue-300 group-hover/manage:text-blue-500 group-hover/manage:translate-x-0.5 transition-all"></i>
+                            </button>
+                        ` : ''}
                         ${
                             this.currentRole === "Funder"
                                 ? `
@@ -424,25 +440,29 @@ class Dashboard {
                     </div>
                 </div>
                 
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center gap-3">
-                    <button onclick="dashboard.viewPaperDetails(${paper.id}, 'view')" 
-                        class="flex-1 h-10 flex items-center justify-center gap-2 text-xs font-bold text-white bg-blue-600 border border-transparent rounded-full hover:bg-blue-700 transition-all shadow-sm active:scale-95">
-                        <i class="fas fa-eye text-blue-100"></i>
-                        Details
-                    </button>
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center gap-3">
+                    <div class="flex-1 flex gap-2">
+                        <button onclick="dashboard.viewPaperDetails(${paper.id}, 'view')" 
+                            class="flex-1 h-10 flex items-center justify-center gap-2 text-xs font-bold text-white bg-blue-600 border border-transparent rounded-xl hover:bg-blue-700 transition-all shadow-sm active:scale-95">
+                            <i class="fas fa-eye text-blue-100"></i>
+                            Details
+                        </button>
+                        
+                        ${this.viewMode === 'citations' ? `
+                            <button onclick="window.location.href='/claim-requests'" 
+                                class="flex-1 h-10 flex items-center justify-center gap-2 text-xs font-bold text-emerald-600 bg-white border border-emerald-100 rounded-xl hover:bg-emerald-600 hover:text-white hover:border-transparent transition-all shadow-sm active:scale-95">
+                                <i class="fas fa-hand-holding-usd"></i>
+                                Claim
+                            </button>
+                        ` : ''}
+                    </div>
                     
                     ${
-                        this.currentRole === "Citer"
+                        this.currentRole === "Citer" && this.viewMode !== 'citations'
                             ? `
-                        <button onclick="${isCited && hasPendingClaim ? '' : `dashboard.toggleCite(${paper.id}, ${isCited})`}" 
-                            class="flex-1 h-10 flex items-center justify-center text-xs font-bold rounded-xl transition-all shadow-md active:scale-95 ${
-                                isCited && hasPendingClaim
-                                    ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
-                                    : isCited
-                                    ? "bg-rose-500 text-white hover:bg-rose-600 shadow-rose-100 font-bold"
-                                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200 font-bold"
-                            }" ${isCited && hasPendingClaim ? 'disabled' : ''} style="background-color: ${isCited && hasPendingClaim ? '#e2e8f0' : isCited ? '#f43f5e' : '#2563eb'} !important; color: white !important;">
-                            ${isCited && hasPendingClaim ? "Claimed" : isCited ? "Uncite" : "Cite paper"}
+                        <button onclick="dashboard.toggleCite(${paper.id}, false)" 
+                            class="flex-1 h-10 flex items-center justify-center text-xs font-bold rounded-xl transition-all shadow-md active:scale-95 bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200 font-bold" style="background-color: #2563eb !important; color: white !important;">
+                            Cite paper
                         </button>
                     `
                             : ""
@@ -583,9 +603,21 @@ class Dashboard {
         const title = document.getElementById('modalTitle');
         const message = document.getElementById('modalMessage');
         const confirmBtn = document.getElementById('confirmCitationBtn');
+        const titleContainer = document.getElementById('citingPaperTitleContainer');
+        const titleInput = document.getElementById('citingPaperTitle');
 
         if (title) title.textContent = `Confirm ${actionCapitalized}`;
         if (message) message.textContent = `Are you sure you want to ${actionCapitalized} this paper?`;
+        
+        if (titleContainer) {
+            if (this.citationAction === 'cite') {
+                titleContainer.classList.remove('hidden');
+                if (titleInput) titleInput.value = '';
+            } else {
+                titleContainer.classList.add('hidden');
+            }
+        }
+
         if (confirmBtn) {
             confirmBtn.textContent = `Yes, ${actionCapitalized}`;
             
@@ -604,31 +636,132 @@ class Dashboard {
     async handleCitationConfirm() {
         if (!this.citationPaperId || !this.citationAction) return;
 
+        const titleInput = document.getElementById('citingPaperTitle');
+        const payload = {
+            _token: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        };
+
+        if (this.citationAction === 'cite') {
+            if (titleInput) {
+                const errorMsg = document.getElementById('citingPaperTitleError');
+                if (!titleInput.value.trim()) {
+                    // Visual feedback
+                    titleInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200');
+                    if (errorMsg) errorMsg.classList.remove('hidden');
+                    titleInput.focus();
+                    
+                    // Clear error on input
+                    const clearError = () => {
+                        titleInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200');
+                        if (errorMsg) errorMsg.classList.add('hidden');
+                        titleInput.removeEventListener('input', clearError);
+                    };
+                    titleInput.addEventListener('input', clearError);
+
+                    return;
+                }
+                payload.citing_paper_title = titleInput.value.trim();
+            }
+        }
+
         try {
+            const formData = new FormData();
+            for (const key in payload) {
+                formData.append(key, payload[key]);
+            }
+
             const response = await fetch(`/${this.citationAction}-paper/${this.citationPaperId}`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    'X-CSRF-TOKEN': payload._token,
+                    'Accept': 'application/json'
                 },
+                body: formData
             });
 
             const data = await response.json();
 
-            if (data.success) {
+            if (response.ok && data.success) {
                 this.showToast(`Paper ${this.citationAction === 'cite' ? 'Cited' : 'Uncited'} successfully!`);
-                this.loadPapers();
+                if (this.viewMode === 'citations') {
+                    this.loadMyCitations(this.currentPage);
+                } else {
+                    this.loadPapers(this.currentPage);
+                }
             } else {
                 this.showToast(data.message || `Failed to ${this.citationAction}.`, true);
             }
             
             this.closePaperDetailsModal();
             this.closeConfirmModal();
+            this.closeManageCitationsModal(); // Close manage modal if it was open
         } catch (err) {
             console.error(err);
             this.closePaperDetailsModal();
             this.closeConfirmModal();
+            this.closeManageCitationsModal();
             this.showToast('Something went wrong.', true);
         }
+    }
+
+    openManageCitationsModal(paperId) {
+        const paper = this.papers.find(p => p.id === paperId);
+        if (!paper || !paper.all_citations) return;
+
+        const modal = document.getElementById('manageCitationsModal');
+        const content = document.getElementById('manageCitationsContent');
+        const list = document.getElementById('manageCitationsList');
+        const titleText = document.getElementById('manageModalPaperTitle');
+
+        if (titleText) titleText.textContent = paper.title;
+
+        if (list) {
+            list.innerHTML = paper.all_citations.map(cit => {
+                const isClaimed = cit.already_claimed;
+                return `
+                <div class="flex items-center justify-between bg-blue-50/50 px-4 py-3 rounded-2xl border border-blue-100 group/item transition-all hover:bg-blue-50">
+                    <div class="flex-1 mr-4 min-w-0">
+                        <p class="text-[14px] font-bold text-blue-900 truncate">${cit.citing_paper_title}</p>
+                    </div>
+                    ${isClaimed ? `
+                        <span class="px-4 py-2 text-xs font-bold text-amber-600 bg-amber-50 rounded-xl border border-amber-100 flex items-center gap-1.5 cursor-not-allowed">
+                            <i class="fas fa-lock text-[10px]"></i>
+                            Claimed
+                        </span>
+                    ` : `
+                        <button onclick="dashboard.toggleCite(${cit.id}, true)" 
+                            class="px-4 py-2 text-xs font-bold text-rose-600 bg-white border border-rose-100 rounded-xl hover:bg-rose-500 hover:text-white hover:border-transparent transition-all shadow-sm active:scale-95">
+                            <i class="fas fa-trash-alt mr-1.5 opacity-70"></i>
+                            Uncite
+                        </button>
+                    `}
+                </div>
+            `}).join('');
+        }
+
+        if (modal) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                if (content) {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }
+            }, 10);
+        }
+    }
+
+    closeManageCitationsModal() {
+        const modal = document.getElementById('manageCitationsModal');
+        const content = document.getElementById('manageCitationsContent');
+
+        if (content) {
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+        }
+        
+        setTimeout(() => {
+            if (modal) modal.classList.add('hidden');
+        }, 300);
     }
 
     performSearch() {

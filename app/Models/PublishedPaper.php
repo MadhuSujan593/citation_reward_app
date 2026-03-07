@@ -38,6 +38,7 @@ class PublishedPaper extends Model
     public function citers()
     {
         return $this->belongsToMany(User::class, 'paper_citations', 'published_paper_id', 'user_id')
+                    ->withPivot('citing_paper_title')
                     ->withTimestamps();
     }
 

@@ -144,7 +144,7 @@ class PublishPaperController extends Controller
         return response()->json($papers->latest()->get());
     }
 
-    public function cite(PublishedPaper $publishedPaper)
+    public function cite(Request $request, PublishedPaper $publishedPaper)
     {
         try {
             $user = Auth::user();
@@ -153,10 +153,9 @@ class PublishPaperController extends Controller
                 return response()->json(['message' => 'Unauthorized.'], 401);
             }
 
-            // Check if already cited
-            if ($publishedPaper->citers()->where('user_id', $user->id)->exists()) {
-                return response()->json(['message' => 'You have already cited this paper.'], 409);
-            }
+            $validated = $request->validate([
+                'citing_paper_title' => 'required|string|max:255',
+            ]);
 
             // Process payment for citation (deduct from paper funder)
             $paymentResult = \App\Services\CitationPaymentService::processCitationPayment($user->id, $publishedPaper->id);
@@ -165,10 +164,17 @@ class PublishPaperController extends Controller
                 return response()->json(['message' => $paymentResult['message']], 400);
             }
 
-            // Attach the user as a citer
-            $publishedPaper->citers()->attach($user->id);
+            // Attach the user as a citer with the paper title
+            $publishedPaper->citers()->attach($user->id, [
+                'citing_paper_title' => $validated['citing_paper_title']
+            ]);
 
             return response()->json(['success' => true]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Throwable $e) {
             Log::error('Citation error: '.$e->getMessage(), [
                 'user_id' => Auth::id(),
@@ -181,7 +187,7 @@ class PublishPaperController extends Controller
         }
     }
 
-    public function unCite(PublishedPaper $publishedPaper)
+    public function unCite(PaperCitation $paperCitation)
     {
         try {
             $user = Auth::user();
@@ -190,14 +196,14 @@ class PublishPaperController extends Controller
                 return response()->json(['message' => 'Unauthorized.'], 401);
             }
 
-            // Check if the user has cited the paper
-            if (! $publishedPaper->citers()->where('user_id', $user->id)->exists()) {
-                return response()->json(['message' => 'You have not cited this paper.'], 409);
+            // Check if user owns this citation
+            if ($paperCitation->user_id !== $user->id) {
+                return response()->json(['message' => 'Unauthorized citation removal.'], 403);
             }
 
             // Check if user has submitted a claim for this paper
             $existingClaim = \App\Models\ClaimRequest::where('user_id', $user->id)
-                ->where('referenced_paper_id', $publishedPaper->id)
+                ->where('referenced_paper_id', $paperCitation->published_paper_id)
                 ->whereIn('status', ['pending', 'approved'])
                 ->exists();
                 
@@ -206,20 +212,20 @@ class PublishPaperController extends Controller
             }
 
             // Process refund for uncitation (refund to paper funder)
-            $refundResult = \App\Services\CitationPaymentService::processCitationRefund($user->id, $publishedPaper->id);
+            $refundResult = \App\Services\CitationPaymentService::processCitationRefund($user->id, $paperCitation->published_paper_id);
             
             if (!$refundResult['success']) {
                 return response()->json(['message' => $refundResult['message']], 400);
             }
 
-            // Detach the user as a citer
-            $publishedPaper->citers()->detach($user->id);
+            // Delete the citation
+            $paperCitation->delete();
 
             return response()->json(['success' => true]);
         } catch (\Throwable $e) {
             Log::error('Uncitation error: '.$e->getMessage(), [
                 'user_id' => Auth::id(),
-                'paper_id' => $publishedPaper->id,
+                'citation_id' => $paperCitation->id,
             ]);
 
             return response()->json([
@@ -233,26 +239,61 @@ class PublishPaperController extends Controller
         $userId = auth()->id();
         $page = $request->input('page', 1);
 
-        // Get paginated papers cited by the current user
-        $papers = PublishedPaper::whereHas('citers', function($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })
-        ->with(['user'])
-        ->latest()
-        ->paginate(6);
+        // Get unique papers cited by the user
+        $citedPaperIds = PaperCitation::where('user_id', $userId)
+            ->distinct()
+            ->pluck('published_paper_id');
 
-        // Map to set is_paper_cited_by_current_user = true
-        foreach($papers->items() as $paper) {
+        $papersQuery = PublishedPaper::whereIn('id', $citedPaperIds)
+            ->with(['user']);
+
+        $paginatedPapers = $papersQuery->paginate(6);
+
+        // For each paper, attach all citations by this user, including claim status
+        $papers = collect($paginatedPapers->items())->map(function($paper) use ($userId) {
+            $userCitations = PaperCitation::where('user_id', $userId)
+                ->where('published_paper_id', $paper->id)
+                ->latest()
+                ->get(['id', 'citing_paper_title']);
+
+            // Get all citation IDs for this paper that are already in a pending/approved claim
+            $claimedCitationIds = [];
+            $existingClaims = \App\Models\ClaimRequest::where('user_id', $userId)
+                ->where('referenced_paper_id', $paper->id)
+                ->whereIn('status', ['pending', 'approved'])
+                ->get();
+                
+            foreach ($existingClaims as $claim) {
+                if (is_array($claim->selected_citations)) {
+                    foreach ($claim->selected_citations as $cit) {
+                        if (isset($cit['id'])) {
+                            $claimedCitationIds[] = (int)$cit['id'];
+                        }
+                    }
+                }
+            }
+
+            foreach ($userCitations as $citation) {
+                $citation->already_claimed = in_array($citation->id, $claimedCitationIds);
+            }
+
             $paper->setAttribute('is_paper_cited_by_current_user', true);
-        }
+            $paper->setAttribute('all_citations', $userCitations);
+            
+            // For backward compatibility or single display if needed
+            $paper->setAttribute('citing_paper_title', $userCitations->first()->citing_paper_title ?? '');
+            $paper->setAttribute('citation_id', $userCitations->first()->id ?? null);
+            
+            return $paper;
+        });
 
         return response()->json([
             'success' => true,
-            'papers' => $papers->items(),
+            'papers' => $papers,
             'pagination' => [
-                'current_page' => $papers->currentPage(),
-                'last_page' => $papers->lastPage(),
-                'total' => $papers->total(),
+                'current_page' => $paginatedPapers->currentPage(),
+                'last_page' => $paginatedPapers->lastPage(),
+                'total' => $paginatedPapers->total(),
             ],
             'stats' => [
                 'totalPapers' => PublishedPaper::where('user_id', '!=', $userId)->count(),

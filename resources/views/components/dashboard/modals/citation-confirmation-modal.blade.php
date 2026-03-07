@@ -10,9 +10,26 @@
             </div>
             
             <h3 id="modalTitle" class="text-xl font-bold text-slate-900 mb-4">Confirm Citation</h3>
-            <p id="modalMessage" class="text-slate-600 mb-8 leading-relaxed font-medium">
+            <p id="modalMessage" class="text-slate-600 mb-6 leading-relaxed font-medium">
                 Are you sure you want to cite this paper?
             </p>
+
+            <!-- Paper Title Input -->
+            <div id="citingPaperTitleContainer" class="mb-8 hidden">
+                <label for="citingPaperTitle" class="block text-left text-sm font-bold text-slate-700 mb-2">
+                    Title of your paper using this citation: <span class="text-rose-500">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="citingPaperTitle" 
+                    required 
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all duration-200"
+                    placeholder="e.g., Advances in AI Research"
+                >
+                <p id="citingPaperTitleError" class="text-rose-500 text-[11px] font-bold mt-2 text-left hidden">
+                    <i class="fas fa-exclamation-circle mr-1"></i> Please enter your paper title.
+                </p>
+            </div>
             
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row justify-center gap-3">

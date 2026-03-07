@@ -146,7 +146,7 @@
                                                 <div>
                                                     <p class="text-[10px] font-bold text-slate-400 tracking-wider mb-1">REFERENCED PAPER</p>
                                                     <p class="text-sm font-bold text-slate-800">{{ Str::limit($claim->referencedPaper->title ?? 'N/A', 50) }}</p>
-                                                    <p class="text-[10px] font-bold text-emerald-600 tracking-wider uppercase mt-1">Payout: 95 Coins</p>
+                                                    <p class="text-[10px] font-bold text-emerald-600 tracking-wider uppercase mt-1">Total: ₹{{ number_format($claim->claim_amount, 2) }} • Payout: ₹{{ number_format($claim->claim_amount * 0.95, 2) }}</p>
                                                 </div>
                                             </div>
 
@@ -237,7 +237,7 @@
                     </div>
                     <div>
                         <h3 class="text-2xl font-bold text-slate-900">Confirm Approval</h3>
-                        <p class="text-slate-500 font-medium">Process 95 Coins reward transfer</p>
+                        <p class="text-slate-500 font-medium">Process reward transfer (95% to citer)</p>
                     </div>
                 </div>
                 <button onclick="closeApprovalModal()" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
@@ -248,7 +248,7 @@
             <div class="space-y-6">
                 <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                     <p class="text-sm font-medium text-slate-600 leading-relaxed">
-                        By approving this claim, you verify the citation is valid. The claimant will receive <strong class="text-indigo-600">95 Coins</strong> and the system will retain <strong class="text-indigo-600">5 Coins</strong> as commission.
+                        By approving this claim, you verify the citation is valid. The claimant will receive <strong class="text-indigo-600">95%</strong> of the specified amount and the system will retain <strong class="text-indigo-600">5%</strong> as commission.
                     </p>
                 </div>
                 

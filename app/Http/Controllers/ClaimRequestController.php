@@ -21,16 +21,14 @@ class ClaimRequestController extends Controller
         $user = Auth::user();
         
         // Get papers with pending or approved claims by user (exclude rejected claims)
-        $claimedPaperIds = $user->claimRequests()
-            ->whereIn('status', ['pending', 'approved'])
-            ->pluck('referenced_paper_id')
-            ->toArray();
+        // Actually, we want to allow multiple claims if they select DIFFERENT citations.
+        // But for now, let's keep it simple: if a paper has an active claim, we might hide it or show available citations.
+        // The user's request says "Select your cited papers", implying we select from available citations.
         
-        // Get user's cited papers excluding those with pending/approved claims
-        // (Allow papers with rejected claims to be claimed again)
-        $citedPapers = $user->citedPapers()
+        $citedPapers = \App\Models\PublishedPaper::whereHas('citers', function($query) use ($user) {
+                $query->where('users.id', $user->id);
+            })
             ->with('user')
-            ->whereNotIn('published_papers.id', $claimedPaperIds)
             ->get();
         
         // Get user's claim requests
@@ -45,12 +43,50 @@ class ClaimRequestController extends Controller
     }
 
     /**
+     * Get citations for a specific paper for the current user
+     */
+    public function getCitations(PublishedPaper $paper)
+    {
+        $user = Auth::user();
+        
+        // Get all citations by this user for this paper
+        $citations = \App\Models\PaperCitation::where('user_id', $user->id)
+            ->where('published_paper_id', $paper->id)
+            ->get();
+            
+        // Get IDs of citations already in pending/approved claims
+        $claimedCitationIds = [];
+        $existingClaims = ClaimRequest::where('user_id', $user->id)
+            ->where('referenced_paper_id', $paper->id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->get();
+            
+        foreach ($existingClaims as $claim) {
+            if ($claim->selected_citations) {
+                foreach ($claim->selected_citations as $cit) {
+                    $claimedCitationIds[] = $cit['id'];
+                }
+            }
+        }
+        
+        // Mark citations as already claimed
+        foreach ($citations as $citation) {
+            $citation->already_claimed = in_array($citation->id, $claimedCitationIds);
+        }
+
+        return response()->json([
+            'success' => true,
+            'citations' => $citations
+        ]);
+    }
+
+    /**
      * Store a new claim request
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'citer_paper_title' => 'required|string|max:255',
+            'citer_paper_title' => 'nullable|string|max:255',
             'paper_link' => 'required|url|max:1000',
             'pdf_document' => 'nullable|file|mimes:pdf|max:10240', // 10MB max
             'referenced_paper_id' => 'required|exists:published_papers,id',
@@ -79,22 +115,48 @@ class ClaimRequestController extends Controller
                 ], 400);
             }
 
-            // Check if pending or approved claim already exists for this paper
-            $existingActiveClaim = ClaimRequest::where('user_id', $user->id)
+            $selectedCitations = $request->input('selected_citations', []);
+            $claimAmount = $request->input('claim_amount', 100);
+
+            // Get IDs of citations already in pending/approved claims for this user and paper
+            $claimedCitationIds = [];
+            $existingClaims = ClaimRequest::where('user_id', $user->id)
                 ->where('referenced_paper_id', $request->referenced_paper_id)
                 ->whereIn('status', ['pending', 'approved'])
-                ->exists();
+                ->get();
                 
-            if ($existingActiveClaim) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You already have a pending or approved claim for this paper. Please wait for the current claim to be processed.'
-                ], 400);
+            foreach ($existingClaims as $claim) {
+                if ($claim->selected_citations) {
+                    foreach ($claim->selected_citations as $cit) {
+                        if (isset($cit['id'])) {
+                            $claimedCitationIds[] = (int)$cit['id'];
+                        }
+                    }
+                }
+            }
+
+            // Verify none of the newly selected citations are already claimed
+            foreach ($selectedCitations as $citData) {
+                if (isset($citData['id']) && in_array((int)$citData['id'], $claimedCitationIds)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'One or more of the selected citations have already been claimed.'
+                    ], 400);
+                }
             }
 
             $pdfPath = null;
             if ($request->hasFile('pdf_document')) {
                 $pdfPath = $request->file('pdf_document')->store('claim-documents', 'public');
+            }
+
+            // Update citation titles if they were changed
+            foreach ($selectedCitations as $citData) {
+                if (isset($citData['id']) && isset($citData['title'])) {
+                    \App\Models\PaperCitation::where('id', $citData['id'])
+                        ->where('user_id', $user->id)
+                        ->update(['citing_paper_title' => $citData['title']]);
+                }
             }
 
             $claim = ClaimRequest::create([
@@ -104,7 +166,8 @@ class ClaimRequestController extends Controller
                 'pdf_document' => $pdfPath,
                 'referenced_paper_id' => $request->referenced_paper_id,
                 'reference_id' => $request->reference_id,
-                'claim_amount' => 95.00 // 100 - 5% commission = 95
+                'claim_amount' => $claimAmount,
+                'selected_citations' => $selectedCitations
             ]);
 
             DB::commit();
@@ -114,7 +177,7 @@ class ClaimRequestController extends Controller
                 $referencedPaper = PublishedPaper::find($request->referenced_paper_id);
                 $funder = $referencedPaper->user;
                 if ($funder) {
-                    $funder->notify(new \App\Notifications\PaperCitedNotification($referencedPaper, $user));
+                    $funder->notify(new \App\Notifications\PaperCitedNotification($referencedPaper, $user, $claimAmount));
                     \Illuminate\Support\Facades\Log::info('Citation notification sent to funder on claim submission: ' . $funder->email);
                 }
             } catch (\Exception $e) {
@@ -183,8 +246,10 @@ class ClaimRequestController extends Controller
             // Get admin wallet
             $adminWallet = AdminWalletService::getAdminWallet();
             
-            // Fixed amounts: ₹95 to citer, ₹5 commission for admin
-            $payoutAmount = 95.00;
+            // Dynamic amount: User specified amount - 5% commission
+            $totalAmount = $claimRequest->claim_amount;
+            $commission = $totalAmount * 0.05;
+            $payoutAmount = $totalAmount - $commission;
             
             // Check if admin has sufficient funds
             if ($adminWallet->balance < $payoutAmount) {
@@ -205,7 +270,7 @@ class ClaimRequestController extends Controller
                 ]);
             }
 
-            // Transfer ₹95 from admin to citer (₹5 remains as commission)
+            // Transfer payout from admin to citer
             $adminWallet->deductFunds(
                 $payoutAmount,
                 'Claim payment for: ' . substr($claimRequest->citer_paper_title, 0, 50) . '...',
@@ -232,7 +297,7 @@ class ClaimRequestController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Claim approved! ₹95.00 transferred to citer, ₹5.00 commission retained.'
+                'message' => 'Claim approved! ₹' . number_format($payoutAmount, 2) . ' transferred to citer, ₹' . number_format($commission, 2) . ' commission retained.'
             ]);
 
         } catch (\Exception $e) {

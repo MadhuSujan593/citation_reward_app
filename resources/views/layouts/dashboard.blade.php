@@ -145,7 +145,7 @@
     
    
     <!-- Premium Global Toast (Tailwind 2 & 3 Compatible) -->
-    <div id="toast" class="fixed bottom-6 right-6 z-[100] transform transition-all duration-300 ease-out translate-y-10 scale-95 opacity-0 pointer-events-none">
+    <div id="toast" class="fixed bottom-6 right-6 z-[10001] transform transition-all duration-300 ease-out translate-y-10 scale-95 opacity-0 pointer-events-none">
         <div class="flex items-center gap-3 bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-2xl min-w-fit max-w-xs border border-white/10">
             <div id="toastIcon" class="w-8 h-8 rounded-xl flex items-center justify-center text-base shadow-sm"></div>
             <div>

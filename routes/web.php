@@ -57,12 +57,13 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/papers/search', [PublishPaperController::class, 'search'])->name('papers.search');
     Route::post('/cite-paper/{publishedPaper}', [PublishPaperController::class, 'cite'])->name('papers.cite');
-    Route::post('/uncite-paper/{publishedPaper}', [PublishPaperController::class, 'unCite'])->name('papers.cite');
+    Route::post('/uncite-paper/{paperCitation}', [PublishPaperController::class, 'unCite'])->name('papers.uncite');
     Route::get('/my-citations', [PublishPaperController::class, 'myCitations']);
 
     // Admin Specific Routes
     Route::get('/admin/users', [\App\Http\Controllers\AdminController::class, 'manageUsers'])->name('admin.users');
     Route::post('/admin/users/{user}/role', [\App\Http\Controllers\AdminController::class, 'updateUserRole'])->name('admin.users.update-role');
+    Route::post('/admin/users/{user}/status', [\App\Http\Controllers\AdminController::class, 'updateUserStatus'])->name('admin.users.update-status');
     Route::post('/admin/users', [\App\Http\Controllers\AdminController::class, 'storeUser'])->name('admin.users.store');
     Route::delete('/admin/users/{user}', [\App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.users.destroy');
     
@@ -74,6 +75,7 @@ Route::middleware('auth')->group(function () {
     // Claim Request routes
     Route::get('/claim-requests', [ClaimRequestController::class, 'index'])->name('claim-requests.index');
     Route::post('/claim-requests', [ClaimRequestController::class, 'store'])->name('claim-requests.store');
+    Route::get('/papers/{paper}/citations', [ClaimRequestController::class, 'getCitations']);
     
     // Admin routes
     Route::middleware('admin')->group(function() {

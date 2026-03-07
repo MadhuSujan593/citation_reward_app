@@ -11,6 +11,7 @@ class PaperCitation extends Model
     protected $fillable = [
         'published_paper_id',
         'user_id',
+        'citing_paper_title',
     ];
 
     public function paper()

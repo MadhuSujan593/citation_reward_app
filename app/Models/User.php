@@ -26,7 +26,8 @@ class User extends Authenticatable
         'google_scholar_link',
         'scopus_id_link',
         'orcid_link',
-        'profile_picture'
+        'profile_picture',
+        'status'
     ];
 
     /**

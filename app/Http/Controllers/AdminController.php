@@ -31,6 +31,21 @@ class AdminController extends Controller
         ]);
     }
 
+    public function updateUserStatus(Request $request, User $user)
+    {
+        $request->validate([
+            'status' => 'required|in:active,inactive'
+        ]);
+
+        $user->status = $request->status;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "User status updated successfully to {$request->status}."
+        ]);
+    }
+
     public function storeUser(Request $request)
     {
         $request->validate([

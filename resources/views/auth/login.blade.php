@@ -88,11 +88,6 @@
             </button>
         </form>
 
-
-
-        <p class="mt-8 text-center text-sm text-slate-500">
-            Don't have an account? <a href="{{ route('register') }}" class="font-bold text-blue-600 hover:text-blue-700 transition">Create one now</a>
-        </p>
     </div>
 
     <script>

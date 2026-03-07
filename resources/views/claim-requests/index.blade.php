@@ -45,16 +45,31 @@
 
                         <form id="claimRequestForm" class="space-y-8" enctype="multipart/form-data">
                             @csrf
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div class="space-y-2">
-                                    <label for="citer_paper_title" class="text-sm font-bold text-slate-700 uppercase tracking-wider ml-1">Your Publication</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2 col-span-1 md:col-span-2">
+                                    <label for="referenced_paper_id" class="text-sm font-bold text-slate-700 uppercase tracking-wider ml-1">Select your cited papers</label>
                                     <div class="relative group">
                                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <i class="fas fa-book-open text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                                            <i class="fas fa-search text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                                         </div>
-                                        <input type="text" id="citer_paper_title" name="citer_paper_title" required
-                                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium"
-                                            placeholder="The title of your paper">
+                                        <select id="referenced_paper_id" name="referenced_paper_id" required
+                                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 appearance-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium cursor-pointer">
+                                            <option value="">Select paper you cited</option>
+                                            @foreach($citedPapers as $paper)
+                                                <option value="{{ $paper->id }}">{{ Str::limit($paper->title, 70) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                            <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic Citations Selection -->
+                                <div id="citations_container" class="md:col-span-2 space-y-3 hidden">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Select Citation Titles</label>
+                                    <div id="citations_list" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <!-- Citations will be loaded here via AJAX -->
                                     </div>
                                 </div>
 
@@ -65,27 +80,8 @@
                                             <i class="fas fa-link text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                                         </div>
                                         <input type="url" id="paper_link" name="paper_link" required
-                                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium"
+                                            class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium sm:text-sm"
                                             placeholder="https://example.com/publication">
-                                    </div>
-                                </div>
-
-                                <div class="space-y-2">
-                                    <label for="referenced_paper_id" class="text-sm font-bold text-slate-700 uppercase tracking-wider ml-1">Supporting Reference</label>
-                                    <div class="relative group">
-                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <i class="fas fa-search text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
-                                        </div>
-                                        <select id="referenced_paper_id" name="referenced_paper_id" required
-                                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 appearance-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium cursor-pointer">
-                                            <option value="">Select paper you cited</option>
-                                            @foreach($citedPapers as $paper)
-                                                <option value="{{ $paper->id }}">{{ Str::limit($paper->title, 50) }}</option>
-                                            @endforeach
-                                        </select>
-                                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                            <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -96,8 +92,21 @@
                                             <i class="fas fa-hashtag text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                                         </div>
                                         <input type="text" id="reference_id" name="reference_id"
-                                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium"
+                                            class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium sm:text-sm"
                                             placeholder="e.g. DOI or Internal ID">
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2 md:col-span-2">
+                                    <label for="claim_amount" class="text-sm font-bold text-slate-700 uppercase tracking-wider ml-1">Total Reward Amount (₹)</label>
+                                    <div class="relative group">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <i class="fas fa-coins text-amber-500 group-focus-within:text-amber-600 transition-colors"></i>
+                                        </div>
+                                        <input type="number" id="claim_amount" name="claim_amount" required min="100" step="1"
+                                            class="w-full pl-11 pr-4 py-3.5 bg-white border-2 border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-bold"
+                                            placeholder="100">
+                                            <p class="text-[9px] text-slate-400 mt-1.5 font-bold uppercase tracking-wider ml-1">₹100 per citation. Editable.</p>
                                     </div>
                                 </div>
                             </div>
@@ -241,9 +250,77 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Paper selection and citation loading
+    const paperSelect = document.getElementById('referenced_paper_id');
+    const citationsContainer = document.getElementById('citations_container');
+    const citationsList = document.getElementById('citations_list');
+    const amountInput = document.getElementById('claim_amount');
+
+    paperSelect.addEventListener('change', async function() {
+        const paperId = this.value;
+        if (!paperId) {
+            citationsContainer.classList.add('hidden');
+            return;
+        }
+
+        try {
+            citationsList.innerHTML = '<div class="col-span-full py-8 text-center"><i class="fas fa-spinner fa-spin text-blue-500"></i><p class="text-xs text-slate-400 mt-2">Loading citations...</p></div>';
+            citationsContainer.classList.remove('hidden');
+
+            const response = await fetch(`/papers/${paperId}/citations`);
+            const data = await response.json();
+
+            if (data.success && data.citations.length > 0) {
+                citationsList.innerHTML = '';
+                data.citations.forEach(cit => {
+                    const isDisabled = cit.already_claimed;
+                    const card = document.createElement('div');
+                    card.className = `p-3 rounded-xl border ${isDisabled ? 'bg-slate-50 border-slate-100 opacity-60' : 'bg-white border-slate-200 hover:border-blue-300 shadow-sm'} transition-all`;
+                    card.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="shrink-0">
+                                <input type="checkbox" name="selected_cit_ids[]" value="${cit.id}" 
+                                    class="citation-checkbox w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                    ${isDisabled ? 'disabled' : ''}>
+                            </div>
+                            <div class="flex-1">
+                                <input type="text" name="cit_title_${cit.id}" value="${cit.citing_paper_title || ''}" 
+                                    class="cit-title-input w-full px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-blue-100 transition-all"
+                                    ${isDisabled ? 'readonly' : ''} placeholder="Edit title">
+                                ${isDisabled ? '<p class="text-[8px] font-bold text-amber-600 uppercase mt-0.5 tracking-tighter">Already claimed</p>' : ''}
+                            </div>
+                        </div>
+                    `;
+                    citationsList.appendChild(card);
+                });
+
+                // Re-bind checkbox event listeners
+                document.querySelectorAll('.citation-checkbox').forEach(cb => {
+                    cb.addEventListener('change', updateAmount);
+                });
+            } else {
+                citationsList.innerHTML = '<div class="col-span-full py-8 text-center text-slate-400 text-sm">No citations found for this paper.</div>';
+            }
+        } catch (error) {
+            console.error('Error loading citations:', error);
+            showToast('Failed to load citations', 'error');
+        }
+    });
+
+    function updateAmount() {
+        const checkedCount = document.querySelectorAll('.citation-checkbox:checked').length;
+        amountInput.value = checkedCount * 100;
+    }
+
     claimForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
+        const selectedCheckboxes = document.querySelectorAll('.citation-checkbox:checked');
+        if (selectedCheckboxes.length === 0) {
+            showToast('Please select at least one citation title', 'error');
+            return;
+        }
+
         const submitBtn = claimForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         
@@ -252,6 +329,25 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             
             const formData = new FormData(claimForm);
+            
+            // Build selected_citations JSON
+            const selectedCitations = [];
+            selectedCheckboxes.forEach(cb => {
+                const id = cb.value;
+                const titleInput = document.querySelector(`input[name="cit_title_${id}"]`);
+                selectedCitations.push({
+                    id: id,
+                    title: titleInput ? titleInput.value : ''
+                });
+            });
+            
+            // We append the JSON string for the backend to parse
+            // But actually we can pass it as a hidden field or just individual fields
+            // Let's use individual fields for simplicity and append them to formData
+            selectedCitations.forEach((cit, index) => {
+                formData.append(`selected_citations[${index}][id]`, cit.id);
+                formData.append(`selected_citations[${index}][title]`, cit.title);
+            });
             
             const response = await fetch('{{ route("claim-requests.store") }}', {
                 method: 'POST',

@@ -1,170 +1,156 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--[if mso]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:AllowPNG/>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
     <title>Your Paper Has Been Cited</title>
     <style>
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f3f4f6;
-            color: #374151;
-            line-height: 1.6;
             margin: 0;
             padding: 0;
+            width: 100% !important;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            background-color: #f3f4f6;
+        }
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        img {
+            border: 0;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
         }
         .container {
-            max-width: 600px;
-            margin: 40px auto;
-            background: #ffffff;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            background-color: #3b82f6;
-            padding: 30px;
-            text-align: center;
-        }
-        .header h1 {
-            color: #ffffff;
-            margin: 0;
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.025em;
-        }
-        .content {
-            padding: 40px;
-        }
-        .content h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .info-card {
-            background-color: #f9fafb;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 30px;
-            border: 1px solid #f3f4f6;
-        }
-        .info-item {
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .info-label {
-            font-weight: 600;
-            color: #6b7280;
-            font-size: 14px;
-            min-width: 120px;
-        }
-        .info-value {
-            font-weight: 700;
-            color: #111827;
-            text-align: right;
-            font-size: 14px;
-        }
-        .payment-info {
-            background-color: #eff6ff;
-            border: 1px dashed #3b82f6;
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 30px;
-            text-align: center;
-        }
-        .upi-id {
-            display: inline-block;
-            background-color: #ffffff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            color: #2563eb;
-            font-weight: 700;
-            font-size: 16px;
-            margin-top: 10px;
-            border: 1px solid #dbeafe;
-        }
-        .footer {
-            padding: 24px;
-            background-color: #f9fafb;
-            text-align: center;
-            font-size: 12px;
-            color: #6b7280;
-        }
-        .emphasis {
-            color: #2563eb;
-            font-weight: 700;
+            width: 100%;
+            max-width: 600px !important;
+            margin: 0 auto;
         }
         @media only screen and (max-width: 600px) {
-            .container {
-                margin: 15px;
-                border-radius: 16px;
+            .full-width {
+                width: 100% !important;
             }
-            .content {
-                padding: 24px;
+            .mobile-padding {
+                padding: 20px !important;
             }
-            .info-item {
-                flex-direction: column;
-            }
-            .info-label {
-                margin-bottom: 4px;
+            .info-label, .info-value {
+                display: block !important;
+                width: 100% !important;
+                text-align: left !important;
             }
             .info-value {
-                text-align: left;
-            }
-            .payment-info {
-                padding: 15px;
-            }
-            .header {
-                padding: 20px 15px;
+                margin-top: 4px !important;
+                margin-bottom: 12px !important;
             }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Citation Hub</h1>
-        </div>
-        <div class="content">
-            <h2>Citation Claim Requested</h2>
-            <p>Hello <span class="emphasis">{{ $funder->first_name }}</span>,</p>
-            <p>Thank you for using our platform.</p>
-            <p>We truly appreciate your support. Kindly proceed with donating the amount to the following account at your earliest convenience.</p>
-            
-            <div class="info-card">
-                <div class="info-item">
-                    <span class="info-label">Paper Title:</span>
-                    <span class="info-value">{{ $paper->title }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Cited By:</span>
-                    <span class="info-value">{{ $citer->first_name }} {{ $citer->last_name }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Platform Fee:</span>
-                    <span class="info-value">₹100.00</span>
-                </div>
-            </div>
+<body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6; color: #374151; margin: 0; padding: 0;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f3f4f6;">
+        <tr>
+            <td align="center" style="padding: 40px 10px;">
+                <table role="presentation" class="container" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="background-color: #3b82f6; padding: 30px;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.025em;">Citation Hub</h1>
+                        </td>
+                    </tr>
+                    <!-- Content -->
+                    <tr>
+                        <td class="mobile-padding" style="padding: 40px;">
+                            <h2 style="font-size: 22px; font-weight: 700; color: #111827; margin: 0 0 20px 0; text-align: center;">Citation Claim Requested</h2>
+                            
+                            <p style="margin: 0 0 15px 0; font-size: 16px;">Hello <span style="color: #2563eb; font-weight: 700;">{{ $funder->first_name }}</span>,</p>
+                            <p style="margin: 0 0 15px 0; font-size: 16px;">Thank you for using our platform.</p>
+                            <p style="margin: 0 0 30px 0; font-size: 16px;">We truly appreciate your support. Kindly proceed with donating the amount to the following account at your earliest convenience.</p>
+                            
+                            <!-- Info Card -->
+                            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f9fafb; border-radius: 16px; border: 1px solid #f3f4f6; margin-bottom: 30px;">
+                                <tr>
+                                    <td style="padding: 24px;">
+                                        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td style="padding-bottom: 12px;">
+                                                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td class="info-label" width="120" valign="top" style="font-weight: 600; color: #6b7280; font-size: 14px;">Paper Title:</td>
+                                                            <td class="info-value" align="right" style="font-weight: 700; color: #111827; font-size: 14px;">{{ $paper->title }}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-bottom: 12px;">
+                                                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td class="info-label" width="120" valign="top" style="font-weight: 600; color: #6b7280; font-size: 14px;">Cited By:</td>
+                                                            <td class="info-value" align="right" style="font-weight: 700; color: #111827; font-size: 14px;">{{ $citer->first_name }} {{ $citer->last_name }}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td class="info-label" width="120" valign="top" style="font-weight: 600; color: #6b7280; font-size: 14px;">Platform Fee:</td>
+                                                            <td class="info-value" align="right" style="font-weight: 700; color: #111827; font-size: 14px;">₹{{ number_format($amount, 2) }}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
 
-            <div class="payment-info">
-                <p style="margin-top: 0; font-weight: 600; color: #1e40af;">Payment Details</p>
-                <div class="upi-id" style="margin-bottom: 10px;">UPI ID: 9985327199@ybl</div>
-                <br>
-                <div class="upi-id">PhonePe/GPay: 9985327199</div>
-                <p style="font-size: 12px; margin-top: 15px; color: #6b7280;">Please share the transaction screenshot with the admin for faster approval.</p>
-            </div>
+                            <!-- Payment Info -->
+                            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #eff6ff; border: 1px dashed #3b82f6; border-radius: 16px;">
+                                <tr>
+                                    <td align="center" style="padding: 20px;">
+                                        <p style="margin: 0 0 15px 0; font-weight: 600; color: #1e40af; font-size: 16px;">Payment Details</p>
+                                        
+                                        <div style="background-color: #ffffff; padding: 10px 20px; border-radius: 10px; border: 1px solid #dbeafe; display: inline-block; margin-bottom: 10px;">
+                                            <span style="color: #2563eb; font-weight: 700; font-size: 16px;">UPI ID: 9985327199@ybl</span>
+                                        </div>
+                                        <br>
+                                        <div style="background-color: #ffffff; padding: 10px 20px; border-radius: 10px; border: 1px solid #dbeafe; display: inline-block;">
+                                            <span style="color: #2563eb; font-weight: 700; font-size: 16px;">PhonePe/GPay: 9985327199</span>
+                                        </div>
+                                        
+                                        <p style="margin: 15px 0 0 0; font-size: 12px; color: #6b7280; font-weight: 500;">Please share the transaction screenshot with the admin for faster approval.</p>
+                                    </td>
+                                </tr>
+                            </table>
 
-            <p style="margin-top: 30px;">If you require any further details or assistance regarding the donation process, please feel free to contact us.</p>
-            
-            <p>Thank you once again for your valuable contribution.</p>
-            <p>Best regards,<br>The Citation Hub Team</p>
-        </div>
-        <div class="footer">
-            &copy; {{ date('Y') }} Citation Hub. All rights reserved.
-        </div>
-    </div>
+                            <p style="margin: 30px 0 15px 0; font-size: 15px;">If you require any further details or assistance regarding the donation process, please feel free to contact us.</p>
+                            <p style="margin: 0 0 30px 0; font-size: 15px;">Thank you once again for your valuable contribution.</p>
+                            
+                            <p style="margin: 0; font-size: 15px;">Best regards,<br><strong style="color: #111827;">The Citation Hub Team</strong></p>
+                        </td>
+                    </tr>
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="background-color: #f9fafb; padding: 24px; border-top: 1px solid #f3f4f6;">
+                            <p style="margin: 0; font-size: 12px; color: #6b7280;">&copy; {{ date('Y') }} Citation Hub. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

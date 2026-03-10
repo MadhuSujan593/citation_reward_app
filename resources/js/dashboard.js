@@ -786,6 +786,7 @@ class Dashboard {
         })
         .then(res => res.json())
         .then(data => {
+            this.papers = data;
             this.filteredPapers = data;
             this.displayPapers();
         })

@@ -256,6 +256,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const citationsList = document.getElementById('citations_list');
     const amountInput = document.getElementById('claim_amount');
 
+    // Auto-select paper if paper_id is in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const preselectedPaperId = urlParams.get('paper_id');
+    
     paperSelect.addEventListener('change', async function() {
         const paperId = this.value;
         if (!paperId) {
@@ -306,6 +310,15 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('Failed to load citations', 'error');
         }
     });
+
+    if (preselectedPaperId) {
+        // check if this paper_id exists in the options
+        const optionExists = Array.from(paperSelect.options).some(option => option.value === preselectedPaperId);
+        if (optionExists) {
+            paperSelect.value = preselectedPaperId;
+            paperSelect.dispatchEvent(new Event('change'));
+        }
+    }
 
     function updateAmount() {
         const checkedCount = document.querySelectorAll('.citation-checkbox:checked').length;

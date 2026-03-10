@@ -449,7 +449,7 @@ class Dashboard {
                         </button>
                         
                         ${this.viewMode === 'citations' ? `
-                            <button onclick="window.location.href='/claim-requests'" 
+                            <button onclick="window.location.href='/claim-requests?paper_id=${paper.id}'" 
                                 class="flex-1 h-10 flex items-center justify-center gap-2 text-xs font-bold text-emerald-600 bg-white border border-emerald-100 rounded-xl hover:bg-emerald-600 hover:text-white hover:border-transparent transition-all shadow-sm active:scale-95">
                                 <i class="fas fa-hand-holding-usd"></i>
                                 Claim
